@@ -46,7 +46,7 @@ const About = () => {
             {t('about.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            {t('about.subtitle')}
+            作为一名科技行业的工程师，我当前的主要工作围绕着推动生成式人工智能的技术在更多的行业内进行实践和应用
           </p>
         </motion.div>
 
@@ -63,7 +63,7 @@ const About = () => {
             </h3>
             <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
               <p>
-                我是一名从机械工程师成长为企业CEO，再到斯坦福大学AI研究生的复合型人才。我的职业发展跨越了汽车制造、战略咨询、互联网出行和人工智能等多个领域。
+                我是一名从工程师成长为企业CEO，再到斯坦福大学AI研究生的复合型人才。我的职业发展跨越了汽车制造、战略咨询、互联网出行和人工智能等多个高科技领域。
               </p>
               <p>
                 在耀出行担任CEO期间，我带领团队从0到1开创了高品质出行业务，打造了横跨亚洲的高端出行第一品牌。这段经历让我深刻理解了如何将技术创新与商业战略相结合。
@@ -84,7 +84,7 @@ const About = () => {
           >
             <ProfileImage
               src="/images/profile-about.jpg"
-              alt="杨广 / Jerry Yang - 关于我"
+              alt="Jerry Yang - About Me"
               className="w-72 h-80"
             />
           </motion.div>

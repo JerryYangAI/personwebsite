@@ -29,12 +29,12 @@ const Timeline = () => {
       current: false
     },
     {
-      period: '2016年 - 2019年',
+      period: '2017年 - 2019年',
       title: '滴滴出行（DiDi Chuxing）',
       subtitle: '战略与运营管理',
       location: '全球',
       description: '推动跨国战略项目落地与实施，涵盖美国、英国、印度等市场。在规模化运营和国际化拓展方面发挥关键作用。',
-      category: 'engineering',
+      category: 'entrepreneurship',
       link: null,
       current: false
     },
@@ -82,6 +82,16 @@ const Timeline = () => {
       current: false
     },
     {
+      period: '2023 - 2024',
+      title: '哈佛商学院',
+      subtitle: '高级工商管理硕士',
+      location: '美国波士顿',
+      description: '哈佛商学院Executive MBA项目，专注于高级管理技能、全球商业战略和领导力发展。',
+      category: 'education',
+      link: null,
+      current: false
+    },
+    {
       period: '2016 - 2017',
       title: '美国密歇根大学信息科学学院',
       subtitle: '数据科学硕士',
@@ -92,11 +102,11 @@ const Timeline = () => {
       current: false
     },
     {
-      period: '2001 - 2005',
-      title: '南京理工大学',
-      subtitle: '机械工程学士',
-      location: '中国南京',
-      description: '南京理工大学机械工程本科专业，为后续的汽车工程和战略管理职业发展奠定坚实基础。',
+      period: '2009 - 2011',
+      title: '中欧国际工商学院',
+      subtitle: '工商管理硕士',
+      location: '中国上海',
+      description: '中欧国际工商学院MBA项目，系统学习现代企业管理理论，培养国际化商业思维和领导能力。',
       category: 'education',
       link: null,
       current: false

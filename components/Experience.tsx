@@ -32,11 +32,11 @@ const Experience = () => {
       ]
     },
     {
-      period: '2016年 - 2019年',
+      period: '2017年 - 2019年',
       company: '滴滴出行（DiDi Chuxing）',
       position: '战略与运营管理',
       location: '全球',
-      description: '推动跨国战略项目落地与实施，涵盖美国、英国、印度等市场。',
+      description: '推动跨国战略项目落地与实施，涵盖美国、英国、印度等市场。在规模化运营和国际化拓展方面发挥关键作用。',
       achievements: [
         '推动跨国战略项目落地与实施',
         '涵盖美国、英国、印度等市场',
@@ -90,6 +90,13 @@ const Experience = () => {
       description: '斯坦福大学计算机科学系人工智能与计算机科学硕士项目，学习方向：生成式人工智能、大语言模型、视觉模型、扩散模型。'
     },
     {
+      period: '2023 - 2024',
+      school: '哈佛商学院',
+      degree: '高级工商管理硕士',
+      major: 'Executive MBA',
+      description: '哈佛商学院Executive MBA项目，专注于高级管理技能、全球商业战略和领导力发展。'
+    },
+    {
       period: '2016 - 2017',
       school: '美国密歇根大学信息科学学院',
       degree: '数据科学硕士',
@@ -97,11 +104,11 @@ const Experience = () => {
       description: '美国密歇根大学信息科学学院数据科学硕士项目，学习方向：机器学习、数据分析、人工智能基础。'
     },
     {
-      period: '2001 - 2005',
-      school: '南京理工大学',
-      degree: '机械工程学士',
-      major: 'Bachelor of Engineering in Mechanical Engineering',
-      description: '南京理工大学机械工程本科专业，为后续的汽车工程和战略管理职业发展奠定坚实基础。'
+      period: '2009 - 2011',
+      school: '中欧国际工商学院',
+      degree: '工商管理硕士',
+      major: 'MBA',
+      description: '中欧国际工商学院MBA项目，系统学习现代企业管理理论，培养国际化商业思维和领导能力。'
     }
   ]
 

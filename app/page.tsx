@@ -3,7 +3,6 @@ import Hero from '../components/Hero'
 import About from '../components/About'
 import Timeline from '../components/Timeline'
 import Beliefs from '../components/Beliefs'
-import Experience from '../components/Experience'
 import Projects from '../components/Projects'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
@@ -16,7 +15,6 @@ export default function Home() {
       <About />
       <Timeline />
       <Beliefs />
-      <Experience />
       <Projects />
       <Contact />
       <Footer />

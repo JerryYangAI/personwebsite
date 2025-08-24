@@ -63,8 +63,8 @@ const Beliefs = () => {
       icon: '🤝'
     },
     {
-      title: '价值创造',
-      description: '每个项目都要创造真正的商业价值和社会价值',
+      title: '创新思维',
+      description: '在共识之中寻找非共识',
       icon: '💎'
     }
   ]

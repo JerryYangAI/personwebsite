@@ -1,7 +1,7 @@
 {
   "name": "individual-blog",
   "version": "1.0.0",
-  "description": "个人网站 - 个人介绍、履历和创业项目展示",
+  "description": "Personal website showcasing professional experience and entrepreneurial projects",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -28,6 +28,6 @@
     "eslint-config-next": "^14.0.0"
   },
   "keywords": ["个人网站", "个人介绍", "履历", "创业项目"],
-  "author": "杨广 / Jerry Yang",
+  "author": "Jerry Yang",
   "license": "MIT"
 }

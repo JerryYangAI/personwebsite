@@ -12,8 +12,10 @@ const Navigation = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
+      const isScrolled = window.scrollY > 10
+      setScrolled(isScrolled)
     }
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -23,7 +25,6 @@ const Navigation = () => {
     { name: t('nav.about'), href: '#about' },
     { name: t('nav.timeline'), href: '#timeline' },
     { name: t('nav.beliefs'), href: '#beliefs' },
-    { name: t('nav.experience'), href: '#experience' },
     { name: t('nav.projects'), href: '#projects' },
     { name: t('nav.contact'), href: '#contact' },
   ]
@@ -37,7 +38,7 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="#home" className="text-2xl font-bold text-gradient">
-              {t('name')}
+              Jerry Yang
             </a>
           </div>
 

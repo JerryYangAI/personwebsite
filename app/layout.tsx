@@ -3,9 +3,9 @@ import './globals.css'
 import { LanguageProvider } from '../contexts/LanguageContext'
 
 export const metadata: Metadata = {
-  title: '杨广 / Jerry Yang - 个人网站 | 个人介绍、履历和创业项目',
-  description: '杨广/Jerry Yang的个人网站，展示个人介绍、过往履历、时间线、信条和未来创业项目',
-  keywords: ['杨广', 'Jerry Yang', '个人网站', '个人介绍', '履历', '创业项目', '职业发展', '时间线', '信条'],
+  title: 'Jerry Yang - Personal Website | Professional Experience and Entrepreneurial Projects',
+  description: 'Jerry Yang\'s personal website showcasing professional experience, entrepreneurial journey, and AI-driven innovation projects',
+  keywords: ['Jerry Yang', 'Personal Website', 'Professional Experience', 'Entrepreneurial Projects', 'AI Technology', 'Career Development', 'Timeline', 'Beliefs'],
 }
 
 export default function RootLayout({

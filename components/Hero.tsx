@@ -28,11 +28,11 @@ const Hero = () => {
           >
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
               {t('hero.greeting')}{' '}
-              <span className="text-gradient">{t('name')}</span>
+              <span className="text-gradient">Jerry Yang</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto lg:mx-0 leading-relaxed">
-              {t('hero.subtitle')}
+              一名工程师·创业家·CEO，致力于通过人工智能的技术创新和新商业模式的结合，为这个世界带来更多的美好体验与价值创造，推动更多人能够使用新的人工智能的新技术与新应用来改变世界。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
@@ -55,7 +55,7 @@ const Hero = () => {
           >
             <ProfileImage
               src="/images/profile-main.jpg"
-              alt="杨广 / Jerry Yang - 专业商务照"
+              alt="Jerry Yang - Professional Business Photo"
               className="w-80 h-96 lg:w-96 lg:h-[500px]"
               priority={true}
             />
