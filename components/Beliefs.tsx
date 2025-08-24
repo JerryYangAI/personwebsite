@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion'
 import { useLanguage } from '../contexts/LanguageContext'
-import { Heart, Lightbulb, Target, Globe, ArrowRight } from 'lucide-react'
+import { Heart, Lightbulb, Target, Globe, ArrowRight, BookOpen } from 'lucide-react'
+import Link from 'next/link'
 
 const Beliefs = () => {
   const { t } = useLanguage()
@@ -28,8 +29,8 @@ const Beliefs = () => {
     },
     {
       icon: <Target className="w-8 h-8 text-blue-600" />,
-      title: '战略思维与执行力并重',
-      description: '在BCG和捷豹路虎的经历让我深刻理解，优秀的战略必须配合强大的执行力。我追求在战略规划与落地实施之间找到完美平衡。',
+      title: '价值创造',
+      description: '始终围绕着真正的价值创造开展研究与行动',
       color: 'from-blue-50 to-cyan-50',
       borderColor: 'border-blue-200',
       bgColor: 'bg-blue-100',
@@ -37,8 +38,8 @@ const Beliefs = () => {
     },
     {
       icon: <Globe className="w-8 h-8 text-green-600" />,
-      title: '全球化视野与本土化实践',
-      description: '我的职业经历跨越多个国家和市场，这让我具备了全球化的战略思维。同时，我深知每个市场都有其独特性，需要因地制宜的策略。',
+      title: '人是万物之灵',
+      description: '我们改造这个世界是为了让人们更美好地生活',
       color: 'from-green-50 to-emerald-50',
       borderColor: 'border-green-200',
       bgColor: 'bg-green-100',
@@ -63,8 +64,8 @@ const Beliefs = () => {
       icon: '🤝'
     },
     {
-      title: '创新思维',
-      description: '在共识之中寻找非共识',
+      title: '创新蝶变',
+      description: '要在共识之中去寻找非共识',
       icon: '💎'
     }
   ]
@@ -82,9 +83,16 @@ const Beliefs = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             {t('beliefs.title')}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
             {t('beliefs.subtitle')}
           </p>
+          <Link 
+            href="/beliefs" 
+            className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl"
+          >
+            <BookOpen className="w-5 h-5" />
+            查看完整人生信条
+          </Link>
         </motion.div>
 
         {/* Core Beliefs */}

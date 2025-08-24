@@ -20,7 +20,7 @@ const Experience = () => {
     {
       period: '2019年 - 2025年9月',
       company: '耀出行（StarRides）',
-      position: '首席执行官（CEO）',
+      position: '首席执行官（首席执行官）',
       location: '亚洲',
       description: '初任首席运营官，后升任首席执行官，全面负责公司的经营与运营管理。',
       achievements: [

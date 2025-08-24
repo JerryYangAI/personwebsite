@@ -46,7 +46,7 @@ const About = () => {
             {t('about.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            作为一名科技行业的工程师，我当前的主要工作围绕着推动生成式人工智能的技术在更多的行业内进行实践和应用
+            作为一名科技行业前沿的探索者，我当前的主要工作围绕着推动生成式人工智能的技术在更多的行业内进行实践和应用
           </p>
         </motion.div>
 

@@ -34,6 +34,7 @@ const Footer = () => {
               <li><a href="#about" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.about')}</a></li>
               <li><a href="#timeline" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.timeline')}</a></li>
               <li><a href="#beliefs" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.beliefs')}</a></li>
+              <li><a href="/beliefs" className="text-gray-300 hover:text-white transition-colors duration-200">我的人生信条</a></li>
               <li><a href="#projects" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.projects')}</a></li>
               <li><a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.contact')}</a></li>
             </ul>

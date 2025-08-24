@@ -21,7 +21,7 @@ const Timeline = () => {
     {
       period: '2019年 - 2025年9月',
       title: '耀出行（StarRides）',
-      subtitle: '首席执行官（CEO）',
+      subtitle: '首席执行官（首席执行官）',
       location: '亚洲',
       description: '初任首席运营官，后升任首席执行官，全面负责公司的经营与运营管理。带领公司从0到1开创高品质出行业务，打造横跨亚洲的高端出行第一品牌。',
       category: 'entrepreneurship',
@@ -54,7 +54,7 @@ const Timeline = () => {
       subtitle: '全球战略部经理',
       location: '全球',
       description: '负责全球战略规划与市场拓展，主导多项跨国业务战略项目。在高端汽车品牌国际化战略和企业增长路径方面积累了丰富经验。',
-      category: 'automotive',
+      category: 'strategy',
       link: null,
       current: false
     },
@@ -144,8 +144,8 @@ const Timeline = () => {
         return 'bg-blue-100 text-blue-800 border-blue-200'
       case 'consulting':
         return 'bg-green-100 text-green-800 border-green-200'
-      case 'automotive':
-        return 'bg-orange-100 text-orange-800 border-orange-200'
+      case 'strategy':
+        return 'bg-indigo-100 text-indigo-800 border-indigo-200'
       case 'education':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case 'future':
@@ -163,8 +163,8 @@ const Timeline = () => {
         return '⚙️'
       case 'consulting':
         return '💼'
-      case 'automotive':
-        return '🚗'
+      case 'strategy':
+        return '🎯'
       case 'education':
         return '🎓'
       case 'future':
