@@ -33,7 +33,7 @@ const Timeline = () => {
       title: '滴滴出行（DiDi Chuxing）',
       subtitle: '战略与运营管理',
       location: '全球',
-      description: '推动跨国战略项目落地与实施，涵盖美国、英国、印度等市场。在规模化运营和国际化拓展方面发挥关键作用。',
+      description: '推动网约车业务在中国地区的发展和渗透，并且在规模化和运营效率方面有多项创新举措。',
       category: 'entrepreneurship',
       link: null,
       current: false

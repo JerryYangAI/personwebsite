@@ -10,40 +10,31 @@ const Beliefs = () => {
 
   const beliefs = [
     {
-      icon: <Lightbulb className="w-8 h-8 text-yellow-600" />,
-      title: '技术创新驱动商业变革',
-      description: '我相信技术是推动商业和社会进步的核心力量。从机械工程到AI技术，我始终致力于将前沿技术与实际应用相结合，创造真正的商业价值。',
-      color: 'from-yellow-50 to-orange-50',
-      borderColor: 'border-yellow-200',
-      bgColor: 'bg-yellow-100',
-      textColor: 'text-yellow-800'
-    },
-    {
-      icon: <Heart className="w-8 h-8 text-red-600" />,
-      title: '以用户为中心的产品思维',
-      description: '无论是汽车制造还是出行服务，我始终坚信优秀的产品必须真正解决用户痛点。通过深入理解用户需求，我们才能创造出有意义的解决方案。',
+      icon: <Target className="w-8 h-8 text-red-600" />,
+      title: '强者思维',
+      description: '我选择红色药丸',
       color: 'from-red-50 to-pink-50',
       borderColor: 'border-red-200',
       bgColor: 'bg-red-100',
       textColor: 'text-red-800'
     },
     {
-      icon: <Target className="w-8 h-8 text-blue-600" />,
-      title: '价值创造',
-      description: '始终围绕着真正的价值创造开展研究与行动',
+      icon: <Heart className="w-8 h-8 text-blue-600" />,
+      title: '成长思维',
+      description: '世界是由那些并不比你聪明的人拼凑起来的，你可以去改变它',
       color: 'from-blue-50 to-cyan-50',
       borderColor: 'border-blue-200',
       bgColor: 'bg-blue-100',
       textColor: 'text-blue-800'
     },
     {
-      icon: <Globe className="w-8 h-8 text-green-600" />,
-      title: '人是万物之灵',
-      description: '我们改造这个世界是为了让人们更美好地生活',
-      color: 'from-green-50 to-emerald-50',
-      borderColor: 'border-green-200',
-      bgColor: 'bg-green-100',
-      textColor: 'text-green-800'
+      icon: <Lightbulb className="w-8 h-8 text-yellow-600" />,
+      title: '创新思维',
+      description: '在共识之中，寻找非共识',
+      color: 'from-yellow-50 to-orange-50',
+      borderColor: 'border-yellow-200',
+      bgColor: 'bg-yellow-100',
+      textColor: 'text-yellow-800'
     }
   ]
 

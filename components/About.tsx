@@ -18,18 +18,18 @@ const About = () => {
   const values = [
     {
       icon: <Target className="w-8 h-8 text-primary-600" />,
-      title: t('about.targetOriented'),
-      description: t('about.targetDesc')
+      title: '强者思维',
+      description: '我选择红色药丸'
     },
     {
       icon: <Heart className="w-8 h-8 text-primary-600" />,
-      title: t('about.peopleFirst'),
-      description: t('about.peopleDesc')
+      title: '成长思维',
+      description: '世界是由那些并不比你聪明的人拼凑起来的，你可以去改变它'
     },
     {
       icon: <Lightbulb className="w-8 h-8 text-primary-600" />,
-      title: t('about.innovative'),
-      description: t('about.innovativeDesc')
+      title: '创新思维',
+      description: '在共识之中，寻找非共识'
     }
   ]
 
