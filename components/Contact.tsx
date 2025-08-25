@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Mail, MapPin, Linkedin, Github, Twitter, Send, CheckCircle, AlertCircle } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import ProfileImage from './ProfileImage'
+import LoadingSpinner from './LoadingSpinner'
 import { useState } from 'react'
 
 const Contact = () => {
@@ -281,8 +282,8 @@ const Contact = () => {
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      发送中...
+                      <LoadingSpinner size="sm" color="white" />
+                      <span>发送中...</span>
                     </>
                   ) : (
                     <>

@@ -137,41 +137,39 @@ const Timeline = () => {
   ]
 
   const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'entrepreneurship':
-        return 'bg-purple-100 text-purple-800 border-purple-200'
-      case 'engineering':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'consulting':
-        return 'bg-green-100 text-green-800 border-green-200'
-      case 'strategy':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-200'
-      case 'education':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'future':
-        return 'bg-indigo-100 text-indigo-800 border-indigo-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+    const colors = {
+      'education': 'from-blue-500 to-blue-600',
+      'entrepreneurship': 'from-green-500 to-green-600',
+      'consulting': 'from-purple-500 to-purple-600',
+      'strategy': 'from-orange-500 to-orange-600',
+      'engineering': 'from-gray-500 to-gray-600',
+      'automotive': 'from-red-500 to-red-600'
     }
+    return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-600'
   }
 
   const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'entrepreneurship':
-        return '🚀'
-      case 'engineering':
-        return '⚙️'
-      case 'consulting':
-        return '💼'
-      case 'strategy':
-        return '🎯'
-      case 'education':
-        return '🎓'
-      case 'future':
-        return '🔮'
-      default:
-        return '📌'
+    const icons = {
+      'education': '🎓',
+      'entrepreneurship': '🚀',
+      'consulting': '💼',
+      'strategy': '🎯',
+      'engineering': '⚙️',
+      'automotive': '🚗'
     }
+    return icons[category as keyof typeof icons] || '📋'
+  }
+
+  const getCategoryBgColor = (category: string) => {
+    const colors = {
+      'education': 'bg-blue-50 border-blue-200',
+      'entrepreneurship': 'bg-green-50 border-green-200',
+      'consulting': 'bg-purple-50 border-purple-200',
+      'strategy': 'bg-orange-50 border-orange-200',
+      'engineering': 'bg-gray-50 border-gray-200',
+      'automotive': 'bg-red-50 border-red-200'
+    }
+    return colors[category as keyof typeof colors] || 'bg-gray-50 border-gray-200'
   }
 
   return (
@@ -256,14 +254,14 @@ const Timeline = () => {
               >
                 <div className="flex items-start gap-6">
                   <div className="flex-shrink-0">
-                    <div className={`w-12 h-12 ${getCategoryColor(event.category)} rounded-full flex items-center justify-center text-lg font-bold border`}>
+                    <div className={`w-12 h-12 ${getCategoryBgColor(event.category)} rounded-full flex items-center justify-center text-lg font-bold border`}>
                       {getCategoryIcon(event.category)}
                     </div>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h4 className="text-xl font-bold text-gray-900">{event.title}</h4>
-                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full border ${getCategoryColor(event.category)}`}>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full border ${getCategoryBgColor(event.category)}`}>
                         {event.category}
                       </span>
                     </div>
@@ -314,14 +312,14 @@ const Timeline = () => {
               >
                 <div className="flex items-start gap-6">
                   <div className="flex-shrink-0">
-                    <div className={`w-12 h-12 ${getCategoryColor(event.category)} rounded-full flex items-center justify-center text-lg font-bold border`}>
+                    <div className={`w-12 h-12 ${getCategoryBgColor(event.category)} rounded-full flex items-center justify-center text-lg font-bold border`}>
                       {getCategoryIcon(event.category)}
                     </div>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h4 className="text-xl font-bold text-gray-900">{event.title}</h4>
-                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full border ${getCategoryColor(event.category)}`}>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full border ${getCategoryBgColor(event.category)}`}>
                         {event.category}
                       </span>
                     </div>

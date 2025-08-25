@@ -32,17 +32,32 @@ const Hero = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto lg:mx-0 leading-relaxed">
-              一名工程师·创业家·CEO，致力于通过人工智能的技术创新和新商业模式的结合，为这个世界带来更多的美好体验与价值创造，推动更多人能够使用新的人工智能的新技术与新应用来改变世界。
+              一名工程师·创业家·首席执行官，致力于通过人工智能的技术创新和新商业模式的结合，为这个世界带来更多的美好体验与价值创造，推动更多人能够使用新的人工智能的新技术与新应用来改变世界。
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
-              <a href="#contact" className="btn-primary flex items-center gap-2">
-                <Mail size={20} />
-                {t('hero.contactMe')}
-              </a>
-              <a href="#projects" className="btn-secondary flex items-center gap-2">
-                {t('hero.viewProjects')}
-              </a>
+              <motion.a 
+                href="#contact" 
+                className="btn-primary flex items-center gap-2 group relative overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <Mail size={20} />
+                  {t('hero.contactMe')}
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-primary-700 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+              </motion.a>
+              <motion.a 
+                href="#projects" 
+                className="btn-secondary flex items-center gap-2 group"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="group-hover:text-primary-600 transition-colors duration-200">
+                  {t('hero.viewProjects')}
+                </span>
+              </motion.a>
             </div>
           </motion.div>
 
@@ -78,6 +93,34 @@ const Hero = () => {
               <ArrowDown size={20} />
             </motion.div>
           </div>
+        </motion.div>
+
+        {/* Achievement Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+        >
+          {[
+            { number: '15+', label: '年行业经验' },
+            { number: '5+', label: '年CEO经验' },
+            { number: '3', label: '个硕士学位' },
+            { number: '∞', label: '创新可能' }
+          ].map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.4 + index * 0.1, duration: 0.6 }}
+              className="text-center"
+            >
+              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
+                {stat.number}
+              </div>
+              <div className="text-sm text-gray-600">{stat.label}</div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
