@@ -1,0 +1,17 @@
+# Cloudflare Pages headers配置
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# 为HTML文件设置正确的Content-Type
+/*.html
+  Content-Type: text/html; charset=utf-8
+
+# 为静态资源设置缓存
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=31536000

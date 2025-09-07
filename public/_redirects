@@ -1,0 +1,8 @@
+# Cloudflare Pages重定向规则
+# 确保所有路由都正确重定向到index.html
+
+# 处理根路径
+/ /index.html 200
+
+# 处理所有其他路径
+/* /index.html 200
