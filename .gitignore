@@ -72,6 +72,7 @@ jspm_packages/
 
 # next.js build output
 .next
+out/
 
 # nuxt.js build output
 .nuxt
@@ -90,3 +91,7 @@ jspm_packages/
 
 # TernJS port file
 .tern-port
+
+# Webpack cache files
+cache/
+*.pack
