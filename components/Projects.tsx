@@ -211,7 +211,10 @@ const Projects = () => {
                     onError={(e) => {
                       // 如果图片加载失败，显示一个占位符
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling.style.display = 'block';
+                      const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (nextElement) {
+                        nextElement.style.display = 'block';
+                      }
                     }}
                   />
                   {/* 备用SVG图表 */}
