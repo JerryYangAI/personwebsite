@@ -25,7 +25,6 @@ const Navigation = () => {
     { name: t('nav.about'), href: '#about' },
     { name: t('nav.timeline'), href: '#timeline' },
     { name: t('nav.beliefs'), href: '#beliefs' },
-    { name: '我的人生信条', href: '/beliefs' },
     { name: t('nav.projects'), href: '#projects' },
     { name: t('nav.contact'), href: '#contact' },
   ]

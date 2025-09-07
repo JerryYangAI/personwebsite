@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowLeft, Heart, Lightbulb, Target, Globe, BookOpen, Users, Zap, Star } from 'lucide-react'
+import { ArrowLeft, Heart, Lightbulb, Target, Globe, BookOpen, Users, Zap, Star, Waves } from 'lucide-react'
 import Link from 'next/link'
 
 const BeliefsPage = () => {
@@ -26,33 +26,34 @@ const BeliefsPage = () => {
       description: '在共识之中，寻找非共识',
       author: 'Jerry Yang',
       category: 'innovation'
+    },
+    {
+      icon: <Waves className="w-8 h-8 text-teal-600" />,
+      title: '冲浪思维',
+      description: '要在时代的浪潮中去找到属于你的那一浪',
+      author: 'Jerry Yang',
+      category: 'surfing'
     }
   ]
 
   const principles = [
     {
-      icon: <BookOpen className="w-6 h-6 text-purple-600" />,
-      title: '持续学习',
-      description: '从机械工程到AI技术，始终保持对新知识的渴望和学习能力',
-      category: 'learning'
+      icon: '🔍',
+      title: '洞察周期，笃定前行',
+      description: '深刻理解"周期"的规律，在起伏与波动中，坚持信念与长期主义的价值取向，才能照亮前行的道路。',
+      category: 'insight'
     },
     {
-      icon: <Users className="w-6 h-6 text-blue-600" />,
-      title: '跨界融合',
-      description: '将不同领域的知识和经验融合，创造独特的解决方案',
-      category: 'fusion'
+      icon: '🎯',
+      title: '将军赶路，不逐小兔',
+      description: '专注长期目标，不被短期机会和噪音分散注意力，以坚定的战略眼光指引方向。',
+      category: 'focus'
     },
     {
-      icon: <Heart className="w-6 h-6 text-pink-600" />,
-      title: '团队协作',
-      description: '相信优秀团队的力量，通过协作实现个人无法达成的目标',
-      category: 'collaboration'
-    },
-    {
-      icon: <Zap className="w-6 h-6 text-yellow-600" />,
-      title: '创新蝶变',
-      description: '要在共识之中去寻找非共识',
-      category: 'innovation'
+      icon: '⚡',
+      title: '在干中学，干即是学',
+      description: '学习最好的方式就是实践，在不断行动中积累经验，在不断迭代中收获成长。',
+      category: 'action'
     }
   ]
 
@@ -155,7 +156,7 @@ const BeliefsPage = () => {
           {/* Operating Principles */}
           <section className="mb-20">
             <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">行动原则</h3>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {principles.map((principle, index) => (
                 <motion.div
                   key={index}
@@ -164,13 +165,13 @@ const BeliefsPage = () => {
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                   className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
+                  <div className="text-center mb-4">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
                       {principle.icon}
                     </div>
                     <h4 className="text-xl font-bold text-gray-900">{principle.title}</h4>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{principle.description}</p>
+                  <p className="text-gray-700 leading-relaxed text-center">{principle.description}</p>
                 </motion.div>
               ))}
             </div>

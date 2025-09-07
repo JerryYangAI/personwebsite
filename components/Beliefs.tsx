@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useLanguage } from '../contexts/LanguageContext'
-import { Heart, Lightbulb, Target, Globe, ArrowRight, BookOpen } from 'lucide-react'
+import { Heart, Lightbulb, Target, Globe, ArrowRight, BookOpen, Waves } from 'lucide-react'
 import Link from 'next/link'
 
 const Beliefs = () => {
@@ -11,8 +11,8 @@ const Beliefs = () => {
   const beliefs = [
     {
       icon: <Target className="w-8 h-8 text-red-600" />,
-      title: '强者思维',
-      description: '我选择红色药丸',
+      title: t('beliefs.coreBeliefs.strong.title'),
+      description: t('beliefs.coreBeliefs.strong.description'),
       color: 'from-red-50 to-pink-50',
       borderColor: 'border-red-200',
       bgColor: 'bg-red-100',
@@ -20,8 +20,8 @@ const Beliefs = () => {
     },
     {
       icon: <Heart className="w-8 h-8 text-blue-600" />,
-      title: '成长思维',
-      description: '世界是由那些并不比你聪明的人拼凑起来的，你可以去改变它',
+      title: t('beliefs.coreBeliefs.growth.title'),
+      description: t('beliefs.coreBeliefs.growth.description'),
       color: 'from-blue-50 to-cyan-50',
       borderColor: 'border-blue-200',
       bgColor: 'bg-blue-100',
@@ -29,35 +29,39 @@ const Beliefs = () => {
     },
     {
       icon: <Lightbulb className="w-8 h-8 text-yellow-600" />,
-      title: '创新思维',
-      description: '在共识之中，寻找非共识',
+      title: t('beliefs.coreBeliefs.innovation.title'),
+      description: t('beliefs.coreBeliefs.innovation.description'),
       color: 'from-yellow-50 to-orange-50',
       borderColor: 'border-yellow-200',
       bgColor: 'bg-yellow-100',
       textColor: 'text-yellow-800'
+    },
+    {
+      icon: <Waves className="w-8 h-8 text-teal-600" />,
+      title: t('beliefs.coreBeliefs.surfing.title'),
+      description: t('beliefs.coreBeliefs.surfing.description'),
+      color: 'from-teal-50 to-cyan-50',
+      borderColor: 'border-teal-200',
+      bgColor: 'bg-teal-100',
+      textColor: 'text-teal-800'
     }
   ]
 
   const principles = [
     {
-      title: '持续学习',
-      description: '从机械工程到AI技术，始终保持对新知识的渴望和学习能力',
-      icon: '📚'
+      title: t('beliefs.actionPrinciples.insight.title'),
+      description: t('beliefs.actionPrinciples.insight.description'),
+      icon: '🔍'
     },
     {
-      title: '跨界融合',
-      description: '将不同领域的知识和经验融合，创造独特的解决方案',
-      icon: '🔗'
+      title: t('beliefs.actionPrinciples.focus.title'),
+      description: t('beliefs.actionPrinciples.focus.description'),
+      icon: '🎯'
     },
     {
-      title: '团队协作',
-      description: '相信优秀团队的力量，通过协作实现个人无法达成的目标',
-      icon: '🤝'
-    },
-    {
-      title: '创新蝶变',
-      description: '要在共识之中去寻找非共识',
-      icon: '💎'
+      title: t('beliefs.actionPrinciples.practice.title'),
+      description: t('beliefs.actionPrinciples.practice.description'),
+      icon: '⚡'
     }
   ]
 
@@ -82,13 +86,13 @@ const Beliefs = () => {
             className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl"
           >
             <BookOpen className="w-5 h-5" />
-            查看完整人生信条
+            {t('beliefs.viewFullBeliefs')}
           </Link>
         </motion.div>
 
         {/* Core Beliefs */}
         <div className="mb-20">
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
             {beliefs.map((belief, index) => (
               <motion.div
                 key={index}
@@ -114,7 +118,7 @@ const Beliefs = () => {
                 
                 <div className="flex items-center justify-between">
                   <span className={`inline-block px-4 py-2 ${belief.bgColor} ${belief.textColor} text-sm font-medium rounded-full border ${belief.borderColor}`}>
-                    核心价值观
+                    {t('beliefs.coreValues')}
                   </span>
                   <ArrowRight className={`w-5 h-5 ${belief.textColor}`} />
                 </div>
@@ -126,9 +130,9 @@ const Beliefs = () => {
         {/* Operating Principles */}
         <div>
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            行动原则
+            {t('beliefs.actionPrinciplesLabel')}
           </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {principles.map((principle, index) => (
               <motion.div
                 key={index}
@@ -160,16 +164,16 @@ const Beliefs = () => {
         >
           <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-8 rounded-2xl text-white">
             <h3 className="text-2xl font-bold mb-4">
-              让我们一起践行这些信念
+              {t('beliefs.ctaTitle')}
             </h3>
             <p className="text-lg mb-6 opacity-90">
-              如果您认同这些价值观和原则，欢迎加入我的AI驱动创业之旅，共同创造有意义的影响。
+              {t('beliefs.ctaDescription')}
             </p>
             <a
               href="#contact"
               className="inline-flex items-center gap-2 bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
             >
-              联系我
+              {t('contact.title')}
               <ArrowRight className="w-5 h-5" />
             </a>
           </div>

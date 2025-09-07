@@ -30,6 +30,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [])
 
+  useEffect(() => {
+    // 设置document的lang属性以应用相应的字体
+    document.documentElement.lang = language
+  }, [language])
+
   const changeLanguage = (lang: Language) => {
     setLanguage(lang)
     localStorage.setItem('language', lang)

@@ -56,14 +56,14 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: <Mail className="w-6 h-6 text-primary-600" />,
-      title: '邮箱',
+      title: t('contact.email'),
       value: 'yangguang8666@gmail.com',
       link: 'mailto:yangguang8666@gmail.com'
     },
     {
       icon: <MapPin className="w-6 h-6 text-primary-600" />,
-      title: '地址',
-      value: '上海/杭州/大阪/旧金山/纽约',
+      title: t('contact.address'),
+      value: t('contact.location'),
       link: null
     }
   ]
@@ -115,7 +115,7 @@ const Contact = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-3xl font-bold text-gray-900 mb-8">联系方式</h3>
+            <h3 className="text-3xl font-bold text-gray-900 mb-8">{t('contact.contactInfo')}</h3>
             
             <div className="space-y-6 mb-8">
               {contactInfo.map((info, index) => (
@@ -142,7 +142,7 @@ const Contact = () => {
 
             {/* Social Links */}
             <div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-4">社交媒体</h4>
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">{t('contact.socialMedia')}</h4>
               <div className="flex gap-4">
                 {socialLinks.map((social, index) => (
                   <a
@@ -161,10 +161,9 @@ const Contact = () => {
 
             {/* Additional Info */}
             <div className="mt-8 p-6 bg-primary-50 rounded-xl">
-              <h4 className="text-lg font-semibold text-primary-900 mb-3">合作机会</h4>
+              <h4 className="text-lg font-semibold text-primary-900 mb-3">{t('contact.cooperation')}</h4>
               <p className="text-primary-700 leading-relaxed">
-                我正在寻找志同道合的合作伙伴，包括技术人才、投资人、行业专家等。
-                如果您对我的项目感兴趣，欢迎讨论合作可能性。
+                {t('contact.cooperationDesc')}
               </p>
             </div>
           </motion.div>
@@ -188,7 +187,7 @@ const Contact = () => {
             
             {/* Contact Form */}
             <div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-8">发送消息</h3>
+              <h3 className="text-3xl font-bold text-gray-900 mb-8">{t('contact.sendMessage')}</h3>
               
               {/* Success/Error Messages */}
               {submitStatus === 'success' && (
@@ -213,7 +212,7 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                      姓名 *
+                      {t('contact.form.name')} *
                     </label>
                     <input
                       type="text"
@@ -223,13 +222,13 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      placeholder="请输入您的姓名"
+                      placeholder={t('contact.form.namePlaceholder')}
                     />
                   </div>
                   
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      邮箱 *
+                      {t('contact.form.email')} *
                     </label>
                     <input
                       type="email"
@@ -239,14 +238,14 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                      placeholder="请输入您的邮箱"
+                      placeholder={t('contact.form.emailPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                    主题
+                    {t('contact.form.subject')}
                   </label>
                   <input
                     type="text"
@@ -255,13 +254,13 @@ const Contact = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                    placeholder="请输入消息主题"
+                    placeholder={t('contact.form.subjectPlaceholder')}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    消息内容 *
+                    {t('contact.form.message')} *
                   </label>
                   <textarea
                     id="message"
@@ -271,7 +270,7 @@ const Contact = () => {
                     required
                     rows={6}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
-                    placeholder="请输入您的消息内容..."
+                    placeholder={t('contact.form.messagePlaceholder')}
                   ></textarea>
                 </div>
 
@@ -283,12 +282,12 @@ const Contact = () => {
                   {isSubmitting ? (
                     <>
                       <LoadingSpinner size="sm" color="white" />
-                      <span>发送中...</span>
+                      <span>{t('contact.form.sending')}</span>
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5" />
-                      发送消息
+                      {t('contact.form.send')}
                     </>
                   )}
                 </button>
@@ -297,7 +296,7 @@ const Contact = () => {
               {/* Form Info */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 text-center">
-                  💡 所有留言将直接发送到我的邮箱，我会尽快回复您
+                  💡 {t('contact.form.note')}
                 </p>
               </div>
             </div>

@@ -2,8 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { Briefcase, Calendar, MapPin, Award } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const Experience = () => {
+  const { t } = useLanguage()
   const experiences = [
     {
       period: '2025年9月 - 至今',
@@ -138,16 +140,16 @@ const Experience = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            职业履历
+            {t('experience.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            我的职业发展历程，从机械工程师到企业CEO，每一步都为我积累了宝贵的经验和技能
+            {t('experience.subtitle')}
           </p>
         </motion.div>
 
         {/* Work Experience */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">工作经历</h3>
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">{t('experience.workExperience')}</h3>
           <div className="space-y-8">
             {experiences.map((exp, index) => (
               <motion.div
@@ -203,7 +205,7 @@ const Experience = () => {
 
         {/* Education */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">教育背景</h3>
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">{t('experience.education')}</h3>
           <div className="space-y-8">
             {education.map((edu, index) => (
               <motion.div
@@ -242,7 +244,7 @@ const Experience = () => {
 
         {/* Certifications */}
         <div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">专业认证</h3>
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">{t('experience.certifications')}</h3>
           <div className="grid md:grid-cols-2 gap-6">
             {certifications.map((cert, index) => (
               <motion.div

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart, ArrowUp } from 'lucide-react'
+import { ArrowUp } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const Footer = () => {
@@ -19,22 +19,19 @@ const Footer = () => {
           <div>
             <h3 className="text-2xl font-bold text-gradient mb-4">Jerry Yang</h3>
             <p className="text-gray-300 leading-relaxed mb-4">
-              致力于通过创新和创业精神改变世界，创造真正的价值。
-            </p>
-            <p className="text-gray-400 text-sm">
-              让我们一起构建更美好的未来。
+              {t('footer.agiMessage')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">快速链接</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
               <li><a href="#home" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.home')}</a></li>
               <li><a href="#about" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.about')}</a></li>
               <li><a href="#timeline" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.timeline')}</a></li>
               <li><a href="#beliefs" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.beliefs')}</a></li>
-              <li><a href="/beliefs" className="text-gray-300 hover:text-white transition-colors duration-200">我的人生信条</a></li>
+              <li><a href="/beliefs" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.beliefsPage')}</a></li>
               <li><a href="#projects" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.projects')}</a></li>
               <li><a href="#contact" className="text-gray-300 hover:text-white transition-colors duration-200">{t('nav.contact')}</a></li>
             </ul>
@@ -42,10 +39,10 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">联系信息</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('footer.contactInfo')}</h4>
             <div className="space-y-2 text-gray-300">
-              <p>邮箱：yangguang8666@gmail.com</p>
-              <p>地址：上海/杭州/大阪/旧金山/纽约</p>
+              <p>{t('contact.email')}：yangguang8666@gmail.com</p>
+              <p>{t('contact.address')}：{t('contact.location')}</p>
             </div>
           </div>
         </div>
@@ -59,12 +56,6 @@ const Footer = () => {
               </p>
             </div>
             
-            <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <span>用心制作</span>
-              <Heart className="w-4 h-4 text-red-500" />
-              <span>在</span>
-              <span className="text-primary-400">中国</span>
-            </div>
           </div>
         </div>
       </div>

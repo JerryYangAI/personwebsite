@@ -9,61 +9,61 @@ const Timeline = () => {
 
   const timelineEvents = [
     {
-      period: '2025年9月 - 至今',
-      title: '斯坦福大学',
-      subtitle: '人工智能与计算机科学硕士在读',
-      location: '美国斯坦福',
-      description: '就读人工智能与计算机科学硕士项目，深入学习生成式人工智能、大语言模型、视觉模型与扩散模型等前沿技术。',
+      period: t('timeline.events.stanford.period'),
+      title: t('timeline.events.stanford.title'),
+      subtitle: t('timeline.events.stanford.subtitle'),
+      location: t('timeline.events.stanford.location'),
+      description: t('timeline.events.stanford.description'),
       category: 'education',
       link: null,
       current: true
     },
     {
-      period: '2019年 - 2025年9月',
-      title: '耀出行（StarRides）',
-      subtitle: '首席执行官（首席执行官）',
-      location: '亚洲',
-      description: '初任首席运营官，后升任首席执行官，全面负责公司的经营与运营管理。带领公司从0到1开创高品质出行业务，打造横跨亚洲的高端出行第一品牌。',
+      period: t('timeline.events.starrides.period'),
+      title: t('timeline.events.starrides.title'),
+      subtitle: t('timeline.events.starrides.subtitle'),
+      location: t('timeline.events.starrides.location'),
+      description: t('timeline.events.starrides.description'),
       category: 'entrepreneurship',
       link: null,
       current: false
     },
     {
-      period: '2017年 - 2019年',
-      title: '滴滴出行（DiDi Chuxing）',
-      subtitle: '战略与运营管理',
-      location: '全球',
-      description: '推动网约车业务在中国地区的发展和渗透，并且在规模化和运营效率方面有多项创新举措。',
+      period: t('timeline.events.didi.period'),
+      title: t('timeline.events.didi.title'),
+      subtitle: t('timeline.events.didi.subtitle'),
+      location: t('timeline.events.didi.location'),
+      description: t('timeline.events.didi.description'),
       category: 'entrepreneurship',
       link: null,
       current: false
     },
     {
-      period: '2014年 - 2015年',
-      title: '波士顿咨询公司（BCG）',
-      subtitle: '战略顾问',
-      location: '全球',
-      description: '服务于汽车与高端消费品行业客户，参与美国、英国、印度等市场的跨国战略与转型项目。在商业模式创新、组织优化及企业增长战略方面有成功案例。',
+      period: t('timeline.events.bcg.period'),
+      title: t('timeline.events.bcg.title'),
+      subtitle: t('timeline.events.bcg.subtitle'),
+      location: t('timeline.events.bcg.location'),
+      description: t('timeline.events.bcg.description'),
       category: 'consulting',
       link: null,
       current: false
     },
     {
-      period: '2011年 - 2014年',
-      title: '捷豹路虎汽车公司（Jaguar Land Rover）',
-      subtitle: '全球战略部经理',
-      location: '全球',
-      description: '负责全球战略规划与市场拓展，主导多项跨国业务战略项目。在高端汽车品牌国际化战略和企业增长路径方面积累了丰富经验。',
+      period: t('timeline.events.jlr.period'),
+      title: t('timeline.events.jlr.title'),
+      subtitle: t('timeline.events.jlr.subtitle'),
+      location: t('timeline.events.jlr.location'),
+      description: t('timeline.events.jlr.description'),
       category: 'strategy',
       link: null,
       current: false
     },
     {
-      period: '2005年 - 2009年',
-      title: '福特汽车公司（Ford Motor Company）',
-      subtitle: '机械工程师',
-      location: '全球',
-      description: '参与整车研发与工程项目，积累了扎实的汽车工程与项目管理经验。为后续的战略管理岗位奠定技术基础。',
+      period: t('timeline.events.ford.period'),
+      title: t('timeline.events.ford.title'),
+      subtitle: t('timeline.events.ford.subtitle'),
+      location: t('timeline.events.ford.location'),
+      description: t('timeline.events.ford.description'),
       category: 'engineering',
       link: null,
       current: false
@@ -72,41 +72,41 @@ const Timeline = () => {
 
   const educationEvents = [
     {
-      period: '2025 - 2026',
-      title: '斯坦福大学',
-      subtitle: '人工智能与计算机科学硕士',
-      location: '美国斯坦福',
-      description: '斯坦福大学计算机科学系人工智能与计算机科学硕士项目，学习方向：生成式人工智能、大语言模型、视觉模型、扩散模型。',
+      period: t('timeline.education.stanford.period'),
+      title: t('timeline.education.stanford.title'),
+      subtitle: t('timeline.education.stanford.subtitle'),
+      location: t('timeline.education.stanford.location'),
+      description: t('timeline.education.stanford.description'),
       category: 'education',
       link: null,
       current: false
     },
     {
-      period: '2023 - 2024',
-      title: '哈佛商学院',
-      subtitle: '高级工商管理硕士',
-      location: '美国波士顿',
-      description: '哈佛商学院Executive MBA项目，专注于高级管理技能、全球商业战略和领导力发展。',
+      period: t('timeline.education.harvard.period'),
+      title: t('timeline.education.harvard.title'),
+      subtitle: t('timeline.education.harvard.subtitle'),
+      location: t('timeline.education.harvard.location'),
+      description: t('timeline.education.harvard.description'),
       category: 'education',
       link: null,
       current: false
     },
     {
-      period: '2016 - 2017',
-      title: '美国密歇根大学信息科学学院',
-      subtitle: '数据科学硕士',
-      location: '美国安娜堡',
-      description: '美国密歇根大学信息科学学院数据科学硕士项目，学习方向：机器学习、数据分析、人工智能基础。',
+      period: t('timeline.education.michigan.period'),
+      title: t('timeline.education.michigan.title'),
+      subtitle: t('timeline.education.michigan.subtitle'),
+      location: t('timeline.education.michigan.location'),
+      description: t('timeline.education.michigan.description'),
       category: 'education',
       link: null,
       current: false
     },
     {
-      period: '2009 - 2011',
-      title: '中欧国际工商学院',
-      subtitle: '工商管理硕士',
-      location: '中国上海',
-      description: '中欧国际工商学院MBA项目，系统学习现代企业管理理论，培养国际化商业思维和领导能力。',
+      period: t('timeline.education.ceibs.period'),
+      title: t('timeline.education.ceibs.title'),
+      subtitle: t('timeline.education.ceibs.subtitle'),
+      location: t('timeline.education.ceibs.location'),
+      description: t('timeline.education.ceibs.description'),
       category: 'education',
       link: null,
       current: false
@@ -115,24 +115,46 @@ const Timeline = () => {
 
   const futureEvents = [
     {
-      period: '2026',
-      title: 'AI驱动的出行解决方案',
-      subtitle: '新项目启动',
-      location: '全球',
-      description: '结合斯坦福大学学到的AI技术，开发下一代智能出行平台，整合生成式AI、计算机视觉等技术。',
-      category: 'future',
-      link: null,
-      current: false
+      title: t('timeline.future.llm.title'),
+      subtitle: t('timeline.future.llm.subtitle'),
+      description: t('timeline.future.llm.description'),
+      category: 'ai',
+      icon: '📝'
     },
     {
-      period: '2027',
-      title: '智能城市交通平台',
-      subtitle: '城市数字化转型',
-      location: '全球',
-      description: '基于AI技术构建智慧城市交通系统，通过大语言模型和视觉模型优化城市交通流量和出行体验。',
-      category: 'future',
-      link: null,
-      current: false
+      title: t('timeline.future.generative.title'),
+      subtitle: t('timeline.future.generative.subtitle'),
+      description: t('timeline.future.generative.description'),
+      category: 'ai',
+      icon: '🎨'
+    },
+    {
+      title: t('timeline.future.agent.title'),
+      subtitle: t('timeline.future.agent.subtitle'),
+      description: t('timeline.future.agent.description'),
+      category: 'ai',
+      icon: '🤖'
+    },
+    {
+      title: t('timeline.future.machine.title'),
+      subtitle: t('timeline.future.machine.subtitle'),
+      description: t('timeline.future.machine.description'),
+      category: 'ai',
+      icon: '⚡'
+    },
+    {
+      title: t('timeline.future.driving.title'),
+      subtitle: t('timeline.future.driving.subtitle'),
+      description: t('timeline.future.driving.description'),
+      category: 'ai',
+      icon: '🛣️'
+    },
+    {
+      title: t('timeline.future.robot.title'),
+      subtitle: t('timeline.future.robot.subtitle'),
+      description: t('timeline.future.robot.description'),
+      category: 'ai',
+      icon: '🦾'
     }
   ]
 
@@ -143,7 +165,8 @@ const Timeline = () => {
       'consulting': 'from-purple-500 to-purple-600',
       'strategy': 'from-orange-500 to-orange-600',
       'engineering': 'from-gray-500 to-gray-600',
-      'automotive': 'from-red-500 to-red-600'
+      'automotive': 'from-red-500 to-red-600',
+      'ai': 'from-indigo-500 to-purple-600'
     }
     return colors[category as keyof typeof colors] || 'from-gray-500 to-gray-600'
   }
@@ -155,7 +178,8 @@ const Timeline = () => {
       'consulting': '💼',
       'strategy': '🎯',
       'engineering': '⚙️',
-      'automotive': '🚗'
+      'automotive': '🚗',
+      'ai': '🤖'
     }
     return icons[category as keyof typeof icons] || '📋'
   }
@@ -167,7 +191,8 @@ const Timeline = () => {
       'consulting': 'bg-purple-50 border-purple-200',
       'strategy': 'bg-orange-50 border-orange-200',
       'engineering': 'bg-gray-50 border-gray-200',
-      'automotive': 'bg-red-50 border-red-200'
+      'automotive': 'bg-red-50 border-red-200',
+      'ai': 'bg-indigo-50 border-indigo-200'
     }
     return colors[category as keyof typeof colors] || 'bg-gray-50 border-gray-200'
   }
@@ -240,7 +265,7 @@ const Timeline = () => {
         {/* Professional Experience */}
         <div className="mb-16">
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            职业经历
+            {t('timeline.experienceLabel')}
           </h3>
           <div className="max-w-4xl mx-auto">
             {timelineEvents.filter(event => !event.current).map((event, index) => (
@@ -298,7 +323,7 @@ const Timeline = () => {
         {/* Education */}
         <div className="mb-16">
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            教育背景
+            {t('timeline.educationLabel')}
           </h3>
           <div className="max-w-4xl mx-auto">
             {educationEvents.map((event, index) => (
@@ -345,33 +370,26 @@ const Timeline = () => {
         {/* Future Vision */}
         <div>
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            {t('timeline.future')}
+            {t('timeline.futureLabel')}
           </h3>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {futureEvents.map((event, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 * index }}
+                transition={{ duration: 0.8, delay: 0.1 * index }}
                 viewport={{ once: true }}
-                className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-200 hover:shadow-lg transition-shadow duration-200"
+                className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-indigo-100 text-indigo-800 rounded-full flex items-center justify-center text-xl font-bold border border-indigo-200">
-                    {getCategoryIcon(event.category)}
+                <div className="text-center mb-4">
+                  <div className="w-16 h-16 bg-indigo-100 text-indigo-800 rounded-full flex items-center justify-center text-2xl font-bold border border-indigo-200 mx-auto mb-3">
+                    {event.icon}
                   </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-gray-900">{event.title}</h4>
-                    <span className="text-indigo-600 font-medium">{event.period}</span>
-                  </div>
+                  <h4 className="text-xl font-bold text-gray-900 mb-1">{event.title}</h4>
+                  <span className="text-indigo-600 font-medium text-sm">{event.subtitle}</span>
                 </div>
-                <h5 className="text-lg font-semibold text-indigo-600 mb-2">{event.subtitle}</h5>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                  <MapPin className="w-4 h-4" />
-                  {event.location}
-                </div>
-                <p className="text-gray-700 leading-relaxed">{event.description}</p>
+                <p className="text-gray-700 leading-relaxed text-center">{event.description}</p>
               </motion.div>
             ))}
           </div>
