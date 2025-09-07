@@ -15,6 +15,19 @@ const nextConfig = {
   
   // 添加尾随斜杠（推荐）
   trailingSlash: true,
+  
+  // 禁用webpack缓存以避免大文件问题
+  webpack: (config, { isServer }) => {
+    // 完全禁用webpack缓存
+    config.cache = false;
+    
+    // 禁用持久化缓存
+    if (config.cache && config.cache.type) {
+      config.cache = false;
+    }
+    
+    return config;
+  },
 }
 
 module.exports = nextConfig
