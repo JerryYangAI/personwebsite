@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创始人手册：构建 AI 原生创业公司 | Jerry Yang</title>
+<meta name="description" content="Anthropic《The Founder's Playbook》中文精排版：AI 原生创业公司的四阶段路径（创意 / MVP / 发布 / 规模化），以及 Claude、Claude Code、Claude Cowork 在每个阶段的工具应用。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="AI 创业, Anthropic, Claude, 创始人手册, AI 原生创业公司, Founder's Playbook, MVP, PMF, Jerry Yang">
+<link rel="canonical" href="https://jerryyang.ai/founderplaybook/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Jerry Yang">
+<meta property="og:title" content="创始人手册：构建 AI 原生创业公司">
+<meta property="og:description" content="Anthropic《The Founder's Playbook》中文精排版：四阶段路径与 AI 工具应用策略。">
+<meta property="og:url" content="https://jerryyang.ai/founderplaybook/">
+<meta property="og:locale" content="zh_CN">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="创始人手册：构建 AI 原生创业公司">
+<meta name="twitter:description" content="Anthropic《The Founder's Playbook》中文精排版：四阶段路径与 AI 工具应用策略。">
+
+<!-- 字体加载：国内友好双源策略
+     · 主源：fonts.font.im（Google Fonts 国内镜像，国内访问快）
+     · 兜底：CSS 内 font-family 已配 Arial / Georgia 系统字体兜底 -->
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic&display=swap" rel="stylesheet">
+<!-- 海外/备用源：访问失败时浏览器会落到系统字体 -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+  :root{
+    --dark:#141413;
+    --light:#faf9f5;
+    --mid-gray:#b0aea5;
+    --light-gray:#e8e6dc;
+    --orange:#d97757;
+    --blue:#6a9bcc;
+    --green:#788c5d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--light);
+    color:var(--dark);
+    font-family:'Lora','Georgia',serif;
+    line-height:1.85;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding:32px 22px 64px;
+    background:var(--light);
+  }
+
+  /* ============== 头部封面 ============== */
+  .cover{
+    background:linear-gradient(135deg,#1a1918 0%,#141413 100%);
+    color:var(--light);
+    border-radius:18px;
+    padding:48px 32px 40px;
+    margin-bottom:36px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cover::before{
+    content:"";
+    position:absolute;
+    top:-60px;right:-60px;
+    width:200px;height:200px;
+    background:radial-gradient(circle,rgba(217,119,87,.35) 0%,rgba(217,119,87,0) 70%);
+    border-radius:50%;
+  }
+  .cover::after{
+    content:"";
+    position:absolute;
+    bottom:-80px;left:-50px;
+    width:240px;height:240px;
+    background:radial-gradient(circle,rgba(106,155,204,.18) 0%,rgba(106,155,204,0) 70%);
+    border-radius:50%;
+  }
+  .cover-tag{
+    display:inline-block;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    letter-spacing:2px;
+    padding:6px 14px;
+    border:1px solid rgba(250,249,245,.35);
+    border-radius:999px;
+    color:var(--light);
+    margin-bottom:24px;
+    position:relative;z-index:1;
+  }
+  .cover h1{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:700;
+    font-size:30px;
+    line-height:1.35;
+    margin-bottom:12px;
+    position:relative;z-index:1;
+  }
+  .cover .subtitle-en{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:400;
+    font-size:14px;
+    color:var(--mid-gray);
+    letter-spacing:.5px;
+    margin-bottom:28px;
+    position:relative;z-index:1;
+  }
+  .cover-meta{
+    display:flex;flex-wrap:wrap;gap:18px;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    color:#cfcdc4;
+    position:relative;z-index:1;
+  }
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{
+    width:6px;height:6px;border-radius:50%;background:var(--orange);
+  }
+
+  /* ============== 摘要 ============== */
+  .abstract{
+    background:#fff;
+    border:1px solid var(--light-gray);
+    border-left:4px solid var(--orange);
+    border-radius:12px;
+    padding:24px 26px;
+    margin-bottom:36px;
+  }
+  .abstract-label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:2px;
+    color:var(--orange);
+    margin-bottom:10px;
+  }
+  .abstract p{font-size:15.5px;color:#3a3937;}
+
+  /* ============== 目录 ============== */
+  .toc{
+    background:#fff;
+    border-radius:14px;
+    padding:28px 26px;
+    margin-bottom:44px;
+    border:1px solid var(--light-gray);
+  }
+  .toc-title{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:15px;
+    font-weight:600;
+    color:var(--dark);
+    margin-bottom:18px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .toc-title::before{
+    content:"";
+    width:24px;height:2px;background:var(--orange);
+  }
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{
+    counter-increment:toc;
+    padding:10px 0;
+    border-bottom:1px dashed var(--light-gray);
+    display:flex;align-items:baseline;gap:14px;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:15px;
+  }
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{
+    content:counter(toc,decimal-leading-zero);
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:600;
+    color:var(--orange);
+    font-size:14px;
+    min-width:30px;
+  }
+  .toc li a{
+    color:var(--dark);
+    text-decoration:none;
+    flex:1;
+  }
+  .toc li .en{
+    color:var(--mid-gray);
+    font-size:12px;
+    font-style:italic;
+  }
+
+  /* ============== 章节标题 ============== */
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:3px;
+    color:var(--orange);
+    margin-bottom:10px;
+  }
+  .chapter h2{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:700;
+    font-size:26px;
+    color:var(--dark);
+    line-height:1.35;
+    margin-bottom:6px;
+  }
+  .chapter .en-title{
+    font-family:'Poppins',Arial,sans-serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:15px;
+    color:var(--mid-gray);
+    margin-bottom:24px;
+  }
+
+  /* ============== 概要卡片 ============== */
+  .insight{
+    background:#fbf9f2;
+    border:1px solid var(--light-gray);
+    border-radius:12px;
+    padding:24px 26px;
+    margin:24px 0 32px;
+  }
+  .insight-head{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--dark);
+    letter-spacing:1.5px;
+    margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .insight-head .pin{
+    color:var(--orange);font-size:14px;
+  }
+  .insight h4{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--orange);
+    margin:14px 0 6px;
+    letter-spacing:.5px;
+  }
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{
+    font-size:14.5px;
+    color:#3a3937;
+    line-height:1.8;
+  }
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{
+    margin-top:16px;padding-top:14px;
+    border-top:1px dashed var(--light-gray);
+    display:flex;flex-wrap:wrap;gap:6px 8px;
+  }
+  .terms .tag{
+    display:inline-block;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:11px;
+    color:var(--blue);
+    background:rgba(106,155,204,.08);
+    padding:3px 10px;
+    border-radius:6px;
+    border:1px solid rgba(106,155,204,.2);
+  }
+
+  /* ============== 正文 ============== */
+  .body p{
+    margin:18px 0;
+    font-size:16px;
+    color:#2a2928;
+    line-height:1.95;
+  }
+  .body p .hl{
+    background:linear-gradient(180deg,transparent 60%,rgba(217,119,87,.22) 60%);
+    padding:0 2px;
+    font-weight:500;
+    color:var(--dark);
+  }
+  .body strong{color:var(--dark);font-weight:600;}
+
+  /* ============== 金句卡片 ============== */
+  .quote{
+    margin:36px 0;
+    padding:32px 28px;
+    background:linear-gradient(135deg,#fef6f1 0%,#faf9f5 100%);
+    border-left:5px solid var(--orange);
+    border-radius:8px 14px 14px 8px;
+    position:relative;
+  }
+  .quote::before{
+    content:""";
+    position:absolute;
+    top:8px;left:18px;
+    font-family:'Poppins',serif;
+    font-size:64px;
+    color:var(--orange);
+    opacity:.25;
+    line-height:1;
+  }
+  .quote p{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:18px;
+    line-height:1.6;
+    color:var(--dark);
+    font-weight:500;
+    padding-left:22px;
+  }
+  .quote .src{
+    margin-top:10px;
+    padding-left:22px;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    color:var(--mid-gray);
+    letter-spacing:1px;
+  }
+
+  /* ============== 练习 / 提示 ============== */
+  .practice{
+    margin:28px 0;
+    background:#f4f7f0;
+    border:1px solid rgba(120,140,93,.25);
+    border-radius:10px;
+    padding:20px 24px;
+  }
+  .practice .label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--green);
+    letter-spacing:2px;
+    margin-bottom:8px;
+  }
+  .practice p{font-size:15px;color:#3a3937;}
+
+  /* ============== 挑战块 ============== */
+  .challenge{
+    margin:24px 0;
+    padding:18px 22px;
+    background:#fff;
+    border:1px solid var(--light-gray);
+    border-left:4px solid var(--blue);
+    border-radius:10px;
+  }
+  .challenge .label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    font-weight:600;
+    color:var(--blue);
+    letter-spacing:2px;
+    margin-bottom:6px;
+  }
+  .challenge p{font-size:15.5px;color:#3a3937;}
+
+  /* ============== 分隔符 ============== */
+  .divider{
+    margin:48px auto;
+    display:flex;align-items:center;justify-content:center;
+    gap:14px;
+  }
+  .divider .line{
+    flex:1;height:1px;
+    background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);
+    max-width:100px;
+  }
+  .divider .glyph{
+    color:var(--orange);
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:14px;
+    letter-spacing:6px;
+  }
+
+  /* ============== 案例列表 ============== */
+  .case-list{
+    display:flex;flex-direction:column;gap:14px;
+    margin:24px 0;
+  }
+  .case-item{
+    background:#fff;
+    border:1px solid var(--light-gray);
+    border-radius:10px;
+    padding:16px 20px;
+  }
+  .case-item .name{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:600;
+    color:var(--orange);
+    font-size:14px;
+    margin-bottom:4px;
+    letter-spacing:.5px;
+  }
+  .case-item p{font-size:14.5px;color:#3a3937;line-height:1.7;}
+
+  /* ============== 页脚 ============== */
+  .footer{
+    margin-top:64px;
+    padding:32px 24px;
+    background:var(--dark);
+    color:var(--mid-gray);
+    border-radius:14px;
+    text-align:center;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;
+    line-height:1.8;
+  }
+  .footer .brand{
+    color:var(--orange);
+    font-weight:600;
+    letter-spacing:2px;
+    margin-bottom:8px;
+  }
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:10px;}
+
+  @media (max-width:480px){
+    .wrap{padding:18px 14px 40px;}
+    .cover{padding:36px 22px 30px;}
+    .cover h1{font-size:24px;}
+    .chapter h2{font-size:22px;}
+    .quote p{font-size:16px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============== 封面 ============== -->
+<div class="cover">
+  <div class="cover-tag">ANTHROPIC · 创始人手册</div>
+  <h1>创始人手册<br>构建 AI 原生创业公司</h1>
+  <div class="subtitle-en">The Founder's Playbook: Building an AI-Native Startup</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> 作者 Claude (Anthropic)</span>
+    <span><i class="dot" style="background:var(--blue);"></i> 2026</span>
+    <span><i class="dot" style="background:var(--green);"></i> 36 页 · 8 章</span>
+  </div>
+</div>
+
+<!-- ============== 摘要 ============== -->
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>本手册探讨 AI 如何重塑创业公司的构建方式。在 2026 年，AI 能够编写生产代码、进行市场研究、自动化运营流程，从根本上改变了创业生命周期。手册详细阐述了 AI 原生创业公司在<strong>创意、MVP、发布和规模化</strong>四个核心阶段的目标、挑战和最佳实践，展示了如何利用 Claude 等 AI 工具压缩开发时间线、降低技术门槛，使非技术创始人也能构建生产级应用。</p>
+</div>
+
+<!-- ============== 目录 ============== -->
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">创业生命周期，2026 年重启版<br><span class="en">The startup lifecycle, rebooted for 2026</span></a></li>
+    <li><a href="#ch2">成为创始人的意义正在改变<br><span class="en">What it means to be a founder is changing</span></a></li>
+    <li><a href="#ch3">创意阶段<br><span class="en">Idea Stage</span></a></li>
+    <li><a href="#ch4">MVP 阶段<br><span class="en">MVP Stage</span></a></li>
+    <li><a href="#ch5">发布阶段<br><span class="en">Launch Stage</span></a></li>
+    <li><a href="#ch6">规模化阶段<br><span class="en">Scale Stage</span></a></li>
+    <li><a href="#ch7">同样的工作，新的规则<br><span class="en">Same job, new rules</span></a></li>
+    <li><a href="#ch8">资源 Resources</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 1 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>创业生命周期，2026 年重启版</h2>
+  <div class="en-title">The startup lifecycle, rebooted for 2026</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>本章节说明 AI 如何从根本上改变创业公司的构建方式，消除了传统创业路径中对大团队、多轮融资和技术背景的依赖。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li>AI 工具可编写生产代码、进行市场研究、综合竞争分析、起草投资材料并自动化运营流程</li>
+    <li>智能体编码（Agentic Coding）使单个创始人能够完成过去需要整个工程团队的工作</li>
+    <li>将创业生命周期重新划分为四个核心阶段：想法、MVP、发布和规模化</li>
+    <li>每个阶段不再需要扩大团队规模、改变技能组合或进行新一轮融资</li>
+  </ul>
+  <h4>关键结果</h4>
+  <ul>
+    <li>非技术创始人现在可以交付生产级应用程序</li>
+    <li>10 人精益独角兽公司已从特例变为可行的战略计划</li>
+    <li>AI 消除了工具、平台和系统整合的学习曲线，拉平了创业竞争环境</li>
+    <li>创业时间线被显著压缩，从想法到产品的路径大幅缩短</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Agentic Coding</span>
+    <span class="tag">MVP</span>
+    <span class="tag">Lean Startup</span>
+    <span class="tag">Unicorn</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>AI（人工智能）正在重塑创业公司的构建方式。<span class="hl">从未编写过一行代码的创始人如今正在交付生产级应用程序</span>，而精益的 10 人独角兽公司已经从艰苦奋斗的弱者故事转变为深思熟虑的行动计划。</p>
+
+  <p>在 2026 年，AI 可以编写生产代码、进行市场研究、综合竞争格局、起草投资者材料，并自动化运营工作流程。通过消除即使是经验丰富的技术创始人在整合工具、平台和系统以实现其想法时所面临的曾经陡峭的学习曲线，<strong>AI 最重要的是在谁能够启动创业公司或构建产品方面拉平了竞争环境</strong>。</p>
+
+  <p>在 2026 年，一个好的想法能让创始人走得比以往任何时候都更远。智能体编码（Agentic Coding）将过去需要一个工程师团队完成的工作压缩为创始人自己就能交付的工作。</p>
+
+  <p>传统的创业公司增长轨迹假设从想法到规模化的路径是：验证 → 融资 → 招聘 → 构建 → 再次融资 → 增长 → 招聘更多人 → 重复。<span class="hl">现在，AI 已经消除了创业生命周期中每个新阶段都需要更大的团队、不同的技能组合和新一轮融资的预期</span>。</p>
+
+  <p>本手册根据这些新现实重新规划了创业旅程的四个核心阶段（想法阶段、MVP 阶段、发布阶段和规模化阶段）。我们研究当 AI 成为技术和组织发展核心时每个阶段的样子，每个阶段的正确工具是什么，以及使用这些工具的创始人如何压缩时间线。<strong>如果你准备好规划从想法到退出之间的最短路径，请继续阅读。</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 2 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · INTRODUCTION</div>
+  <h2>成为创始人的意义正在改变</h2>
+  <div class="en-title">What it means to be a founder is changing</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>本节阐明 AI 如何从根本上重新定义创始人角色，打破技术与非技术创始人之间的传统界限。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li>AI 模型、系统和智能体使非技术创始人能够构建生产级软件</li>
+    <li>创始人角色从个人贡献者转变为 AI 智能体的编排者</li>
+    <li>AI 在三个核心领域提供支持：研究、智能体编码和工作流自动化</li>
+    <li>AI 作为全领域随叫随到专家，替代传统的顾问或知识获取渠道</li>
+  </ul>
+  <h4>关键结果</h4>
+  <ul>
+    <li>2026 年早期初创公司极其精益，通常只有创始人或几人团队</li>
+    <li>非技术创始人可以构建生产软件，技术创始人可以制定商业策略</li>
+    <li>初创公司可以在扩大团队前达到产品验证、早期收入甚至盈利</li>
+    <li>创始人群体扩展到工程背景之外，解决传统技术创始人渠道忽视的问题</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">AI-Native Startups</span>
+    <span class="tag">Orchestrator of Agents</span>
+    <span class="tag">Subject Matter Expertise</span>
+    <span class="tag">Pre-Seed</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>创始人过去由他们能做什么来定义：技术型创始人编写代码，非技术型创始人运营业务并完成交易。但 2026 年可供创始人使用的模型（Models）、系统（Systems）和 AI 智能体（AI Agents）已经<span class="hl">打破了"能够构建的人"和"拥有值得构建的想法的人"之间的壁垒</span>。</p>
+
+  <p>AI 原生初创公司（AI-Native Startups）正在从根本上改变成为创始人的意义。现在，没有工程背景的人可以构建生产级软件来实现他们的想法，而技术娴熟但缺乏商业知识的创始人可以轻松制定市场进入策略、财务模型和高度精致的融资演示文稿（Pitch Deck）。</p>
+
+  <p>从历史上看，创始人将大部分时间花在执行模式（Execution Mode）上：编写代码、管理人员、处理日常运营工作。在 AI 原生初创公司中，<strong>创始人的角色从个人贡献者（Individual Contributor）转变为智能体编排者（Orchestrator of Agents）</strong>——这些专业化的 AI 助手可以读取文件、运行命令、执行代码，甚至浏览网页。创始人的注意力向上转移到更高阶的工作：产生想法并指挥系统来执行这些想法。</p>
+
+  <p>然而，AI 作为核心基础设施最具革命性的结果是<span class="hl">解放了具有专业领域知识的非技术型创始人</span>。当创始人群体扩展到工程背景之外的人时，你会看到由具有截然不同生活经历的人建立的初创公司，他们解决传统技术创始人渠道从未优先考虑（或者甚至从未注意到）的真实问题。</p>
+
+  <p>2026 年的早期初创公司截然不同。它们在设计上极其精益（Lean），通常只有创始人一人或几人的小团队。通过将技术和组织发展都以 AI 作为基础设施为中心，<strong>它们可以在扩大团队之前达到产品验证、早期收入甚至盈利</strong>。AI 在三个特定领域帮助初创公司像更大的组织一样运作：研究、智能体编码和关键业务运营的工作流自动化。</p>
+</div>
+
+<div class="quote">
+  <p>可以理解为：每个领域的随叫随到专家。</p>
+  <div class="src">— AI 作为核心基础设施</div>
+</div>
+
+<div class="body">
+  <p>考虑创始人在第一年需要知道但几乎肯定不知道的所有事情：如何设置工资单？如何规划产品开发冲刺？如何起草紧凑的投资者备忘录？</p>
+
+  <p>像这样的早期初创公司问题过去都有相同的答案，那就是<strong>找到知道的人</strong>。对于自力更生或种子前阶段的创始人来说，这可能会消耗用于知识收集而非构建的时间，或者可能需要在顾问身上消耗一大笔早期资本。现在，他们拥有 AI 作为每个可想象领域的随叫随到专家：</p>
+
+  <p>· <strong>深度研究</strong>：竞争分析、市场规模估算、财务建模<br>
+  · <strong>文档起草</strong>：融资演示文稿、案例研究、投资者备忘录、产品需求文档（PRD）<br>
+  · <strong>战略思考伙伴</strong>：魔鬼代言人分析、事前验尸、情景规划、路线图优化</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 3 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · METHODOLOGY</div>
+  <h2>创意阶段</h2>
+  <div class="en-title">Idea Stage</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>创意阶段解决的核心问题是：在投入资源构建产品之前，通过系统化的研究和验证确认真实问题的存在及解决方案的有效性，避免构建无人需要的产品。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li><strong>研究导向的验证方法</strong>：通过客户发现、竞争分析和反驳性证据评估验证问题的真实性</li>
+    <li><strong>可测试假设构建</strong>：将模糊观察转化为具体、可测试的假设陈述</li>
+    <li><strong>问题-解决方案匹配验证</strong>：通过与真实用户的对话收集定性证据</li>
+    <li><strong>结构化对抗性思维</strong>：使用 AI 工具对想法进行压力测试，主动寻找反驳性证据</li>
+    <li><strong>轻量级原型构建</strong>：使用 Claude Code 构建最小功能原型作为用户对话的压力测试道具</li>
+  </ul>
+  <h4>关键结果</h4>
+  <ul>
+    <li>42% 的创业公司失败是因为构建了无人需要的产品，AI 时代这一比例可能上升</li>
+    <li>创意阶段退出需满足三个条件：问题真实且具体、解决方案解决实际问题、有足够信号支持构建决策</li>
+    <li>AI 工具可能加剧确认偏差和过早扩展风险，需要创始人保持意义建构领先于构建速度</li>
+    <li>原型的存在不等于验证，与潜在用户的真实对话才是验证的核心证据</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Customer Discovery</span>
+    <span class="tag">Problem-Solution Fit</span>
+    <span class="tag">Testable Hypothesis</span>
+    <span class="tag">Premature Scaling</span>
+    <span class="tag">Confirmation Bias</span>
+    <span class="tag">TAM</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>每位创业公司创始人都从同一个起点出发：一个他们无法停止思考的问题。这是创业过程中创意与现实相遇的阶段：<span class="hl">2026 年的创业成功需要一种自律——在证据充分之前不要开始构建产品</span>。</p>
+
+  <p>这一阶段的工作包括研究、客户发现（Customer Discovery）、竞争分析，以及对反驳性证据的诚实评估——所有这些都要在要求 Claude Code 生成第一行生产代码之前完成。</p>
+
+  <p>在创意阶段，创始人的主要目标是<strong>以研究为导向的验证</strong>：在投入资源进行构建之前，收集确凿证据证明真实问题的存在（以及你提出的解决方案能够有效解决该问题）。</p>
+
+  <p>实际上，创意阶段是创始人需要按大致顺序回答的一系列问题：这个问题是否真实、具体且足够频繁，值得围绕它构建产品？具体是谁遇到了这个问题，这是否构成一个市场？是否有其他人在解决它，如果有，他们如何解决以及解决得如何？一个解决方案实际上需要做什么才能解决这个问题，我的想法能做到吗？</p>
+
+  <p><strong>这些探究的结果汇总起来回答一个终极问题：这值得构建吗？</strong></p>
+
+  <p>这意味着在行动之前要具体化。"人们在费用报销方面遇到困难"是一个观察。"中型市场公司的财务经理每周花费四个多小时核对提交的报销单，因为他们当前使用的工具无法与会计软件集成"则是一个<strong>可测试的假设</strong>。</p>
+
+  <p>创意阶段的退出条件是找到<strong>问题-解决方案匹配（Problem-Solution Fit）</strong>。你已经建立了定性证据——主要来自与真实人类的对话——证明你正在为真实的人解决真实的问题，然后才开始构建解决它的产品。</p>
+</div>
+
+<div class="quote">
+  <p>原型应该作为与潜在用户对话时有用的压力测试道具。<br>这些对话本身才是真正的证据。</p>
+  <div class="src">— 关于"原型 ≠ 验证"</div>
+</div>
+
+<div class="body">
+  <p>当你能对以下三个问题都回答"是"时，你就准备好离开创意阶段了：</p>
+  <p><strong>1. 问题是否真实且具体？</strong>肯定回答这个问题需要你能够准确说出谁遇到了这个问题、他们多久遇到一次、问题对他们的影响有多严重，以及他们目前如何应对。<br>
+  <strong>2. 你的解决方案是否解决了实际问题？</strong>不是你最初假设的问题，而是验证过程揭示的问题。<br>
+  <strong>3. 你是否有足够的信号来证明构建的合理性？</strong>等待确定性本身就是一种失败模式，但你需要足够的定性证据，使得投入到 MVP 是一个理性决策而非信仰之举。</p>
+
+  <p>创意阶段是创业旅程中最重要的工作发生的地方，因为这是犯下最严重错误的地方：现在出错可能会迅速让你的新兴企业脱轨。然而，构思阶段的大多数挑战都涉及行动速度超过理解所能支撑的程度，因此深思熟虑、审慎行事的创始人将会取得稳步进展。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 01</div>
+  <p>当技术障碍被消除时，充满激情的创始人可能会跳过创业旅程中最重要的工作：<strong>验证他们的想法确实是人们需要并会使用的解决方案</strong>。</p>
+</div>
+
+<div class="body">
+  <p>即使在当前智能体编码时代之前，<span class="hl">42% 的创业公司失败是因为他们构建了没有人想要的东西</span>。然而现在，像 Claude Code 这样的智能体编码解决方案已经大幅缩短了"我有一个想法"和"我有一个产品"之间的距离，而这一失败率只会继续攀升。</p>
+
+  <p>虽然对于拥有令人振奋的好想法的创始人来说，现在是最好的时代，但快速轻松地启动一个看起来像产品的原型，反直觉地，也为 AI 原生创业公司带来了真正危险的生存风险。</p>
+
+  <p>直到最近，构建产品还需要真实的开发时间和预算。然而，现在技术开发的障碍基本消失了，AI 使得创始人很容易直接跳入构建阶段，而不验证其在现实世界中的实用性。</p>
+
+  <p>达到问题-解决方案匹配需要首先验证你的假设然后再构建，但许多首次创业者（甚至是有经验的创始人）错误地认为 AI 绕过了这一要求，将流程变成了：<strong>有一个想法 → 立即构建原型 → 将原型的存在视为验证</strong>。原型成为相信假设一直正确的理由，而从未测试它是否真的正确。</p>
+
+  <p>一个可运行的原型很容易被误认为是你正在解决真实问题的具体证据，但事实并非如此。你的原型应该作为与潜在用户对话时有用的压力测试道具。这些对话本身才是真正的证据。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 02</div>
+  <p>当构建变得毫不费力且即时时，你可以将执行规模扩大到远超业务需求的程度。<strong>过早扩展（Premature Scaling）</strong>意味着在你真正验证该路径值得投入之前就承诺了产品路径。</p>
+</div>
+
+<div class="body">
+  <p>这一直是创业公司的杀手，但 AI 使得创始人在不知不觉中陷入过早扩展陷阱变得更加容易。智能体编码助手如此强大，以至于很容易在验证问题-解决方案匹配之前就将执行规模扩大，而从未有意识地决定偏离轨道。</p>
+
+  <p>它会以同样的热情围绕一个根本有缺陷的前提生成、测试、调试和重构代码库，就像对待一个伟大的想法一样。<strong>系统中的智能是你的。</strong>这个阶段的首要指令是<span class="hl">保持你的意义建构（Sense-Making）领先于你的构建</span>，尤其是当构建如此快速且感觉如此轻松时。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 03</div>
+  <p>要求 AI 工具提供支持你已经相信的东西的证据，它就会找到。<strong>确认偏差（Confirmation Bias）现在配备了一个研究引擎。</strong></p>
+</div>
+
+<div class="body">
+  <p>确认偏差一直是创业公司的职业风险：创始人天生对自己的想法充满热情。现在，AI 工具给确认偏差带来了显著的增强。要求 AI 验证你的创业想法，它会找到支持性证据；要求它估算你的潜在市场规模，它会找到使你的 TAM 看起来可融资的数字。</p>
+
+  <p>AI 遵循你的指示，这意味着一个不提出尖锐问题的创始人现在可以比以往任何时候都更快地为一个糟糕的想法构建一个精心设计、看起来研究充分的案例，同时完全相信他们实际上正在进行尽职调查。<strong>解药是同一个工具，只是指向相反的方向</strong>：AI 会像验证一个想法一样彻底地对其进行压力测试。</p>
+
+  <p>当研究和结构化的对抗性思维（Structured Adversarial Thinking）揭示出你的想法需要修正的证据时，<span class="hl">这就是转向（Pivot）的信号</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 4 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · METHODOLOGY</div>
+  <h2>MVP 阶段</h2>
+  <div class="en-title">MVP Stage</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>核心要点</h4>
+  <p>MVP 阶段的本质仍然是证据收集，目标是验证"是否有真实用户愿意使用、付费、推荐你的产品"。同时还要避免积累会复利增长的技术债务。</p>
+  <h4>关键工具</h4>
+  <ul>
+    <li><strong>CLAUDE.md 架构上下文文档</strong>：项目级指令，让每个 AI 会话从共同理解出发</li>
+    <li><strong>书面范围定义</strong>：在构建前明确产品做什么、不做什么</li>
+    <li><strong>Sean Ellis 测试</strong>：&gt;40% 用户回答"非常失望" = 有意义的 PMF 指标</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">PMF</span>
+    <span class="tag">Technical Debt</span>
+    <span class="tag">CLAUDE.md</span>
+    <span class="tag">Scope Creep</span>
+    <span class="tag">Sean Ellis Test</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>许多创始人将 MVP 阶段视为构建阶段，但 MVP 阶段本质上仍然是<strong>一个证据收集过程</strong>。不同之处在于，你现在收集的是关于解决方案的证据，而不是关于问题空间的证据；具体来说，就是验证是否有一个真实的、可识别的用户群体认为你的产品足够有价值，<span class="hl">愿意使用它、重复使用它、为它付费，和/或向他人推荐它</span>。</p>
+
+  <p>作为 AI 原生初创公司的创始人，你的目标是将一个经过验证的问题转化为真实用户会实际使用的可工作产品。这不是包含所有路线图功能的完整版本，而是你想法的最小、最聚焦的迭代版本。</p>
+
+  <p>与此同时，你现在的构建方式决定了未来的可能性。这意味着 MVP 阶段有第二个同样重要的目标：<strong>快速推进的同时不积累会复利增长的技术债务</strong>——这种债务会在真实用户大量涌入时困扰你。</p>
+
+  <p>最后，从第一天起就投资于持久化上下文（Persistent Context），这是让 AI 成为力量倍增器而非熵源的关键。在 AI 原生初创公司中，你的代码库是你与 AI 在一次又一次会话中协作的对象，<span class="hl">这使得可读性成为基础</span>。跳过规格说明、架构决策和上下文文件（如 CLAUDE.md）的创始人会遇到一个可预见的瓶颈：每次新会话都需要重新解释代码库，AI 生成的变更会偏离原始愿景。</p>
+
+  <p>MVP 阶段的退出条件是<strong>产品市场契合度（PMF）的真实证据</strong>：证明一个特定的、可识别的用户群体认为产品足够有价值，愿意重复使用它（留存）、为它付费（收入），或向他人推荐它（推荐）。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 01 · 技术债务复利</div>
+  <p>速度得到了保证。但当速度是创始人在 MVP 构建中考虑的唯一变量时，他们面临积累难以偿还的技术债务的风险。<strong>AI 技术债务会复利增长。</strong></p>
+</div>
+
+<div class="body">
+  <p>如果没有将规格说明和架构约束写在 AI 可以读取的地方，每次会话都会从头重新推导基础决策，这些决策会发生漂移。你最终会得到一个背后没有连贯心智模型（Mental Model）的代码库，不是因为任何单个部分不好，而是<strong>因为这些部分从未被设计为相互配合</strong>。这是一个真实的问题，而且往往会在后期才暴露出来。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 02 · 把早期吸引力误认为 PMF</div>
+  <p>AI 工具可以生成令人印象深刻的早期数据，但这些并不能保证市场需要你的产品。<strong>早期吸引力与产品市场契合度不同</strong>。发布能量来自短暂的力量，无法可靠地预测当初始推动力消退后会发生什么。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 03 · 范围蔓延</div>
+  <p>当构建感觉毫不费力且几乎免费时，总是有一个更酷的功能要添加或一个更多的边缘情况要处理。每个单独的添加都是可辩护的——这正是危险所在。</p>
+</div>
+
+<div class="body">
+  <p>解决方法是在开始构建之前创建一个<strong>书面的范围定义</strong>，描述产品做什么、故意不做什么，以及来自真实用户的具体证据，这些证据将证明添加新内容是合理的。<span class="hl">这将决策点从"我们应该构建这个吗？"转移到"大量用户告诉我们，没有这个他们无法从产品中获得价值？"</span></p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 04 · 忽视安全</div>
+  <p>智能体编码工具生成的是<strong>可工作的代码，而不是本质上安全的代码</strong>。安全漏洞在被利用之前是不可见的，这意味着没有自然的反馈循环来提醒首次创业的创始人出了问题。</p>
+</div>
+
+<div class="body">
+  <p>在 Claude Code 编写一行生产代码之前，使用 Claude 定义并记录将管理此阶段构建的所有内容的架构决策：要遵循的模式、要避免的依赖项、正在做出的权衡以及原因。此输出将作为<strong>聚焦的架构上下文文档</strong>，并建立 Claude Code 将在其中运行的护栏。</p>
+
+  <p>没有这个上下文，每次会话都从头开始，Claude Code 被迫推断自己的结构假设。让 Claude Code 在没有护栏的情况下构建会产生一个功能性但结构上不连贯的代码库，<span class="hl">而在不连贯的代码库上迭代和扩展最终是浪费时间和令牌</span>。迟早会有一个点，代码不可避免地崩溃，迫使你从头重建。</p>
+</div>
+
+<div class="practice">
+  <div class="label">🎯 练习 · CLAUDE.md 架构上下文文档</div>
+  <p>在打开 Claude Code 之前，打开 Claude 并描述你正在构建的内容：它解决的核心问题、它服务的用户，以及你在未来六个月内实际预期的规模。请它帮助你定义应该管理你的 MVP 构建的架构原则、应该避免的依赖项，以及你在此阶段有意识地接受的权衡。接下来，<strong>将此输出保存为 CLAUDE.md markdown 文件</strong>。这是你的架构上下文文档：你构建的第一个工件，也是每个后续会话所依赖的工件。</p>
+</div>
+
+<div class="body">
+  <p>无摩擦的范围蔓延是 AI 时代 MVP 的定义性失败模式之一。正如你定义并记录了产品的应用架构一样，你还需要在构建单个功能之前定义 MVP 的范围。</p>
+
+  <p>Claude 可以帮助你创建一个范围文档，描述你的 MVP 产品做什么、故意不做什么，以及功能修订标准：在这一点上，来自真实用户的什么具体证据将证明添加新内容是合理的。当新功能想法浮出水面时——它们肯定会——你使用 Claude 来压力测试它是来自用户的真实信号，还是<strong>伪装成产品思维的创始人热情</strong>。</p>
+
+  <p>一旦架构和范围被定义，Claude Code 就成为主要的 MVP 构建工具。使用它来生成、测试、调试和迭代你的代码库，但<span class="hl">将每个会话视为你已经做出的产品决策的执行，而不是作为引入一些新决策的机会</span>。</p>
+
+  <p>通过以下方式开始每个 Claude Code 会话：(1) 重新审视你的范围文档，(2) 向模型提供你的 CLAUDE.md 架构上下文文档。通过更新会话中浮现的任何决策来结束每个会话。<strong>目标是一个你可以解释其结构的代码库，而不仅仅是一个可以运行的代码库。</strong></p>
+</div>
+
+<div class="practice">
+  <div class="label">🎯 练习 · 会话模板</div>
+  <p>为你的 Claude Code 工作创建一个简单的会话模板，包括架构上下文文档、此会话的特定任务，以及要遵守的任何约束或模式。在每个会话结束时，向上下文文档添加一个简短的日志条目。<strong>每个会话五分钟的文档记录是防止架构漂移复利增长为不可管理的代码库的廉价保险。</strong></p>
+</div>
+
+<div class="body">
+  <p>作为 AI 原生初创公司创始人，你的责任是了解代码库中的内容，理解任何潜在的暴露向量，并且不向信任你处理其数据的真实用户发布明显的漏洞。</p>
+
+  <p>Claude 可以对 AI 生成的代码进行有用的首次安全审查，并可以帮助识别常见漏洞。在发布之前将其构建到循环中是一个好习惯。然而，<strong>它不能替代安全工具，或者在更高风险的情况下，不能替代人工审查员</strong>——将其视为替代品的创始人最终会出现在数据泄露故事中。</p>
+
+  <p><strong>Claude Code Security</strong> 更进一步：它扫描代码库以查找安全漏洞，并建议针对性的补丁供人工审查，浮现传统方法可能遗漏的问题。</p>
+</div>
+
+<div class="practice">
+  <div class="label">🎯 练习 · 安全审查清单</div>
+  <p>在部署到任何真实用户之前，使用特定的简报通过 Claude 运行你的核心应用代码：审查身份验证和会话处理、API 响应中的数据暴露、输入验证和注入风险，以及具有已知漏洞的依赖项。对于涉及身份验证、机密或数据处理的任何内容都需要人工审查。</p>
+</div>
+
+<div class="body">
+  <p>将早期吸引力误认为产品市场契合度的创始人通常是那些在发布后才开始跟踪数据的人。<strong>解决方法是在第一个用户出现之前建立你的测量框架。</strong></p>
+
+  <p>使用 Claude 定义哪些指标对你的特定产品重要、基准是什么，以及数据中的哪些模式将构成真正的产品市场契合度与讨好的噪音。具体来说：在发布 MVP 之前设置你的留存基准、激活标准，以及第 7 天和第 30 天的目标。</p>
+
+  <p>接下来，定义对于你的特定产品，<strong>假阳性是什么样子</strong>：例如，没有激活的注册、没有留存的收入，或者没有重复使用的初始热情。当数据到达时，请 Claude 对你自己的吸引力提出对抗性论证：怀疑论者会对这些数字说什么？</p>
+
+  <p>一旦真实用户进入产品，运营层就会快速扩展。Claude Cowork 处理重要但繁琐的工作，如构建和维护用户联系人列表、运行外联序列、安排反馈会议、分类错误报告和跟踪迭代周期。</p>
+
+  <p>在收集循环中保留人工以进行用户反馈的细致探索。例如，用户说"这很好，但我希望它也能……"需要解释：这是核心需求还是锦上添花？它是特定于此客户还是代表一个细分市场？<strong>没有工具可以回答这些问题。</strong></p>
+</div>
+
+<div class="practice">
+  <div class="label">🎯 练习 · 配置反馈循环</div>
+  <p>配置 Claude Cowork 以运行你的 MVP 阶段反馈循环：起草对早期用户列表的外联、安排反馈会议、设计错误报告和功能请求的结构化接收流程，并撰写每周收到的内容的综合报告。首先自己审查综合报告；之后，你可以要求 Claude 分析信息以捕捉你可能忽略的任何重要点。</p>
+</div>
+
+<div class="body">
+  <p>当你有产品市场契合度的真实证据时，MVP 阶段就结束了，无论产品感觉有多"完成"。宣布你已经实现了产品市场契合度并且现在准备从 MVP 阶段转移到发布阶段，最终是一个<strong>结合创始人直觉和收集证据的判断练习</strong>。不过，有一些有用的试金石测试：</p>
+</div>
+
+<div class="quote">
+  <p>Sean Ellis 测试：问你的活跃用户——"如果你不能再使用这个产品，你会有什么感觉？"<br>如果超过 40% 的人回答"非常失望"，那就是一个有意义的 PMF 指标。</p>
+  <div class="src">— PMF 试金石测试之一</div>
+</div>
+
+<div class="body">
+  <p><strong>努力测试</strong>：在产品市场契合度之前，留存需要持续干预，包括频繁的外联、激励、个人跟进，以及为保持用户参与而消耗的英雄般的创始人能量。在产品市场契合度之后，产品开始自己做这项工作。<span class="hl">当事情开始拉动而不是推动时，这种努力的转变是某些真实事物已经改变的最清晰信号之一。</span></p>
+
+  <p>最终，没有单一的数据点可以确认产品市场契合度，因为它是一个必须在多个迭代周期中保持的模式，然后你才能明确地称之为产品市场契合度。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 5 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · METHODOLOGY</div>
+  <h2>发布阶段</h2>
+  <div class="en-title">Launch Stage</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>发布阶段要解决的核心问题是：如何将早期产品吸引力转化为<strong>可重复、可持续的增长引擎</strong>，同时加固技术基础设施、建立运营系统，使创始人不再成为瓶颈。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li>系统性架构审计与技术债务修复</li>
+    <li>书面范围定义防止范围蔓延</li>
+    <li>安全与合规工作流集成（SOC 2 / GDPR / HIPAA）</li>
+    <li>运营系统自动化（Claude Cowork 编排）</li>
+    <li>产品管理流程标准化（sprint 节奏、规范模板、错误分类、每周指标）</li>
+  </ul>
+  <h4>退出条件三要素</h4>
+  <ul>
+    <li>增长可重复且渠道驱动（CAC / LTV / 回本周期可量化）</li>
+    <li>产品能处理生产工作负载（基础设施加固、安全合规就绪）</li>
+    <li>运营无创始人瓶颈（流程与自动化到位）</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Growth Engine</span>
+    <span class="tag">Unit Economics</span>
+    <span class="tag">CAC</span>
+    <span class="tag">LTV</span>
+    <span class="tag">Payback Period</span>
+    <span class="tag">Technical Debt</span>
+    <span class="tag">SOC 2</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>如果说 MVP 阶段是为了证明你的产品值得存在，那么<strong>发布阶段（Launch Stage）就是为了证明你的业务值得增长</strong>。</p>
+
+  <p>在发布阶段，初创公司创始人必须将早期吸引力转化为可重复的、可持续的增长引擎（Growth Engine）。除了让你的产品达到生产就绪状态，你还必须加固其底层基础设施，同时围绕你的产品构建一家真正的公司。</p>
+
+  <p>在创意阶段和 MVP 阶段，初创公司自然是以创始人为中心的，因为你需要全面的态势感知和紧密的反馈循环。然而现在，仍然试图亲自掌控每一个环节的创始人会成为发布阶段的瓶颈。<span class="hl">目标不是让你脱离公司，而是建立运营系统，将你的注意力释放到只有创始人才能做出的决策上。</span></p>
+
+  <p>发布阶段的退出条件包含三个要素：</p>
+  <p><strong>1. 增长是可重复的且由渠道驱动。</strong>你不仅在留住用户，还通过特定渠道以可预测的方式获取用户，并理解单位经济效益（Unit Economics）：CAC、LTV 和回本周期都是你知道并能够辩护的数字。</p>
+  <p><strong>2. 产品能够处理生产工作负载。</strong>基础设施已加固，安全性和合规性已就绪，可靠性在真实生产条件下保持稳定。</p>
+  <p><strong>3. 运营在没有创始人瓶颈的情况下运行。</strong>流程已存在，自动化已到位。你不再是亲自处理支持、分类、冲刺规划或报告的人。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 · 技术债务开始产生利息</div>
+  <p>为速度和验证而构建的 MVP 代码库运行得足够好，证明了产品有效，但<strong>生产流量、新功能和不断增长的复杂性现在正在暴露那些捷径</strong>。在发布阶段，这些债务开始产生利息，拖延得越久，修复成本就越高。</p>
+</div>
+
+<div class="body">
+  <p>解决方案包括<strong>系统性的架构审计</strong>以识别结构性弱点，针对性的重构（Refactoring）以解决其中最严重的问题，以及有意义地扩展测试覆盖率，以便下一轮功能开发不会重新引入相同的问题。</p>
+
+  <p>你的 MVP 代码库可以工作，但它也需要系统性的修复过程。首先，使用 Claude Code 运行<strong>完整的架构审计</strong>：识别代码库在哪里脆弱，哪些捷径将变得维护成本高昂，以及测试覆盖率在哪里薄弱到下一轮功能工作将重新引入相同的问题。</p>
+
+  <p>将 Claude Code 的审计结果反馈给 Claude，以分类和排序修复工作：在下一个版本之前需要修复什么，什么可以等待一个冲刺，以及考虑到你当前阶段什么代表可接受的持续债务。这也是<span class="hl">记录你在 MVP 阶段做出的架构决策的时刻</span>（那些存在于你脑海中的决策，因为没有时间写下来）。现在将它们放入 CLAUDE.md 文件中，确保每个未来的 Claude Code 会话都从对系统如何设计以及为什么设计的共同理解开始。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 · 安全漏洞不可见</div>
+  <p>使用 AI 工具将应用程序匆忙推向市场而没有首先理解基本安全原则的创始人，最终会使他们的用户暴露于可预防的风险中。<strong>在任何用户接触你的应用程序之前进行安全审查，是将 MVP 发布到世界上的最低责任门槛。</strong></p>
+</div>
+
+<div class="body">
+  <p>构建释放你注意力以处理只有创始人才能处理的责任的运营系统，需要确切知道你的注意力去向何处。</p>
+
+  <p>使用 <strong>Claude Cowork 对你当前的运营负载进行结构化审计</strong>，记录每个重复性任务、每个落在你桌上的决策，以及每个仅因为你个人记得去做而发生的工作流。然后让 Claude Cowork 将此清单分类为：</p>
+  <p>· <strong>可以完全自动化的内容</strong><br>
+  · <strong>需要人类但不一定是你的内容</strong><br>
+  · <strong>真正需要创始人判断的内容</strong></p>
+
+  <p>审计完成后，使用 Claude Cowork 为自动化候选项设计工作流逻辑：什么触发每个工作流，决策规则是什么，输出是什么样子，以及完成后去哪里。</p>
+
+  <p>使用 Claude Code 来揭示在 SOC 2、GDPR 或 HIPAA 审计中经常出现的代码级问题。这将揭示漏洞和合规差距。将这些发现反馈给 Claude，以帮助你优先处理修复工作，并设计企业买家在签署之前会要求的<strong>控制、审计日志记录和访问管理</strong>。</p>
+
+  <p>接下来，将合规工作流构建到你的开发周期中，而不是将其作为一次性项目运行；<span class="hl">合规文档需要持续维护和更新</span>。对于接近企业合同或国际市场的创始人来说，这也是 Claude Code 安全扫描可以帮助你为独立安全评估做准备的时刻。</p>
+
+  <p>发布阶段需要一套<strong>轻量级、可重复的流程</strong>，这些流程可以在不需要创始人干预触发或运行的情况下运行。使用 Claude 设计你的产品时间线和工作周期将如何构建，在 Claude Code 接触功能之前规范（Spec）需要包含什么，错误报告如何被分类和路由，以及你的每周指标报告涵盖什么以及如何分发。</p>
+
+  <p>流程设计完成后，使用 Claude Cowork 构建和运行运营层：安排冲刺仪式、将传入的错误报告路由到正确的位置、从连接的数据源编译每周指标，并维护将用户信号流入产品决策的反馈循环。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 6 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · METHODOLOGY</div>
+  <h2>规模化阶段</h2>
+  <div class="en-title">Scale Stage</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>本章解决规模化阶段创始人如何<strong>从产品构建者转型为公司高管</strong>，同时保持 AI 驱动的精益结构优势，并构建可防御的竞争护城河。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li>将创始人角色从执行者转变为系统编排者</li>
+    <li>使用 Claude Code 构建企业级技术支持基础设施（日志、监控、SLA）</li>
+    <li>通过 Claude 构建完整的 GTM 职能（市场细分、销售手册、分析师关系策略）</li>
+    <li>将创始人领域专业知识编码为<strong>专有知识基底</strong>（Skills）</li>
+    <li>利用用户行为数据构建复合价值飞轮和工作流锁定效应</li>
+    <li>通过深度集成（API、webhook、SDK）创建用户切换成本</li>
+  </ul>
+  <h4>关键结果</h4>
+  <ul>
+    <li>退出条件：可持续盈利、IPO 准备就绪或被收购</li>
+    <li>从数千用户增长到数百万用户，从单一市场扩展到多个市场</li>
+    <li>小团队通过 AI 工具获得大型组织的支持态势</li>
+    <li>用户行为数据形成<strong>时间锁定的、不可复制的行为指纹</strong></li>
+    <li>工作流锁定使产品切换从产品决策升级为全面运营项目</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Defensible Moat</span>
+    <span class="tag">Institutional Knowledge</span>
+    <span class="tag">GTM</span>
+    <span class="tag">Workflow Lock-in</span>
+    <span class="tag">Compounding Value</span>
+    <span class="tag">SLA</span>
+    <span class="tag">Agentic AI</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>在规模化阶段，创始人的角色从构建者重新定位为<strong>面向公众的高管</strong>。产品仍然是核心，但你个人的日常工作越来越多地围绕公司本身展开。你的注意力必须扩展到规模化阶段的新活动，如分析师简报会和 IPO 路演，同时还要努力保持精益的、以 AI 为中心的结构性优势。</p>
+
+  <p>在规模化阶段，你要从数千用户增长到数百万用户，从一个市场扩展到多个市场。在之前的每个阶段，增长都是你可以通过贴近用户、基于紧密反馈循环的数据调整方向，再加上健康剂量的创始人直觉来摸索前进的。但现在，<span class="hl">目标是建立由成熟组织运营支撑的系统性增长</span>。</p>
+
+  <p>对于 AI 原生初创公司，你的目标应该是通过积累的深度构建<strong>可防御的护城河</strong>，这源于你在产品中构建的专业知识、产品与用户依赖的其他工具和平台的深度集成，以及专有的系统数据和工作流。那些一直在一致的基础设施上朝着一个方向持续构建的创始人，现在拥有了真正难以复制的东西。</p>
+
+  <p>在这个阶段，公共投资者、分析师、监管机构、企业采购团队和收购方施加更大的压力——以及更大的怀疑——因为现在风险更高了。你的产品和组织必须经受外部审查：不仅是你所构建产品的能力，<strong>还有围绕它的治理、合规态势、财务控制和战略叙事</strong>。</p>
+
+  <p>规模化阶段的退出条件不再是单一里程碑，而是一个<strong>阈值事件</strong>：即使创始人越来越不直接运营日常业务，公司也能可持续发展。</p>
+
+  <p>在实践中，这个阈值通常采取三种形式之一：<strong>不再需要外部资本的规模化可持续盈利能力、IPO 准备就绪或被收购</strong>。这三者都要求你的增长是系统性的且可审计的，你的产品护城河经得起审查，你的组织在运营上成熟且可持续。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 · 信任你建立的系统</div>
+  <p>你在启动阶段的工作是<strong>创建系统</strong>；在规模化阶段，工作变成了（1）使这些系统成熟到完全可信赖，以及（2）然后真正信任它们。这里的根本挑战是识别仅存在于创始人头脑中或未记录工作流中的<strong>机构知识</strong>，然后将其编码为有文档记录的、可审计的和可转移的系统。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 · 成为可靠的基础设施合作伙伴</div>
+  <p>客户不再只评估你的产品；他们想知道你的组织能否成为可靠的基础设施合作伙伴。<strong>挑战现在变成了围绕代码库构建的一切</strong>：创建支持基础设施、文档和可靠性保证。</p>
+</div>
+
+<div class="challenge">
+  <div class="label">⚠ 挑战 · 有机增长的天花板</div>
+  <p>有机增长有天花板，大多数规模化阶段的创始人在必须建立真正的市场进入职能之前就触及了这个天花板。<strong>迹象包括用户曲线趋平、CAC 上升，以及只有在创始人亲自参与时才能推进的销售管道。</strong></p>
+</div>
+
+<div class="body">
+  <p>早期初创阶段使用 Claude 作为产品本身的基础设施：验证创意的研究伙伴、设计和构建原型的工程团队，以及使单一创始人初创公司成为可能的 AI 运营层。到达规模化阶段的 AI 原生初创公司创始人现在可以使用 Claude、Claude Code 和 Claude Cowork，以他们构建时相同的方式继续扩展。</p>
+
+  <p>以清醒的眼光开始规模化阶段，明确你现在最需要投入时间和注意力的地方。Claude 可以通过构建<strong>只有你应该在这个阶段做的事情清单</strong>来提供帮助，其中可能包括产品叙事决策、董事会关系、企业交易和创始人之间的对话等。<span class="hl">不在该清单上的任何事情都是委派或 Claude Cowork 自动化的候选项。</span></p>
+
+  <p>第一步是将机构知识转换为可扩展的系统。使用 Claude 起草和维护企业采购期望看到的书面基础设施，包括<strong>产品文档、支持手册和 SLA</strong>。</p>
+
+  <p>同时，指导 Claude Code 审计和强化代码库，使其符合企业合同要求的特定可靠性和安全标准，并构建基于 Discord 的社区支持从未提供过的技术支持基础设施：日志记录、监控、事件响应工具，以及使 SLA 真正可执行的可观测性层。</p>
+
+  <p>然后，Claude Cowork 运行企业支持的运营层本身：工单路由、升级工作流、由产品变更触发的文档更新、续订跟踪。<strong>这三者共同为小团队提供了大型组织的支持态势</strong>，这正是签署多年企业合同所要求你展示的。</p>
+
+  <p>Claude 可以协助从头开始构建基础 GTM 资源：市场细分、消息传递架构、分析师关系策略、销售手册，以及一旦你与公共投资者、企业买家和华尔街分析师交谈时重要的<strong>面向投资者的指标叙事</strong>。这些受众中的每一个都有自己的词汇表，并根据自己的标准评估你；Claude 的工作是将你产品的价值主张转化为与每个受众细分相关的产品营销方法。</p>
+
+  <p>现在，Claude Cowork 可以成为你的战术执行层：内容管道、外向序列、分析师简报会后勤、新闻室和公关节奏、CRM 卫生、管道报告，以及将 GTM 战略转化为实际商业运作的许多重复周期。</p>
+
+  <p>许多超精益初创公司创始人正在为他们在特定领域亲身经历或观察到的现实世界问题构建高度特定的应用程序或工具。智能体 AI 现在使从未编写过一行代码的创始人能够利用他们的领域专业知识构建解决复杂问题的产品。</p>
+
+  <p>使用 <strong>Claude 捕获、组织和完善创始人知识</strong>，将领域专业知识放在产品可以触及的地方。通过扩展对话、项目和记忆，创始人可以分享他们所知道的一切——行业术语、监管陷阱、边缘案例、挫折、这个问题的明显答案不起作用的原因——形成结构化、可搜索的上下文。</p>
+
+  <p>然后，<strong>技能（Skills）</strong>可以将重复工作流（例如，"我如何审计商业租赁"，"我如何分类患者入院表"）编码为 Claude 每次以相同方式运行的可重用例程。<span class="hl">几个月后，这成为任何通用 AI 都无法匹敌的专有知识基底。</span></p>
+</div>
+
+<div class="quote">
+  <p>当用户与你的产品互动时，他们会生成行为信号。<br>每次改进都使产品更有用，从而推动更多使用，产生更多反馈，从而推动更多改进。<br>这就是<strong>复合价值</strong>。</p>
+  <div class="src">— 不可复制的数据网络效应</div>
+</div>
+
+<div class="body">
+  <p>这些数据是时间锁定的、特定于上下文的，模仿者不可能重新创建：<strong>你根本无法购买数千名一直在你的产品内完善其工作流的用户的行为指纹。</strong></p>
+
+  <p>复合数据网络效应使你的产品更难复制，但<strong>用户工作流锁定（Workflow Lock-in）</strong>使你的产品更难离开。用户在日常运营中运行你的产品的时间越长，它就越深入地嵌入到他们的实际工作方式中。他们在其上构建了自动化，培训人们使用它，并将其连接到他们的数据源和其他工具。<span class="hl">在这一点上，切换从产品决策变成了全面的运营项目。</span></p>
+
+  <p>创建工作流锁定的第一步是要求 Claude <strong>按集成深度映射你当前的客户群</strong>。对于每个客户细分，识别他们在你的产品之上构建了哪些工作流以及他们依赖哪些集成。这显示了你的产品在哪里粘住了，以及它需要在哪里更深入。</p>
+
+  <p>你提供的集成越多，客户构建依赖于你产品的工作流的表面积就越大。Claude Code 帮助你快速启动与目标用户依赖的数据管道、项目管理工具和其他系统的原生集成。Claude Code 还可以构建 API、webhook 和 SDK，让客户不仅使用你的产品，<strong>还可以在其上构建——这是最深层次的锁定形式。</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 7 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · CONCLUSION</div>
+  <h2>同样的工作，新的规则</h2>
+  <div class="en-title">Same job, new rules</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>解决的问题</h4>
+  <p>本章总结了 AI 原生创业公司在整个生命周期中的核心转变：<strong>创始人的根本使命未变，但实现路径被 AI 工具彻底重塑</strong>，时间周期大幅压缩，瓶颈从执行能力转向战略选择。</p>
+  <h4>方案 / 算法</h4>
+  <ul>
+    <li>AI 工具将创业四阶段的时间周期从季度级压缩到周级</li>
+    <li>验证周期从数月缩短至数小时/天</li>
+    <li>原型开发不再依赖技术联合创始人，而是依靠清晰问题定义 + 代码智能体</li>
+    <li>发布准备从一次性冲刺转变为持续工作流</li>
+    <li>规模化阶段将运营负担交给 AI，团队聚焦战略判断</li>
+  </ul>
+  <h4>关键结果</h4>
+  <ul>
+    <li>创始人角色从执行者转变为战略编排者</li>
+    <li>技术瓶颈消失，决策瓶颈成为核心：<strong>'what you choose to build' 比 'what you can build' 更重要</strong></li>
+    <li>AI 使非技术创始人能够独立构建生产级产品</li>
+    <li>小团队可以达到远超其人数规模的运营能力</li>
+    <li>护城河从技术壁垒转向判断力、领域专长和数据积累</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Coding Agent</span>
+    <span class="tag">Moat</span>
+    <span class="tag">Bottleneck</span>
+    <span class="tag">Validation Cycle</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>在 AI 时代，创始人的工作本质并未改变：<strong>发现一个真实的问题，构建解决方案，并将其扩展为一家有影响力的公司</strong>。改变的是实现这一目标的路径。在四个阶段——创意阶段、MVP 阶段、发布阶段和规模化阶段——<span class="hl">AI 将原本需要数个季度的工作压缩到了数周</span>。</p>
+
+  <p>过去需要数月的验证周期现在只需几个下午。一个可运行的原型不再需要拥有合适技术栈的联合创始人；它只需要一个清晰的问题和与代码智能体的几次专注会话。发布准备工作从发布前的混乱冲刺压缩为持续的工作流。在规模化阶段，过去迫使早期员工陷入救火角色的运营负担现在可以越来越多地交给 AI 处理，从而让你的团队将注意力集中在那些构成你护城河的判断性决策上。</p>
+</div>
+
+<div class="quote">
+  <p>瓶颈不再是你能构建什么，<br>而是你<strong>选择</strong>构建什么。</p>
+  <div class="src">— THE BOTTLENECK HAS SHIFTED</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="glyph">◆ ◆ ◆</span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- ===================== 第 8 章 ============================== -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · RESOURCES</div>
+  <h2>资源</h2>
+  <div class="en-title">Resources</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心洞察</div>
+  <h4>核心要点</h4>
+  <p>本章节为 AI 原生初创公司创始人提供全面的资源索引，涵盖：</p>
+  <ul>
+    <li>Claude 产品系列（Claude Code、Claude Cowork）的官方文档、最佳实践和教程</li>
+    <li>真实初创公司案例，涵盖法律科技、医疗、采购、非营利等垂直领域</li>
+    <li>Anthropic 官方支持计划（免费 API 额度、速率限制提升、专属活动）和社区资源</li>
+  </ul>
+  <h4>关键成果</h4>
+  <ul>
+    <li>Carta Healthcare 数据摘要时间缩短 <strong>66%</strong></li>
+    <li>Anything 服务 <strong>150 万用户</strong>，让非技术创始人无需写代码即可构建软件</li>
+    <li>Duvo 实现跨 ERP、供应商门户、电子表格、邮件、电话的流程自动化</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Agent SDK</span>
+    <span class="tag">MCP Connector</span>
+    <span class="tag">Structured Tool Calling</span>
+    <span class="tag">CLAUDE.md</span>
+  </div>
+</div>
+
+<div class="body">
+  <h3 style="font-family:'Poppins',Arial,sans-serif;font-size:18px;color:var(--dark);margin:32px 0 14px;border-left:4px solid var(--orange);padding-left:12px;">使用 Claude 构建</h3>
+
+  <p>· <strong>为初创公司构建 AI 智能体</strong>：分享初创公司如何使用智能体在扩展过程中减少对创始人的依赖。<br>
+  · <strong>Claude Code 文档</strong>：引导构建者从初始安装到高级智能体工作流。专业提示：从"Claude Code 如何工作"概述开始。<br>
+  · <strong>Claude Code 最佳实践</strong>：涵盖在 Anthropic 内部和各工程团队中行之有效的模式——上下文管理、权限、规划和验证工作流。<br>
+  · <strong>使用 CLAUDE.md 文件</strong>：详细介绍如何为特定代码库配置 Claude Code。对于正在搭建开发环境的 MVP 阶段创始人来说是必读内容。<br>
+  · <strong>Claude Code 高级用户技巧</strong>：重点介绍 Claude Code 团队自身的工作流模式，包括并行会话和验证循环。<br>
+  · <strong>开始使用 Claude Cowork</strong>：分享团队如何设置 Claude Cowork 并开始实施技能、插件和其他功能。<br>
+  · <strong>教程</strong>：claude.com/resources/tutorials 提供针对特定任务的可搜索实操演练列表。</p>
+
+  <h3 style="font-family:'Poppins',Arial,sans-serif;font-size:18px;color:var(--dark);margin:32px 0 14px;border-left:4px solid var(--orange);padding-left:12px;">创始人故事</h3>
+</div>
+
+<div class="case-list">
+  <div class="case-item">
+    <div class="name">三家 YC 初创公司</div>
+    <p>考察 HumanLayer（F24）、Ambral（W25）和 Vulcan Technologies（S25）如何使用 Claude 快速将原型推向市场，并通过智能体编码工作流扩展 AI 驱动的平台。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">GC AI</div>
+    <p>创始人利用领域专业知识构建了一个响应式的、由 Claude 驱动的法律平台，以适应内部团队的实际工作方式：公司特定的操作手册、跨职能利益相关者和可变的风险容忍阈值。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Carta Healthcare</div>
+    <p>使用 Claude 为其临床摘要平台提供动力，每年处理 22,000 例手术病例，并将数据摘要时间缩短了 <strong>66%</strong>。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Anything</div>
+    <p>由 Claude 和 Agent SDK 驱动，已帮助 <strong>150 万用户</strong>在不编写代码的情况下将想法转化为可运行的软件产品，包括一位非技术创始人构建并已开始销售完整的招聘平台。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Cogent</div>
+    <p>应用 AI 实验室，构建智能体以自动化关键的企业安全任务。该初创公司使用 Claude 作为智能体的推理层，在整个漏洞生命周期中自动化调查、优先级排序和修复。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Airtree</div>
+    <p>使用 Claude Cowork 作为其运营基础设施的中心，整合了过去分散在十几个不同工具和团队中的数据。现在，当一个人使用技能构建工作流自动化时，组织中的每个人都可以使用它。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Duvo</div>
+    <p>构建 AI 智能体，在 ERP、供应商门户、电子表格、电子邮件甚至电话中运行采购、供应链和品类管理流程。Duvo 完全基于 Claude 构建，使用 Agent SDK 跨工作流进行编排。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Zingage</div>
+    <p>为家庭护理机构构建的 7×24 小时自动化运营 AI 智能体平台。使用 Claude 的结构化工具调用在电子病历（EMR）和多个通信渠道之间进行编排，构建能够提供针对患者定制结果的智能体。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Kindora</div>
+    <p>由非营利组织高管构建的 AI 驱动平台，使用 Claude Sonnet 构建了一个急需的工具，用于智能匹配慈善机构与资助者。MCP 连接器让非营利组织可以直接在 Claude 中访问其潜在客户开发工具。</p>
+  </div>
+  <div class="case-item">
+    <div class="name">Wordsmith</div>
+    <p>由一位律师转型的 CTO 创立，旨在为内部法律团队提供可靠的 AI 驱动法律技术。Claude 是 Wordsmith 合同审查、协议起草和文档审查能力的推理引擎。</p>
+  </div>
+</div>
+
+<div class="body">
+  <h3 style="font-family:'Poppins',Arial,sans-serif;font-size:18px;color:var(--dark);margin:32px 0 14px;border-left:4px solid var(--orange);padding-left:12px;">初创公司支持与机会</h3>
+
+  <p>· <strong>Anthropic 初创公司计划（Anthropic Startups Program）</strong>：对于与 Anthropic 的风险投资合作伙伴合作的初创公司，该计划提供免费 API 额度、公开可用的最高级别速率限制，以及专属创始人活动和研讨会的邀请。<br>
+  · <strong>Claude 社区</strong>：为构建者提供的论坛和社区空间。<br>
+  · <strong>实时学习资源</strong>：会议、网络研讨会、直播和录像。</p>
+</div>
+
+<!-- ============================================================== -->
+<!-- ===================== 页脚 ============================== -->
+<!-- ============================================================== -->
+<div class="footer">
+  <div class="brand">ANTHROPIC</div>
+  <div>The Founder's Playbook · 2026</div>
+  <div class="meta">本文由 Claude (Anthropic) 撰写 · 中文版精排</div>
+</div>
+
+</div>
+</body>
+</html>
