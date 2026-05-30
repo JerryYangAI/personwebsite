@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>反向传播详解：从计算图直觉到向量化梯度 | 广哥在硅谷</title>
+<meta name="description" content="CS231n 经典讲义中文精校版：从简单导数、链式法则讲起，到 Sigmoid 模块化、分阶段计算、反向流动模式、矩阵梯度的维度分析。建立反向传播的工程直觉。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="反向传播, Backpropagation, CS231n, 神经网络, 梯度, 链式法则, 深度学习, Jerry Yang, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/backprop/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="反向传播详解：从计算图直觉到向量化梯度">
+<meta property="og:description" content="CS231n 经典讲义中文精校版 · 一篇读懂神经网络训练的核心算法。">
+<meta property="og:url" content="https://jerryyang.ai/backprop/">
+<meta property="og:locale" content="zh_CN">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="反向传播详解：从计算图直觉到向量化梯度">
+<meta name="twitter:description" content="CS231n 经典讲义中文精校版">
+
+<!-- 字体加载：国内友好双源策略 -->
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<!-- MathJax 公式渲染 -->
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{
+    --dark:#141413;
+    --light:#faf9f5;
+    --mid-gray:#b0aea5;
+    --light-gray:#e8e6dc;
+    --orange:#d97757;
+    --blue:#6a9bcc;
+    --green:#788c5d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    background:var(--light);
+    color:var(--dark);
+    font-family:'Lora','Georgia',serif;
+    line-height:1.85;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:740px;
+    margin:0 auto;
+    padding:32px 22px 64px;
+    background:var(--light);
+  }
+
+  /* ============== 顶部品牌栏 ============== */
+  .brandbar{
+    background:var(--dark);
+    color:var(--light);
+    padding:10px 20px;
+    text-align:center;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;
+    letter-spacing:1px;
+    border-bottom:2px solid var(--orange);
+    position:relative;
+    overflow:hidden;
+  }
+  .brandbar::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--orange),transparent);
+  }
+  .brandbar .bb-name{
+    color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;
+  }
+  .brandbar .bb-slogan{
+    color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;
+  }
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){
+    .brandbar{padding:10px 14px;font-size:11px;}
+    .brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}
+    .brandbar .bb-sep{display:none;}
+    .brandbar .bb-slogan{display:block;font-size:10.5px;}
+  }
+
+  /* ============== 封面 ============== */
+  .cover{
+    background:linear-gradient(135deg,#1a1918 0%,#141413 100%);
+    color:var(--light);
+    border-radius:18px;
+    padding:48px 32px 40px;
+    margin-bottom:36px;
+    position:relative;overflow:hidden;
+  }
+  .cover::before{
+    content:"";position:absolute;top:-60px;right:-60px;
+    width:200px;height:200px;
+    background:radial-gradient(circle,rgba(217,119,87,.35) 0%,rgba(217,119,87,0) 70%);
+    border-radius:50%;
+  }
+  .cover::after{
+    content:"";position:absolute;bottom:-80px;left:-50px;
+    width:240px;height:240px;
+    background:radial-gradient(circle,rgba(106,155,204,.18) 0%,rgba(106,155,204,0) 70%);
+    border-radius:50%;
+  }
+  .cover-tag{
+    display:inline-block;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;letter-spacing:2px;
+    padding:6px 14px;
+    border:1px solid rgba(250,249,245,.35);
+    border-radius:999px;color:var(--light);
+    margin-bottom:24px;position:relative;z-index:1;
+  }
+  .cover h1{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:700;font-size:30px;line-height:1.35;
+    margin-bottom:12px;position:relative;z-index:1;
+  }
+  .cover .subtitle-en{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:400;font-size:14px;
+    color:var(--mid-gray);letter-spacing:.5px;
+    margin-bottom:28px;position:relative;z-index:1;
+  }
+  .cover-meta{
+    display:flex;flex-wrap:wrap;gap:18px;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;color:#cfcdc4;position:relative;z-index:1;
+  }
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--orange);}
+
+  /* ============== 摘要 ============== */
+  .abstract{
+    background:#fff;border:1px solid var(--light-gray);
+    border-left:4px solid var(--orange);
+    border-radius:12px;padding:24px 26px;margin-bottom:36px;
+  }
+  .abstract-label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;font-weight:600;letter-spacing:2px;
+    color:var(--orange);margin-bottom:10px;
+  }
+  .abstract p{font-size:15.5px;color:#3a3937;}
+
+  /* ============== 目录 ============== */
+  .toc{
+    background:#fff;border-radius:14px;padding:28px 26px;
+    margin-bottom:44px;border:1px solid var(--light-gray);
+  }
+  .toc-title{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:15px;font-weight:600;color:var(--dark);
+    margin-bottom:18px;display:flex;align-items:center;gap:10px;
+  }
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--orange);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{
+    counter-increment:toc;padding:10px 0;
+    border-bottom:1px dashed var(--light-gray);
+    display:flex;align-items:baseline;gap:14px;
+    font-family:'Poppins',Arial,sans-serif;font-size:15px;
+  }
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{
+    content:counter(toc,decimal-leading-zero);
+    font-family:'Poppins',Arial,sans-serif;font-weight:600;
+    color:var(--orange);font-size:14px;min-width:30px;
+  }
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+
+  /* ============== 章节标题 ============== */
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;font-weight:600;letter-spacing:3px;
+    color:var(--orange);margin-bottom:10px;
+  }
+  .chapter h2{
+    font-family:'Poppins',Arial,sans-serif;
+    font-weight:700;font-size:26px;color:var(--dark);
+    line-height:1.35;margin-bottom:6px;
+  }
+  .chapter .en-title{
+    font-family:'Poppins',Arial,sans-serif;
+    font-style:italic;font-weight:400;font-size:15px;
+    color:var(--mid-gray);margin-bottom:24px;
+  }
+
+  /* ============== 概要卡片 ============== */
+  .insight{
+    background:#fbf9f2;border:1px solid var(--light-gray);
+    border-radius:12px;padding:24px 26px;margin:24px 0 32px;
+  }
+  .insight-head{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;font-weight:600;color:var(--dark);
+    letter-spacing:1.5px;margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .insight-head .pin{color:var(--orange);font-size:14px;}
+  .insight h4{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;font-weight:600;color:var(--orange);
+    margin:14px 0 6px;letter-spacing:.5px;
+  }
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{
+    margin-top:16px;padding-top:14px;
+    border-top:1px dashed var(--light-gray);
+    display:flex;flex-wrap:wrap;gap:6px 8px;
+  }
+  .terms .tag{
+    display:inline-block;
+    font-family:'Poppins',Arial,sans-serif;font-size:11px;
+    color:var(--blue);background:rgba(106,155,204,.08);
+    padding:3px 10px;border-radius:6px;
+    border:1px solid rgba(106,155,204,.2);
+  }
+
+  /* ============== 正文 ============== */
+  .body p{
+    margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;
+  }
+  .body p .hl{
+    background:linear-gradient(180deg,transparent 60%,rgba(217,119,87,.22) 60%);
+    padding:0 2px;font-weight:500;color:var(--dark);
+  }
+  .body strong{color:var(--dark);font-weight:600;}
+  .body em{font-style:italic;color:#4a4947;}
+
+  /* ============== MathJax 公式块 ============== */
+  .math-block{
+    margin:24px 0;padding:18px 22px;
+    background:#fff;border:1px solid var(--light-gray);
+    border-radius:10px;text-align:center;
+    overflow-x:auto;
+  }
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+
+  /* ============== 代码块 ============== */
+  .code{
+    margin:24px 0;
+    background:#1a1918;color:#e8e6dc;
+    border-radius:10px;
+    padding:20px 22px;
+    font-family:'JetBrains Mono','Fira Code','Consolas',monospace;
+    font-size:13.5px;line-height:1.7;
+    overflow-x:auto;
+    border:1px solid #2a2826;
+  }
+  .code .kw{color:#d97757;}
+  .code .cm{color:#7a7972;font-style:italic;}
+  .code .st{color:#a3b186;}
+  .code .num{color:#c0a5cc;}
+  .code .fn{color:#b9c9d9;}
+  .code .pre{white-space:pre;}
+  .code-label{
+    display:inline-block;
+    background:rgba(217,119,87,.12);
+    color:var(--orange);
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:11px;letter-spacing:2px;
+    padding:3px 10px;border-radius:4px;
+    margin-bottom:-8px;
+    position:relative;left:8px;top:8px;
+  }
+
+  /* ============== 金句卡片 ============== */
+  .quote{
+    margin:36px 0;padding:32px 28px;
+    background:linear-gradient(135deg,#fef6f1 0%,#faf9f5 100%);
+    border-left:5px solid var(--orange);
+    border-radius:8px 14px 14px 8px;
+    position:relative;
+  }
+  .quote::before{
+    content:""";
+    position:absolute;top:8px;left:18px;
+    font-family:'Poppins',serif;font-size:64px;
+    color:var(--orange);opacity:.25;line-height:1;
+  }
+  .quote p{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:18px;line-height:1.6;
+    color:var(--dark);font-weight:500;padding-left:22px;
+  }
+  .quote .src{
+    margin-top:10px;padding-left:22px;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;color:var(--mid-gray);letter-spacing:1px;
+  }
+
+  /* ============== 直觉/技巧块 ============== */
+  .intuit{
+    margin:24px 0;padding:18px 22px;
+    background:#f4f7f0;
+    border:1px solid rgba(120,140,93,.25);
+    border-left:4px solid var(--green);
+    border-radius:10px;
+  }
+  .intuit .label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;font-weight:600;color:var(--green);
+    letter-spacing:2px;margin-bottom:6px;
+  }
+  .intuit p{font-size:15px;color:#3a3937;}
+
+  .note{
+    margin:24px 0;padding:16px 20px;
+    background:#fff;
+    border:1px solid var(--light-gray);
+    border-left:4px solid var(--blue);
+    border-radius:10px;
+  }
+  .note .label{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;font-weight:600;color:var(--blue);
+    letter-spacing:2px;margin-bottom:6px;
+  }
+  .note p{font-size:15px;color:#3a3937;}
+
+  /* ============== 分隔符（含品牌字样） ============== */
+  .divider{
+    margin:48px auto;
+    display:flex;align-items:center;justify-content:center;
+    gap:14px;
+  }
+  .divider .line{
+    flex:1;height:1px;
+    background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);
+    max-width:100px;
+  }
+  .divider .brand-mark{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    color:var(--orange);
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;letter-spacing:3px;font-weight:600;
+    white-space:nowrap;
+  }
+  .divider .brand-mark .diamonds{
+    color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;
+  }
+
+  /* ============== 计算图示意 ============== */
+  .circuit{
+    margin:24px 0;padding:20px;
+    background:#fff;border:1px solid var(--light-gray);
+    border-radius:10px;text-align:center;
+  }
+  .circuit svg{max-width:100%;height:auto;}
+  .circuit .cap{
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:12px;color:var(--mid-gray);
+    margin-top:10px;line-height:1.6;
+  }
+
+  /* ============== 页脚 ============== */
+  .footer{
+    margin-top:64px;padding:40px 28px 32px;
+    background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);
+    color:var(--mid-gray);border-radius:14px;text-align:center;
+    font-family:'Poppins',Arial,sans-serif;
+    font-size:13px;line-height:1.8;
+    position:relative;overflow:hidden;
+  }
+  .footer::before{
+    content:"";position:absolute;
+    top:0;left:50%;transform:translateX(-50%);
+    width:120px;height:3px;
+    background:var(--orange);border-radius:0 0 3px 3px;
+  }
+  .footer .brand{
+    color:var(--orange);font-weight:600;
+    letter-spacing:2px;margin-bottom:8px;
+  }
+  .footer .footer-wechat{
+    margin:14px auto 8px;padding:14px 20px;
+    background:rgba(217,119,87,.08);
+    border:1px solid rgba(217,119,87,.25);
+    border-radius:10px;max-width:480px;
+  }
+  .footer .footer-wechat .wc-label{
+    font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;
+  }
+  .footer .footer-wechat .wc-name{
+    color:var(--light);font-weight:600;
+    font-size:16px;letter-spacing:2px;margin-bottom:6px;
+  }
+  .footer .footer-wechat .wc-slogan{
+    color:#cfcdc4;font-family:'Lora','Georgia',serif;
+    font-size:13px;font-style:italic;
+    letter-spacing:.5px;line-height:1.6;
+  }
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+
+  @media (max-width:480px){
+    .wrap{padding:18px 14px 40px;}
+    .cover{padding:36px 22px 30px;}
+    .cover h1{font-size:24px;}
+    .chapter h2{font-size:22px;}
+    .quote p{font-size:16px;}
+    .code{font-size:12.5px;padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== 顶部品牌栏 ============== -->
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<!-- ============== 封面 ============== -->
+<div class="cover">
+  <div class="cover-tag">CS231n · 深度学习经典讲义</div>
+  <h1>反向传播详解<br>从计算图直觉到向量化梯度</h1>
+  <div class="subtitle-en">Backpropagation: From Circuits Intuition to Vectorized Gradients</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> CS231n · Stanford</span>
+    <span><i class="dot" style="background:var(--blue);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<!-- ============== 摘要 ============== -->
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>本文是 Stanford CS231n 课程关于<strong>反向传播</strong>的核心讲义。它不是教你用框架去自动求导，而是带你建立一种"<strong>实数电路的反向流动</strong>"的工程直觉。读完这篇，你会知道：为什么加法门是"梯度分发器"、最大门是"梯度路由器"、乘法门是"梯度交换器"；为什么矩阵梯度只看维度就能推出来；为什么数据预处理会影响学习率。这种直觉，是你设计、调试和发明新神经网络结构的内功。</p>
+</div>
+
+<!-- ============== 目录 ============== -->
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言：为什么要理解反向传播<br><span class="en">Introduction · Motivation</span></a></li>
+    <li><a href="#ch2">简单表达式与梯度的解释<br><span class="en">Simple expressions, interpreting the gradient</span></a></li>
+    <li><a href="#ch3">复合表达式：链式法则与反向传播<br><span class="en">Compound expressions, chain rule</span></a></li>
+    <li><a href="#ch4">反向传播的直觉：每个门都是局部的<br><span class="en">Intuitive understanding</span></a></li>
+    <li><a href="#ch5">模块化：Sigmoid 示例<br><span class="en">Modularity: Sigmoid example</span></a></li>
+    <li><a href="#ch6">实战：分阶段反向传播<br><span class="en">Backprop in practice: Staged computation</span></a></li>
+    <li><a href="#ch7">反向流动中的模式<br><span class="en">Patterns in backward flow</span></a></li>
+    <li><a href="#ch8">向量化运算的梯度<br><span class="en">Gradients for vectorized operations</span></a></li>
+    <li><a href="#ch9">总结：从直觉到工程<br><span class="en">Summary</span></a></li>
+  </ol>
+</div>
+
+<!-- ============================================================== -->
+<!-- 第 1 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言：为什么要理解反向传播</h2>
+  <div class="en-title">Motivation &amp; Problem Statement</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <h4>动机</h4>
+  <p>本节的目标是建立对<strong>反向传播</strong>的<strong>直觉</strong>——它本质上是<strong>通过链式法则递归计算梯度</strong>的方法。理解它的过程与微妙之处，对你<strong>有效地设计、开发和调试神经网络</strong>是至关重要的。</p>
+  <h4>问题陈述</h4>
+  <p>给定一个函数 $f(x)$，其中 $x$ 是输入向量。我们关心的是：在某个点 $x$ 处计算 $f$ 的梯度，也就是 $\nabla f(x)$。</p>
+  <h4>为什么这事关重大</h4>
+  <p>在神经网络的场景里，$f$ 是<strong>损失函数 $L$</strong>，输入 $x$ 包括<strong>训练数据和神经网络的权重</strong>。比如，$f$ 可以是 SVM 损失，输入是训练样本 $(x_i, y_i)$ 和参数 $(W, b)$。训练数据通常是给定且固定的，权重才是我们能调整的变量。所以虽然我们可以用反向传播算输入的梯度，但<strong>实际中我们主要算的是参数的梯度</strong>，用来做参数更新。</p>
+  <div class="terms">
+    <span class="tag">Backpropagation</span>
+    <span class="tag">Chain Rule</span>
+    <span class="tag">Gradient</span>
+    <span class="tag">Loss Function</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>每个学神经网络的人，最终都要面对一个问题：<span class="hl">这个庞大的、由成百上千万参数构成的模型，到底是怎么"学"起来的？</span></p>
+
+  <p>答案是<strong>反向传播</strong>——一种通过链式法则<strong>递归地</strong>计算梯度的方法。它是神经网络训练的核心引擎，是所有深度学习框架（PyTorch、TensorFlow、JAX）底层都在做的事情。</p>
+
+  <p>但本文不是教你怎么调框架的 API，而是要带你建立一种更深的认知：<strong>反向传播是一种实数电路中的反向流动</strong>。这种视角不仅会让你"理解"反向传播，更会让你在未来设计新结构、调试梯度异常、定位训练问题时，<span class="hl">直接"看到"梯度在网络里的流动方式</span>。</p>
+
+  <p>即使你已经能熟练用链式法则手推梯度，也建议你至少读一遍这篇文章。因为它呈现的视角——把反向传播看作实数电路里的反向流动——是一种很少有人系统讨论的角度，能在整个学习过程中持续给你启发。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 2 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · FOUNDATION</div>
+  <h2>简单表达式与梯度的解释</h2>
+  <div class="en-title">Simple expressions and interpretation of the gradient</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>我们先从最简单的<strong>两数运算</strong>（乘法、加法、最大值）开始，建立符号与约定。关键是要理解：<strong>导数告诉你的，是"整个表达式对该变量值的敏感程度"</strong>。这个直觉会贯穿后面所有的推导。</p>
+  <div class="terms">
+    <span class="tag">Partial Derivative</span>
+    <span class="tag">Multiplication</span>
+    <span class="tag">Max Gate</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>我们从最简单的入手——两个数相乘 $f(x,y) = xy$。求偏导数是基础微积分：</p>
+</div>
+
+<div class="math-block">
+$$f(x,y) = xy \quad\Rightarrow\quad \frac{\partial f}{\partial x} = y,\quad \frac{\partial f}{\partial y} = x$$
+</div>
+
+<div class="body">
+  <p><strong>怎么解释它？</strong>记住，导数告诉你的是：函数在某个点附近、对该变量的<strong>变化率</strong>。形式化地写出来就是：</p>
+</div>
+
+<div class="math-block">
+$$\frac{df(x)}{dx} = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+</div>
+
+<div class="body">
+  <p>这里有个小细节：左边的"除号"和右边的除号<strong>不是一回事</strong>。左边其实是一个<strong>算子</strong>——$\frac{d}{dx}$ 作用在函数 $f$ 上，返回一个新的函数（导函数）。一个好的理解方式是：当 $h$ 很小时，函数被一条直线很好地近似，而导数就是这条直线的斜率。</p>
+
+  <p>换句话说，<span class="hl">每个变量的导数告诉你"整个表达式对它的值有多敏感"</span>。</p>
+
+  <p>举个例子：如果 $x = 4$、$y = -3$，那么 $f(x,y) = -12$，且 $\partial f / \partial x = -3$。这告诉我们：如果把 $x$ 增加一个极小的量，整个表达式会<strong>减少</strong>（因为符号是负的），减少的量是这个增量的 3 倍。这可以从一个变形看出：$f(x+h) = f(x) + h \cdot \frac{df(x)}{dx}$。同理，$\partial f / \partial y = 4$，意味着把 $y$ 增加一点 $h$，输出会增加 $4h$。</p>
+</div>
+
+<div class="quote">
+  <p>每个变量的导数，告诉你的是整个表达式对它的值有多敏感。</p>
+  <div class="src">— THE CORE INTUITION OF GRADIENTS</div>
+</div>
+
+<div class="body">
+  <p>所谓"梯度"$\nabla f$，就是所有偏导数构成的向量。所以对乘法函数我们有：</p>
+</div>
+
+<div class="math-block">
+$$\nabla f = \left[\frac{\partial f}{\partial x},\, \frac{\partial f}{\partial y}\right] = [y, x]$$
+</div>
+
+<div class="body">
+  <p>虽然技术上"梯度"是一个向量，但为了行文方便，我们经常会说"$x$ 上的梯度"，其实指的是"$f$ 对 $x$ 的偏导数"。</p>
+
+  <p><strong>加法和最大值的导数</strong>也很简单：</p>
+</div>
+
+<div class="math-block">
+$$f(x,y) = x + y \quad\Rightarrow\quad \frac{\partial f}{\partial x} = 1,\quad \frac{\partial f}{\partial y} = 1$$
+</div>
+
+<div class="body">
+  <p>无论 $x, y$ 的值是多少，加法对两个输入的偏导数都是 1。这很合理：增加 $x$ 或 $y$ 都会等量地增加 $f$，而且这个增加率与 $x, y$ 的具体取值无关（这一点和乘法相反）。</p>
+</div>
+
+<div class="math-block">
+$$f(x,y) = \max(x,y) \quad\Rightarrow\quad \frac{\partial f}{\partial x} = \mathbb{1}(x \geq y),\quad \frac{\partial f}{\partial y} = \mathbb{1}(y \geq x)$$
+</div>
+
+<div class="body">
+  <p>也就是说，最大值函数的"次梯度"（subgradient）是：<span class="hl">在较大的那个输入上是 1，另一个输入上是 0</span>。</p>
+
+  <p>直觉上想：如果输入是 $x = 4, y = 2$，那么最大值是 4，函数对 $y$ 的值<strong>不敏感</strong>——把 $y$ 加上一个很小的 $h$，函数还是输出 4，所以梯度是 0：没有效果。当然，如果你把 $y$ 改大一点（比如加上大于 2），那 $f$ 的值会变化，但<strong>导数只能告诉你输入有微小变化时的影响</strong>，对大变化的影响它什么也说明不了。这就是定义里那个 $\lim_{h \to 0}$ 的含义。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 3 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · CHAIN RULE</div>
+  <h2>复合表达式：链式法则与反向传播</h2>
+  <div class="en-title">Compound expressions with chain rule</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>面对由多个函数复合的表达式，我们<strong>不直接求整体导数</strong>，而是<strong>拆成多个简单步骤</strong>，分别求局部梯度，然后<strong>通过乘法把它们链接起来</strong>——这就是链式法则。这是反向传播的雏形。</p>
+  <div class="terms">
+    <span class="tag">Chain Rule</span>
+    <span class="tag">Forward Pass</span>
+    <span class="tag">Backward Pass</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>现在考虑更复杂的表达式，比如 $f(x, y, z) = (x + y) z$。这个表达式直接求导也不难，但我们要用一种<strong>不一样的方法</strong>——这种方法会帮你理解反向传播背后的直觉。</p>
+
+  <p>这个表达式可以拆成两步：</p>
+</div>
+
+<div class="math-block">
+$$q = x + y, \quad f = qz$$
+</div>
+
+<div class="body">
+  <p>这两步我们都会算了。$f$ 是 $q$ 和 $z$ 的乘积，所以 $\partial f / \partial q = z$，$\partial f / \partial z = q$。$q$ 是 $x$ 和 $y$ 的和，所以 $\partial q / \partial x = 1$，$\partial q / \partial y = 1$。</p>
+
+  <p>但我们其实<strong>不关心</strong>中间变量 $q$ 的梯度——$\partial f / \partial q$ 这个值本身没用。我们最终想要的，是 $f$ 对它<strong>输入</strong> $x, y, z$ 的梯度。</p>
+
+  <p><strong>链式法则告诉我们：把这些梯度表达式正确地"链"起来的方式是乘法。</strong>比如：</p>
+</div>
+
+<div class="math-block">
+$$\frac{\partial f}{\partial x} = \frac{\partial f}{\partial q} \cdot \frac{\partial q}{\partial x}$$
+</div>
+
+<div class="body">
+  <p>在实践中，这就是把两个存放梯度的数字相乘。我们用代码看一个例子：</p>
+</div>
+
+<div class="code"><span class="code-label">PYTHON</span><pre class="pre">
+<span class="cm"># 设定输入</span>
+x = -<span class="num">2</span>; y = <span class="num">5</span>; z = -<span class="num">4</span>
+
+<span class="cm"># 前向传播（forward pass）</span>
+q = x + y       <span class="cm"># q = 3</span>
+f = q * z       <span class="cm"># f = -12</span>
+
+<span class="cm"># 反向传播（backward pass），逆序执行：</span>
+<span class="cm"># 先经过 f = q * z</span>
+dfdz = q        <span class="cm"># df/dz = q，所以 z 上的梯度是 3</span>
+dfdq = z        <span class="cm"># df/dq = z，所以 q 上的梯度是 -4</span>
+dqdx = <span class="num">1.0</span>
+dqdy = <span class="num">1.0</span>
+
+<span class="cm"># 然后经过 q = x + y</span>
+dfdx = dfdq * dqdx   <span class="cm"># 这里的乘法就是链式法则！</span>
+dfdy = dfdq * dqdy</pre></div>
+
+<div class="body">
+  <p>我们最终得到的是 <code>[dfdx, dfdy, dfdz]</code>，它们告诉我们：变量 $x, y, z$ 对 $f$ 的敏感程度。<span class="hl">这就是反向传播最简单的例子。</span></p>
+
+  <p>后面我们会用更简洁的记号：省略 <code>df</code> 前缀，直接写 <code>dq</code> 而不是 <code>dfdq</code>，并且<strong>始终默认梯度是相对于最终输出而言</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📊 计算图可视化</div>
+  <p>整个计算可以用电路图很直观地展示出来。<strong>前向传播</strong>从输入沿着边一路计算到输出（绿色数字），<strong>反向传播</strong>从末端开始，递归地应用链式法则，把梯度（红色数字）一路传回输入。<span class="hl">梯度可以被想象成在电路里"反向流动"</span>。</p>
+</div>
+
+<div class="circuit">
+  <svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg" style="background:#fbf9f2;border-radius:8px;">
+    <defs>
+      <marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#b0aea5"/>
+      </marker>
+    </defs>
+    <style>
+      .val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;}
+      .v-fwd{fill:#788c5d;}
+      .v-bwd{fill:#d97757;}
+      .lbl{font-family:'Poppins',sans-serif;font-size:12px;fill:#141413;font-weight:600;}
+      .nd{fill:#fff;stroke:#141413;stroke-width:1.5;}
+      .gate{fill:#141413;}
+      .gate-t{font-family:'Poppins',sans-serif;font-size:18px;fill:#faf9f5;font-weight:700;}
+      .ed{stroke:#b0aea5;stroke-width:1.5;fill:none;}
+    </style>
+    <!-- inputs -->
+    <circle cx="50" cy="60" r="22" class="nd"/>
+    <text x="50" y="65" text-anchor="middle" class="lbl">x</text>
+    <text x="20" y="40" class="val v-fwd">-2</text>
+    <text x="20" y="105" class="val v-bwd">-4</text>
+
+    <circle cx="50" cy="130" r="22" class="nd"/>
+    <text x="50" y="135" text-anchor="middle" class="lbl">y</text>
+    <text x="20" y="170" class="val v-fwd">5</text>
+    <text x="20" y="195" class="val v-bwd">-4</text>
+
+    <circle cx="50" cy="200" r="0" class="nd"/>
+
+    <circle cx="330" cy="170" r="22" class="nd"/>
+    <text x="330" y="175" text-anchor="middle" class="lbl">z</text>
+    <text x="300" y="200" class="val v-fwd">-4</text>
+    <text x="300" y="155" class="val v-bwd">3</text>
+
+    <!-- add gate -->
+    <circle cx="220" cy="95" r="28" class="gate"/>
+    <text x="220" y="102" text-anchor="middle" class="gate-t">+</text>
+    <text x="200" y="55" class="val v-fwd">3</text>
+    <text x="200" y="150" class="val v-bwd">-4</text>
+
+    <!-- mul gate -->
+    <circle cx="420" cy="120" r="28" class="gate"/>
+    <text x="420" y="127" text-anchor="middle" class="gate-t">×</text>
+    <text x="475" y="120" class="val v-fwd">-12</text>
+    <text x="475" y="140" class="val v-bwd">1</text>
+
+    <!-- output -->
+    <circle cx="520" cy="120" r="14" class="nd" style="stroke:#d97757;"/>
+    <text x="520" y="125" text-anchor="middle" class="lbl">f</text>
+
+    <!-- edges -->
+    <line x1="72" y1="68" x2="195" y2="90" class="ed" marker-end="url(#ar)"/>
+    <line x1="72" y1="122" x2="195" y2="100" class="ed" marker-end="url(#ar)"/>
+    <line x1="248" y1="95" x2="394" y2="115" class="ed" marker-end="url(#ar)"/>
+    <line x1="352" y1="170" x2="403" y2="138" class="ed" marker-end="url(#ar)"/>
+    <line x1="448" y1="120" x2="506" y2="120" class="ed" marker-end="url(#ar)"/>
+  </svg>
+  <div class="cap">绿色为前向传播的值，橙色为反向传播的梯度。<br>梯度从输出端反向流回到每一个输入。</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 4 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · INTUITION</div>
+  <h2>反向传播的直觉：每个门都是局部的</h2>
+  <div class="en-title">Intuitive understanding of backpropagation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>反向传播之所以漂亮，是因为它是一个<strong>纯粹局部的过程</strong>。每个"门"在接收输入后，立刻能算两件事：<strong>输出值</strong>和<strong>输出对输入的局部梯度</strong>。当反向传播来临时，它只需要把"从上游传下来的梯度"乘以"自己的局部梯度"，再传给下游。门完全不需要知道自己嵌入在多大、多复杂的网络里。</p>
+  <div class="terms">
+    <span class="tag">Local Process</span>
+    <span class="tag">Gate</span>
+    <span class="tag">Local Gradient</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>注意一件事：<strong>反向传播是一个完全局部（local）的过程</strong>。电路图里的每个门，在拿到输入的那一刻，可以立刻独立完成两件事：</p>
+
+  <p><strong>1. 计算它的输出值；</strong><br>
+  <strong>2. 计算输出相对于输入的局部梯度。</strong></p>
+
+  <p>注意，<span class="hl">门完全不需要知道自己嵌入在多大的电路里就能做这两件事</span>。然而，前向传播一旦结束，在反向传播过程中，这个门最终会"得知"自己的输出对整个电路最终输出的梯度。链式法则说，门应该把这个梯度乘以它正常计算的每一个对输入的局部梯度，再传下去。</p>
+
+  <p>我们用前面的例子来培养直觉。加法门接收了输入 $[-2, 5]$，计算出输出 $3$。因为是加法运算，它对两个输入的局部梯度都是 $+1$。电路其余部分计算出了最终值 $-12$。</p>
+
+  <p>反向传播开始后，加法门（作为乘法门的输入）"得知"它的输出梯度是 $-4$。</p>
+
+  <p>如果我们把电路<strong>拟人化</strong>，想象它"希望输出一个更高的值"，那么我们可以把电路理解为：它<strong>"希望"</strong>加法门的输出<strong>更低</strong>（因为符号是负的），并且<strong>"用力"4</strong>。为了继续递归并链接梯度，加法门拿着这个 $-4$，乘以它对每个输入的局部梯度（都是 1），得到 $x$ 和 $y$ 上的梯度都是 $1 \times -4 = -4$。</p>
+
+  <p>注意这正好达到了预期效果：<span class="hl">如果 $x, y$ 响应它们的负梯度而<strong>减小</strong>，加法门的输出就会减小，进而让乘法门的输出<strong>增大</strong>。</span></p>
+</div>
+
+<div class="quote">
+  <p>反向传播，可以理解为电路里各个门之间通过梯度信号互相沟通：<br>它们各自表达"希望自己的输出变大还是变小，以及力度多大"，<br>从而让整个电路的最终输出更高。</p>
+  <div class="src">— THE BEAUTIFUL LOCALITY OF BACKPROP</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 5 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · MODULARITY</div>
+  <h2>模块化：Sigmoid 示例</h2>
+  <div class="en-title">Modularity: Sigmoid example</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>"门"是<strong>任意可微分函数</strong>。我们可以把多个门合并为一个，也可以把一个函数拆成多个门。<strong>合并的好处</strong>是：有些复杂表达式（比如 Sigmoid）的导数在合并后会简化成异常优雅的形式，计算更快、数值更稳。这就是<strong>模块化</strong>的力量。</p>
+  <div class="terms">
+    <span class="tag">Sigmoid</span>
+    <span class="tag">Activation Function</span>
+    <span class="tag">Modularity</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>前面引入的几个门（加、乘、最大）其实是<strong>相当任意</strong>的选择。<span class="hl">任何可微分函数都可以充当一个门</span>。我们可以把多个门组合成一个，也可以把一个函数拆解成多个门，只要方便。</p>
+
+  <p>看一个例子：</p>
+</div>
+
+<div class="math-block">
+$$f(w, x) = \frac{1}{1 + e^{-(w_0 x_0 + w_1 x_1 + w_2)}}$$
+</div>
+
+<div class="body">
+  <p>后面课程会讲到，这个表达式描述了一个使用 <strong>Sigmoid 激活函数</strong>的二维神经元（输入 $x$，权重 $w$）。但现在我们就把它当作一个简单的"从输入 $w, x$ 映射到一个数"的函数。</p>
+
+  <p>它由多个门组成。除了之前的加、乘、最大门，这里还多了四个：</p>
+</div>
+
+<div class="math-block">
+$$f(x) = \frac{1}{x} \;\Rightarrow\; \frac{df}{dx} = -\frac{1}{x^2}$$
+$$f_c(x) = c + x \;\Rightarrow\; \frac{df}{dx} = 1$$
+$$f(x) = e^x \;\Rightarrow\; \frac{df}{dx} = e^x$$
+$$f_a(x) = ax \;\Rightarrow\; \frac{df}{dx} = a$$
+</div>
+
+<div class="body">
+  <p>其中 $f_c$ 和 $f_a$ 分别表示"将输入加上常数 $c$"和"将输入乘以常数 $a$"。它们技术上是加法和乘法的特例，这里把它们当成一元门引入，因为<strong>我们不需要对常数 $c, a$ 求梯度</strong>。</p>
+
+  <p>整个电路展开来是 8 个门，从输入端依次：乘法（$w_0 x_0$）、乘法（$w_1 x_1$）、加法、加法（加上 $w_2$）、乘以 $-1$、$e^x$、加 1、取倒数。</p>
+
+  <p>这是一长串函数依次应用，作用在 $w, x$ 的点积结果上。我们把这一连串运算实现的函数叫做 <strong>Sigmoid 函数</strong> $\sigma(x)$。它的导数推导（稍微有点技巧，需要在分子里加 1 减 1）化简后会变得<strong>异常简洁</strong>：</p>
+</div>
+
+<div class="math-block">
+$$\sigma(x) = \frac{1}{1 + e^{-x}}$$
+$$\frac{d\sigma(x)}{dx} = \frac{e^{-x}}{(1 + e^{-x})^2} = \left(\frac{1 + e^{-x} - 1}{1 + e^{-x}}\right)\left(\frac{1}{1 + e^{-x}}\right) = (1 - \sigma(x)) \cdot \sigma(x)$$
+</div>
+
+<div class="body">
+  <p>这是一个<strong>惊人的简化</strong>。比如 Sigmoid 收到输入 $1.0$、计算出输出 $0.73$，那么它的局部梯度就直接是 $(1 - 0.73) \cdot 0.73 \approx 0.2$——和电路图里一步步算出来的结果一样，但这里用一个简单、高效的表达式就完成了（而且数值上更稳定）。</p>
+
+  <p>所以在实际应用中，把这些运算<strong>打包成一个门</strong>非常有用。我们看看这个神经元的反向传播代码：</p>
+</div>
+
+<div class="code"><span class="code-label">PYTHON</span><pre class="pre">
+w = [<span class="num">2</span>, -<span class="num">3</span>, -<span class="num">3</span>]    <span class="cm"># 假设的随机权重</span>
+x = [-<span class="num">1</span>, -<span class="num">2</span>]        <span class="cm"># 输入数据</span>
+
+<span class="cm"># 前向传播</span>
+dot = w[<span class="num">0</span>]*x[<span class="num">0</span>] + w[<span class="num">1</span>]*x[<span class="num">1</span>] + w[<span class="num">2</span>]
+f = <span class="num">1.0</span> / (<span class="num">1</span> + math.exp(-dot))   <span class="cm"># sigmoid 函数</span>
+
+<span class="cm"># 反向传播（通过整个神经元）</span>
+ddot = (<span class="num">1</span> - f) * f          <span class="cm"># 用 sigmoid 的简化公式直接算</span>
+dx = [w[<span class="num">0</span>] * ddot, w[<span class="num">1</span>] * ddot]      <span class="cm"># 传到 x</span>
+dw = [x[<span class="num">0</span>] * ddot, x[<span class="num">1</span>] * ddot, <span class="num">1.0</span> * ddot]  <span class="cm"># 传到 w</span>
+
+<span class="cm"># 完成！我们得到了所有输入的梯度</span></pre></div>
+
+<div class="intuit">
+  <div class="label">🔧 实现技巧 · 分阶段反向传播</div>
+  <p>如代码所示，实践中一个非常有用的习惯是：<strong>把前向传播拆分成容易反向传播的多个阶段</strong>。比如这里我们创建了一个中间变量 <code>dot</code> 来保存 $w$ 和 $x$ 的点积。反向传播时我们再<strong>依次倒着计算</strong>对应的梯度变量（如 <code>ddot</code>，以及最终的 <code>dw</code>、<code>dx</code>）。</p>
+</div>
+
+<div class="body">
+  <p>这一节的重点是：<span class="hl">反向传播的细节如何执行，以及我们把前向函数的哪些部分看作"门"，是一种<strong>便利性选择</strong>。</span>关键是要清楚哪些部分有简单的局部梯度，这样它们可以以最少的代码与精力链接在一起。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 6 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · PRACTICE</div>
+  <h2>实战：分阶段反向传播</h2>
+  <div class="en-title">Backprop in practice: Staged computation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>面对一个更复杂的、嵌套的函数，<strong>不要</strong>试图直接对原函数求导——那样会得到极其冗长、易错的表达式。<strong>正确做法</strong>是把前向传播拆分为多个中间变量，然后<strong>逐个</strong>反向传播。两个关键细节：<strong>缓存前向值</strong>、<strong>分叉处梯度要累加</strong>（用 <code>+=</code> 而不是 <code>=</code>）。</p>
+  <div class="terms">
+    <span class="tag">Staged Computation</span>
+    <span class="tag">Cache Forward Values</span>
+    <span class="tag">Gradients Add at Forks</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>我们用另一个例子来看这一点。假设有这样一个函数：</p>
+</div>
+
+<div class="math-block">
+$$f(x, y) = \frac{x + \sigma(y)}{\sigma(x) + (x + y)^2}$$
+</div>
+
+<div class="body">
+  <p>说实话，这个函数<strong>完全没用</strong>，也看不出谁会想算它的梯度——它纯粹是反向传播实战的一个好例子。要强调的是：<span class="hl">如果你直接对 $x$ 或 $y$ 求导，会得到一个极其庞大、复杂的表达式。</span>但好消息是——<strong>我们根本不需要</strong>写出梯度的显式公式。我们只要会计算它就行了。</p>
+
+  <p>下面是这种表达式的前向传播写法：</p>
+</div>
+
+<div class="code"><span class="code-label">PYTHON · 前向传播</span><pre class="pre">
+x = <span class="num">3</span>       <span class="cm"># 示例值</span>
+y = -<span class="num">4</span>
+
+<span class="cm"># 前向传播</span>
+sigy = <span class="num">1.0</span> / (<span class="num">1</span> + math.exp(-y))  <span class="cm"># 分子里的 sigmoid  (1)</span>
+num = x + sigy                       <span class="cm"># 分子                (2)</span>
+sigx = <span class="num">1.0</span> / (<span class="num">1</span> + math.exp(-x))  <span class="cm"># 分母里的 sigmoid  (3)</span>
+xpy = x + y                          <span class="cm">#                    (4)</span>
+xpysqr = xpy**<span class="num">2</span>                       <span class="cm">#                    (5)</span>
+den = sigx + xpysqr                  <span class="cm"># 分母                (6)</span>
+invden = <span class="num">1.0</span> / den                   <span class="cm">#                    (7)</span>
+f = num * invden                     <span class="cm"># 完成！              (8)</span></pre></div>
+
+<div class="body">
+  <p>呼，前向传播算完了。注意我们结构化了代码，让中间变量都很简单——每个都是我们已经知道局部梯度的小表达式。所以<strong>反向传播就很容易</strong>：我们倒着走，对每一个变量（<code>sigy, num, sigx, xpy, xpysqr, den, invden</code>）都会有一个 <code>d</code> 开头的对应变量，保存最终输出对它的梯度。每一步都涉及"计算局部梯度 + 与上游梯度相乘"。我们用注释标注每行对应前向传播的哪一步：</p>
+</div>
+
+<div class="code"><span class="code-label">PYTHON · 反向传播</span><pre class="pre">
+<span class="cm"># backprop f = num * invden</span>
+dnum = invden                                        <span class="cm">#(8)</span>
+dinvden = num                                        <span class="cm">#(8)</span>
+
+<span class="cm"># backprop invden = 1.0 / den</span>
+dden = (-<span class="num">1.0</span> / (den**<span class="num">2</span>)) * dinvden            <span class="cm">#(7)</span>
+
+<span class="cm"># backprop den = sigx + xpysqr</span>
+dsigx = (<span class="num">1</span>) * dden                                <span class="cm">#(6)</span>
+dxpysqr = (<span class="num">1</span>) * dden                              <span class="cm">#(6)</span>
+
+<span class="cm"># backprop xpysqr = xpy**2</span>
+dxpy = (<span class="num">2</span> * xpy) * dxpysqr                        <span class="cm">#(5)</span>
+
+<span class="cm"># backprop xpy = x + y</span>
+dx = (<span class="num">1</span>) * dxpy                                   <span class="cm">#(4)</span>
+dy = (<span class="num">1</span>) * dxpy                                   <span class="cm">#(4)</span>
+
+<span class="cm"># backprop sigx = 1.0 / (1 + math.exp(-x))</span>
+dx += ((<span class="num">1</span> - sigx) * sigx) * dsigx  <span class="cm"># 注意 += ！见下方说明  (3)</span>
+
+<span class="cm"># backprop num = x + sigy</span>
+dx += (<span class="num">1</span>) * dnum                                  <span class="cm">#(2)</span>
+dsigy = (<span class="num">1</span>) * dnum                                <span class="cm">#(2)</span>
+
+<span class="cm"># backprop sigy = 1.0 / (1 + math.exp(-y))</span>
+dy += ((<span class="num">1</span> - sigy) * sigy) * dsigy                 <span class="cm">#(1)</span>
+<span class="cm"># 完成！</span></pre></div>
+
+<div class="intuit">
+  <div class="label">💾 实践要点一 · 缓存前向变量</div>
+  <p>计算反向传播时，<strong>你会大量用到前向传播中算出的中间变量</strong>。所以实践中要把代码结构化好，让这些变量在反向传播时可用。如果实在不行，<strong>也可以重新计算它们</strong>（虽然有点浪费）。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">➕ 实践要点二 · 分叉处梯度要累加</div>
+  <p>前向表达式里 $x, y$ 出现了多次（比如 $x$ 既出现在分子 <code>num</code>，又出现在 <code>sigx</code>、又出现在 <code>xpy</code>），所以反向传播时<strong>必须用 <code>+=</code> 而不是 <code>=</code></strong>，来<strong>累加梯度</strong>，否则就会被覆盖。这遵循了多变量链式法则：<span class="hl">如果一个变量在电路里分叉到不同部分，反向流回它的梯度需要<strong>相加</strong></span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 7 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · PATTERNS</div>
+  <h2>反向流动中的模式</h2>
+  <div class="en-title">Patterns in backward flow</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>神经网络里最常用的三个门——加、乘、最大——在反向传播时各自呈现出非常直观的"<strong>性格</strong>"：</p>
+  <ul>
+    <li><strong>加法门 = 梯度分发器</strong>：把上游梯度<strong>原样分发</strong>到每个输入</li>
+    <li><strong>最大门 = 梯度路由器</strong>：把上游梯度<strong>只路由</strong>到前向最大的那个输入</li>
+    <li><strong>乘法门 = 梯度交换器</strong>：把输入值<strong>互换</strong>后，与上游梯度相乘</li>
+  </ul>
+  <p>理解这些模式，你才能"<strong>看见</strong>"梯度在网络里的流动方式。</p>
+  <div class="terms">
+    <span class="tag">Add Gate</span>
+    <span class="tag">Max Gate</span>
+    <span class="tag">Multiply Gate</span>
+    <span class="tag">Data Preprocessing</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>有意思的是，反向流动的梯度在许多场景下都有非常直观的解释。神经网络中最常用的三个门——<strong>加、乘、最大</strong>——在反向传播时各有非常简单的"行为模式"。</p>
+</div>
+
+<div class="quote">
+  <p>加法门是梯度的<strong>分发器</strong>，<br>最大门是梯度的<strong>路由器</strong>，<br>乘法门是梯度的<strong>交换器</strong>。</p>
+  <div class="src">— THE THREE PATTERNS OF BACKWARD FLOW</div>
+</div>
+
+<div class="body">
+  <p><strong>加法门</strong>会把"对它输出的梯度"<strong>原样分发</strong>给所有输入，无论它们在前向传播时的值是多少。这是因为加法的局部梯度都是 $+1.0$，所以输入梯度等于输出梯度乘以 1，<strong>保持不变</strong>。在前面的示例电路里，加法门把 $2.00$ 的梯度<strong>原封不动</strong>地分给了它的两个输入。</p>
+
+  <p><strong>最大门会路由梯度。</strong>与加法门把梯度发给所有输入不同，最大门只把梯度（原样地）<strong>发给其中一个输入</strong>——那个<strong>在前向传播时值最大</strong>的输入。这是因为最大门的局部梯度对于最大值那个输入是 $1.0$，对其他输入是 $0$。在示例电路里，最大门把梯度 $2.00$ 路由给了 $z$（因为 $z$ 比 $w$ 大），而 $w$ 上的梯度仍然是零。</p>
+
+  <p><strong>乘法门稍微难理解一点。</strong>它的局部梯度是<strong>输入值的"互换"</strong>，再与上游梯度相乘。在示例里，$x$ 上的梯度是 $-8.00$，等于 $-4.00 \times 2.00$。</p>
+</div>
+
+<div class="note">
+  <div class="label">⚠ 非直觉的结果及其后果</div>
+  <p>注意：如果乘法门的一个输入<strong>非常小</strong>，另一个<strong>非常大</strong>，乘法门会做一件略反直觉的事——<strong>它会给小输入分配相对巨大的梯度，给大输入分配微小的梯度</strong>。</p>
+  <p>在线性分类器中，权重和输入做点积（也就是乘法），这意味着：<span class="hl">数据的尺度会影响权重梯度的大小</span>。举个例子，如果你把所有输入数据都乘以 1000（预处理时不小心做了这件事），那么权重上的梯度就会大 1000 倍——你必须把学习率相应降低 1000 倍才能补偿。<strong>这就是为什么预处理至关重要，且有时影响微妙</strong>。理解梯度如何流动，能帮你 debug 这些隐蔽的问题。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 8 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · VECTORIZED</div>
+  <h2>向量化运算的梯度</h2>
+  <div class="en-title">Gradients for vectorized operations</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>前面讲的都是<strong>标量</strong>的运算，但所有概念都能直接推广到<strong>矩阵和向量</strong>。最 tricky 的运算是<strong>矩阵-矩阵乘法</strong>。这里有一个工程上极其有用的技巧——<strong>维度分析</strong>：你不需要死记 dW、dX 的公式，根据矩阵形状<strong>反推</strong>就行了。</p>
+  <div class="terms">
+    <span class="tag">Matrix Multiplication</span>
+    <span class="tag">Dimension Analysis</span>
+    <span class="tag">Transpose</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>之前讨论的都是单变量，但所有概念都可以<strong>直接推广</strong>到矩阵和向量运算。不过这里要多花点心思去关注<strong>维度</strong>和<strong>转置</strong>。</p>
+
+  <p><strong>矩阵-矩阵乘法的梯度</strong>可能是最 tricky 的一个运算（它涵盖了所有矩阵-向量、向量-向量乘法的情况）：</p>
+</div>
+
+<div class="code"><span class="code-label">PYTHON · 矩阵乘法的梯度</span><pre class="pre">
+<span class="cm"># 前向传播</span>
+W = np.random.randn(<span class="num">5</span>, <span class="num">10</span>)
+X = np.random.randn(<span class="num">10</span>, <span class="num">3</span>)
+D = W.dot(X)
+
+<span class="cm"># 假设上游传过来的梯度是 dD</span>
+dD = np.random.randn(*D.shape)   <span class="cm"># 和 D 形状相同</span>
+dW = dD.dot(X.T)   <span class="cm"># .T 是矩阵的转置</span>
+dX = W.T.dot(dD)</pre></div>
+
+<div class="intuit">
+  <div class="label">🧠 工程技巧 · 用维度分析</div>
+  <p>你<strong>不需要记住</strong> dW 和 dX 的公式——根据维度可以重新推导出来！</p>
+  <p>比如我们知道：权重的梯度 dW 必须和 W 的形状一样，而它<strong>必须涉及到 X 和 dD 的某种矩阵乘法</strong>（就像标量情形那样）。<span class="hl">只有<strong>一种</strong>排列方式能让维度对得上。</span></p>
+  <p>举例：X 的形状是 $[10 \times 3]$，dD 是 $[5 \times 3]$。如果我们想要 dW（形状必须是 $[5 \times 10]$），那么<strong>唯一</strong>的可能就是 <code>dD.dot(X.T)</code>——dD 是 $[5 \times 3]$，<code>X.T</code> 是 $[3 \times 10]$，乘出来正好是 $[5 \times 10]$。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📝 学习建议 · 从小例子推导</div>
+  <p>如果你一开始觉得向量化推导很难，<strong>建议先写出一个最小的、显式的向量化例子</strong>，在纸上推导梯度，然后把这种模式<strong>泛化到高效的向量化形式</strong>。</p>
+  <p>Erik Learned-Miller 也写过一篇更长的关于矩阵/向量求导的笔记，需要时可以参考。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- ============================================================== -->
+<!-- 第 9 章 -->
+<!-- ============================================================== -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · SUMMARY</div>
+  <h2>总结：从直觉到工程</h2>
+  <div class="en-title">Summary &amp; Looking Forward</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li>我们建立了对梯度<strong>含义</strong>的直觉：它在电路里如何反向流动，如何告诉电路"哪部分应该增大或减小、用多大力"</li>
+    <li>我们强调了<strong>分阶段计算</strong>对实践中的反向传播多么重要</li>
+    <li>关键洞察：<strong>几乎永远不要在纸上把整个梯度表达式写出来</strong>。把函数拆成易于求局部梯度的模块，然后用链式法则串起来</li>
+    <li>下一站：<strong>神经网络</strong>。反向传播将让我们能高效地计算损失函数对参数的梯度。我们已经准备好训练神经网络了——这门课最难的概念部分已经过去了！</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>让我们快速回顾这一篇的核心收获。</p>
+
+  <p><strong>第一</strong>，我们建立了对梯度含义的直觉：它告诉我们<strong>电路对每个输入的敏感程度</strong>。我们看到了它如何在电路中反向流动，如何"告诉"电路的不同部分：你应该增大还是减小，用多大的力，才能让最终输出更高。</p>
+
+  <p><strong>第二</strong>，我们讨论了<strong>分阶段计算</strong>对实际反向传播的重要性。<span class="hl">你应该总是把函数拆成你能轻易推导出局部梯度的模块</span>，然后用链式法则把它们串起来。</p>
+
+  <p>关键一点：<strong>你几乎永远不会想把整个梯度表达式写在纸上然后符号微分</strong>。因为你<strong>根本不需要</strong>一个显式的梯度数学公式。所以——分解你的表达式为多个阶段，每个阶段能独立求导（这些阶段会是矩阵-向量乘法、最大值运算、求和运算等等），然后一步步地对每个变量反向传播。</p>
+</div>
+
+<div class="quote">
+  <p>反向传播不是"算"出来的，<br>是<strong>"流"</strong>出来的。<br>把网络看成电路，把梯度看成信号——这就是你的内功心法。</p>
+  <div class="src">— TAKEAWAY</div>
+</div>
+
+<div class="body">
+  <p>下一节我们会开始定义<strong>神经网络</strong>，而反向传播会让我们高效地计算损失函数对参数的梯度。<span class="hl">换句话说，我们已经准备好训练神经网络了——这门课中最概念性、最难的部分已经过去了！</span>之后讲卷积网络，就只是一小步距离了。</p>
+</div>
+
+<!-- ============================================================== -->
+<!-- 页脚 -->
+<!-- ============================================================== -->
+<div class="footer">
+  <div class="brand">CS231n · STANFORD</div>
+  <div>Backpropagation, Intuitions · 中文版精校</div>
+  <div class="meta">本文译自 CS231n 课程网站 · 译者：广哥</div>
+
+  <!-- 品牌区块 -->
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/backprop</div>
+</div>
+
+</div>
+</body>
+</html>

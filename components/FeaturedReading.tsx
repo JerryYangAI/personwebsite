@@ -3,60 +3,126 @@
 import { motion } from 'framer-motion'
 import { BookOpen, ArrowRight, Sparkles, Layers } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
+import { getFeaturedArticles, type Article } from '../lib/articles'
 
-// 多语言文案（内联，避免修改 lib/i18n.ts）
-const COPY = {
+// 多语言区块文案
+const SECTION_COPY = {
   zh: {
     sectionLabel: '推荐阅读',
     sectionTitle: '深度文章 · Featured Writing',
     sectionSubtitle: '我读过、改写过、相信值得分享的长文。中文精排，方便阅读与转发。',
-    article: {
-      tag: 'ANTHROPIC · 2026',
-      title: '创始人手册：构建 AI 原生创业公司',
-      subtitle: "The Founder's Playbook: Building an AI-Native Startup",
-      desc: 'Anthropic 出品的创业方法论：在 AI 时代，创业生命周期被重新划分为创意、MVP、发布、规模化四个阶段，每个阶段不再需要扩大团队或新一轮融资。本文是中文精排版。',
-      meta1: '8 章',
-      meta2: '约 35 分钟',
-      meta3: '中文版',
-      cta: '阅读全文',
-    },
+    cta: '阅读全文',
+    viewAll: '查看全部笔记',
   },
   en: {
     sectionLabel: 'Featured Reading',
     sectionTitle: 'Long-Form Writing',
     sectionSubtitle: 'Essays I have read, translated, or curated — worth your time.',
-    article: {
-      tag: 'ANTHROPIC · 2026',
-      title: "The Founder's Playbook: Building an AI-Native Startup",
-      subtitle: 'Anthropic · Chinese curated edition',
-      desc: 'In 2026, the startup lifecycle has been rebooted into four stages — Idea, MVP, Launch, Scale — and each no longer requires a bigger team or new round. A Chinese curated edition.',
-      meta1: '8 chapters',
-      meta2: '~35 min read',
-      meta3: 'Chinese edition',
-      cta: 'Read article',
-    },
+    cta: 'Read article',
+    viewAll: 'View all notes',
   },
   ja: {
     sectionLabel: 'おすすめ記事',
     sectionTitle: '長文・Featured Writing',
     sectionSubtitle: '私が読み、書き直し、共有する価値があると信じる長文。',
-    article: {
-      tag: 'ANTHROPIC · 2026',
-      title: '創業者ハンドブック：AIネイティブ・スタートアップを構築する',
-      subtitle: "The Founder's Playbook · 中国語精製版",
-      desc: 'Anthropic による創業方法論。AI 時代の四段階（Idea / MVP / Launch / Scale）と、それぞれで使うべき AI ツールを解説。中国語精製版です。',
-      meta1: '8 章',
-      meta2: '約 35 分',
-      meta3: '中国語版',
-      cta: '記事を読む',
-    },
+    cta: '記事を読む',
+    viewAll: 'すべて見る',
   },
 } as const
 
+// 主题色映射（Anthropic 风格 dark 卡片上的强调色）
+const THEME = {
+  orange: { accent: '#d97757', glow: 'rgba(217,119,87,.35)', glow2: 'rgba(106,155,204,.15)' },
+  blue: { accent: '#6a9bcc', glow: 'rgba(106,155,204,.35)', glow2: 'rgba(217,119,87,.15)' },
+  green: { accent: '#788c5d', glow: 'rgba(120,140,93,.35)', glow2: 'rgba(217,119,87,.15)' },
+} as const
+
+const ArticleCard = ({
+  article,
+  ctaLabel,
+  lang,
+}: {
+  article: Article
+  ctaLabel: string
+  lang: 'zh' | 'en' | 'ja'
+}) => {
+  const theme = THEME[article.theme]
+  return (
+    <motion.a
+      href={article.url}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3 }}
+      className="group block"
+    >
+      <div
+        className="relative h-full overflow-hidden rounded-2xl bg-[#141413] text-[#faf9f5] shadow-2xl transition-shadow duration-500"
+        style={{ boxShadow: '0 8px 30px -8px rgba(0,0,0,0.25)' }}
+      >
+        {/* 装饰光晕（颜色随主题切换） */}
+        <div
+          className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-30 blur-3xl pointer-events-none"
+          style={{ background: theme.glow }}
+        />
+        <div
+          className="absolute -bottom-32 -left-20 w-72 h-72 rounded-full opacity-20 blur-3xl pointer-events-none"
+          style={{ background: theme.glow2 }}
+        />
+
+        <div className="relative p-8 md:p-9 flex flex-col h-full">
+          {/* 顶部 tag 与 icon */}
+          <div className="flex items-start justify-between mb-6">
+            <span
+              className="inline-block px-3 py-1 text-[10px] tracking-[0.2em] border rounded-full text-white/80"
+              style={{ borderColor: 'rgba(255,255,255,0.3)' }}
+            >
+              {article.tag}
+            </span>
+            <div className="flex items-center gap-2" style={{ color: theme.accent }}>
+              <Layers className="w-5 h-5" strokeWidth={1.5} />
+              <BookOpen className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+          </div>
+
+          {/* 标题与副标题 */}
+          <h3 className="text-xl md:text-2xl font-bold leading-tight mb-2 text-white">
+            {article.title[lang]}
+          </h3>
+          <p className="text-xs italic text-white/50 mb-4">{article.subtitle[lang]}</p>
+
+          {/* 描述 */}
+          <p className="text-sm text-white/75 leading-relaxed mb-6 flex-grow">
+            {article.desc[lang]}
+          </p>
+
+          {/* 三条元信息（mono 字体） */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/40 font-mono mb-5">
+            {article.meta[lang].map((m, i) => (
+              <span key={i}>{m}</span>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div
+            className="inline-flex items-center gap-2 font-medium text-sm group-hover:gap-3 transition-all duration-300"
+            style={{ color: theme.accent }}
+          >
+            <span>{ctaLabel}</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+      </div>
+    </motion.a>
+  )
+}
+
 const FeaturedReading = () => {
   const { language } = useLanguage()
-  const t = COPY[language] ?? COPY.zh
-  const a = t.article
+  const lang = (['zh', 'en', 'ja'].includes(language) ? language : 'zh') as 'zh' | 'en' | 'ja'
+  const t = SECTION_COPY[lang]
+  const featuredArticles = getFeaturedArticles()
+
+  // 没有 featured 文章则不渲染整个区块
+  if (featuredArticles.length === 0) return null
 
   return (
     <section id="reading" className="section-padding bg-gradient-to-b from-white to-secondary-50">
@@ -75,66 +141,41 @@ const FeaturedReading = () => {
               {t.sectionLabel}
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            {t.sectionTitle}
-          </h2>
-          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            {t.sectionSubtitle}
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{t.sectionTitle}</h2>
+          <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">{t.sectionSubtitle}</p>
         </motion.div>
 
-        {/* 文章卡片 */}
-        <motion.a
-          href="/founderplaybook/"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
+        {/* 文章卡片网格：移动端 1 列、平板及以上 2 列 */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-10">
+          {featuredArticles.map((article, idx) => (
+            <motion.div
+              key={article.slug}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 * idx }}
+              viewport={{ once: true }}
+            >
+              <ArticleCard article={article} ctaLabel={t.cta} lang={lang} />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* 查看全部笔记 → /notes */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
           viewport={{ once: true }}
-          whileHover={{ y: -4 }}
-          className="group block max-w-4xl mx-auto"
+          className="text-center"
         >
-          <div className="relative overflow-hidden rounded-2xl bg-[#141413] text-[#faf9f5] shadow-2xl hover:shadow-[0_20px_60px_-15px_rgba(217,119,87,0.4)] transition-all duration-500">
-            {/* 装饰光晕 */}
-            <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-[#d97757] opacity-20 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-32 -left-20 w-72 h-72 rounded-full bg-[#6a9bcc] opacity-15 blur-3xl pointer-events-none" />
-
-            <div className="relative grid md:grid-cols-5 gap-0">
-              {/* 左侧视觉块 */}
-              <div className="md:col-span-2 p-8 md:p-10 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10">
-                <div>
-                  <span className="inline-block px-3 py-1 text-[10px] tracking-[0.2em] border border-white/30 rounded-full text-white/80 mb-6">
-                    {a.tag}
-                  </span>
-                  <div className="flex items-center gap-3 text-[#d97757]">
-                    <Layers className="w-8 h-8" strokeWidth={1.5} />
-                    <BookOpen className="w-8 h-8" strokeWidth={1.5} />
-                  </div>
-                </div>
-                <div className="mt-8 space-y-1 text-xs text-white/50 font-mono">
-                  <div>{a.meta1}</div>
-                  <div>{a.meta2}</div>
-                  <div>{a.meta3}</div>
-                </div>
-              </div>
-
-              {/* 右侧文字块 */}
-              <div className="md:col-span-3 p-8 md:p-10">
-                <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-2 text-white">
-                  {a.title}
-                </h3>
-                <p className="text-sm italic text-white/50 mb-5">{a.subtitle}</p>
-                <p className="text-base text-white/80 leading-relaxed mb-8">
-                  {a.desc}
-                </p>
-
-                <div className="inline-flex items-center gap-2 text-[#d97757] font-medium group-hover:gap-3 transition-all duration-300">
-                  <span>{a.cta}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.a>
+          <a
+            href="/notes/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 text-sm font-medium border-b border-gray-300 hover:border-gray-900 pb-1"
+          >
+            <span>{t.viewAll}</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </motion.div>
       </div>
     </section>
   )
