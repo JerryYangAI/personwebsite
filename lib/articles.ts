@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'vit',
+    url: '/vit/',
+    category: 'ai',
+    date: '2026-05-30',
+    tag: 'ICLR 2021 · GOOGLE BRAIN',
+    title: {
+      zh: 'Vision Transformer：一张图片值 16×16 个词',
+      en: 'An Image is Worth 16×16 Words: Vision Transformer',
+      ja: 'Vision Transformer：一枚の画像は 16×16 個の単語に値する',
+    },
+    subtitle: {
+      zh: 'Dosovitskiy et al. · 中文精校版',
+      en: 'Dosovitskiy et al. · Curated Chinese Edition',
+      ja: 'Dosovitskiy et al. · 中国語精製版',
+    },
+    desc: {
+      zh: 'Google Brain 用一招极简的"把图像切成 16×16 的 Patch"，把为文字设计的 Transformer 直接搬到视觉，最终在大数据上超过 CNN。这是 CV 范式转移的起点。',
+      en: 'Google Brain shows that a vanilla Transformer applied to image patches beats CNNs when pre-trained on enough data — the start of a paradigm shift in computer vision.',
+      ja: 'Google Brain は、画像を 16×16 のパッチに切り、純粋な Transformer を視覚に適用することで CNN を超えました。CV のパラダイムシフトの始まりです。',
+    },
+    meta: {
+      zh: ['9 章', '约 30 分钟', '含公式与图表'],
+      en: ['9 chapters', '~30 min read', 'Math & figures'],
+      ja: ['9 章', '約 30 分', '数式と図表'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'transformer',
+    url: '/transformer/',
+    category: 'ai',
+    date: '2026-05-30',
+    tag: 'NeurIPS 2017 · GOOGLE BRAIN',
+    title: {
+      zh: 'Attention Is All You Need：Transformer 论文详解',
+      en: 'Attention Is All You Need: The Original Transformer Paper',
+      ja: 'Attention Is All You Need：Transformer 論文の詳解',
+    },
+    subtitle: {
+      zh: 'Vaswani et al. · 中文精校版',
+      en: 'Vaswani et al. · Curated Chinese Edition',
+      ja: 'Vaswani et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '2017 年 Google Brain 八位作者用一句"注意力就是你需要的全部"，彻底改写了序列建模。今天所有大语言模型——GPT、Claude、Gemini——的底层架构都来自这一篇。',
+      en: 'The 2017 paper that rewrote AI: eight authors at Google Brain showed that "attention is all you need" — the foundation of GPT, Claude, Gemini, and every modern LLM.',
+      ja: '2017 年の論文。Google Brain の 8 人の著者が「注意力こそすべて」と示し、現代の LLM 全ての基盤となりました。',
+    },
+    meta: {
+      zh: ['9 章', '约 30 分钟', '含公式'],
+      en: ['9 chapters', '~30 min read', 'With formulas'],
+      ja: ['9 章', '約 30 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'backprop',
     url: '/backprop/',
     category: 'cs',
