@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attention Is All You Need：Transformer 详解 | 广哥在硅谷</title>
+<meta name="description" content="2017 年 Google Brain 的奠基论文中文精校版。这篇论文用一句"注意力就是你需要的全部"，彻底改写了序列建模的规则——从此 RNN 退场，GPT、BERT、ChatGPT、Claude 全部诞生在这之上。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Transformer, Attention, Self-Attention, 注意力机制, Multi-Head, Vaswani, NIPS 2017, 大语言模型, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/transformer/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Attention Is All You Need：Transformer 详解">
+<meta property="og:description" content="改写 AI 历史的那一篇论文 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/transformer/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Attention Is All You Need：Transformer 详解">
+<meta name="twitter:description" content="改写 AI 历史的那一篇论文 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+
+  .code{margin:24px 0;background:#1a1918;color:#e8e6dc;border-radius:10px;padding:20px 22px;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:13.5px;line-height:1.7;overflow-x:auto;border:1px solid #2a2826;}
+  .code .kw{color:#d97757;}.code .cm{color:#7a7972;font-style:italic;}.code .st{color:#a3b186;}.code .num{color:#c0a5cc;}
+  .code .pre{white-space:pre;}
+  .code-label{display:inline-block;background:rgba(106,155,204,.12);color:var(--blue);font-family:'Poppins',Arial,sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:4px;margin-bottom:-8px;position:relative;left:8px;top:8px;}
+
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;letter-spacing:.5px;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}.code{font-size:12.5px;padding:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">NeurIPS 2017 · GOOGLE BRAIN</div>
+  <h1>Attention Is All You Need<br>Transformer 论文详解</h1>
+  <div class="subtitle-en">The paper that rewrote modern AI · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Vaswani et al. · Google</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 30 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2017 年，Google Brain 八位作者用一篇仅 15 页的论文，用一句"<strong>注意力就是你需要的全部</strong>"，彻底改写了序列建模的规则——从此 RNN 和卷积在序列任务上退场。Transformer 这一架构在五年内催生了 BERT、GPT、ChatGPT、Claude，几乎所有今天你听过的大模型。本文是这篇论文的中文精校版，逐章讲透：自注意力是什么、缩放点积怎么算、多头注意力为什么必要、位置编码用了什么妙招，以及为什么这套设计在质量、并行度、训练速度上全面碾压了 RNN。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 为什么需要 Transformer<br><span class="en">Why we need a new architecture</span></a></li>
+    <li><a href="#ch2">模型架构总览<br><span class="en">Model Architecture Overview</span></a></li>
+    <li><a href="#ch3">编码器与解码器堆栈<br><span class="en">Encoder and Decoder Stacks</span></a></li>
+    <li><a href="#ch4">缩放点积注意力<br><span class="en">Scaled Dot-Product Attention</span></a></li>
+    <li><a href="#ch5">多头注意力<br><span class="en">Multi-Head Attention</span></a></li>
+    <li><a href="#ch6">位置编码<br><span class="en">Positional Encoding</span></a></li>
+    <li><a href="#ch7">为什么用自注意力<br><span class="en">Why Self-Attention</span></a></li>
+    <li><a href="#ch8">训练与结果<br><span class="en">Training &amp; Results</span></a></li>
+    <li><a href="#ch9">总结：里程碑的意义<br><span class="en">Why this is a milestone</span></a></li>
+  </ol>
+</div>
+
+<!-- 第 1 章 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：为什么需要 Transformer</h2>
+  <div class="en-title">From RNN to Attention-Only</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <h4>主流方案的瓶颈</h4>
+  <p>在 2017 年之前，序列建模的霸主是 RNN、LSTM、GRU 这类<strong>循环神经网络</strong>。它们的根本问题：必须按时间步顺序计算，无法并行；而且长距离依赖很难学。</p>
+  <h4>注意力机制的崛起</h4>
+  <p>注意力机制让模型可以建立任意距离的依赖关系，但此前大多与 RNN 配合使用——仍未摆脱顺序计算的桎梏。</p>
+  <h4>Transformer 的提案</h4>
+  <p>这篇论文提出：<strong>完全抛弃循环和卷积，只用注意力机制</strong>，构建一个可以高度并行训练的序列转录架构。</p>
+  <div class="terms">
+    <span class="tag">RNN / LSTM</span>
+    <span class="tag">Sequence Transduction</span>
+    <span class="tag">Self-Attention</span>
+    <span class="tag">Parallelization</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>在 2017 年之前，如果你想做机器翻译、文本摘要、语音识别这类"<strong>把一个序列映射到另一个序列</strong>"的任务，标准做法是用循环神经网络——尤其是 LSTM 和 GRU。它们是当时序列建模和转录任务的 SOTA。</p>
+
+  <p>但 RNN 有一个绕不开的痛点。它的计算<strong>沿着序列位置展开</strong>：当前位置的隐状态 $h_t$ 是上一位置 $h_{t-1}$ 和当前输入的函数。换句话说，第 $t$ 步必须等第 $t-1$ 步算完才能开始。<span class="hl">这种内禀的顺序性，使得训练样本内部无法并行</span>——在序列变长时尤其致命，因为内存约束会限制批次大小。</p>
+
+  <p>当时注意力机制已经成为序列模型的必备组件，因为它能<strong>无视距离地建立依赖关系</strong>——句首和句尾的两个词，不再像 RNN 那样需要通过中间几十个时间步辗转传递信号。但绝大多数工作里，注意力是<strong>和 RNN 一起用的</strong>，没有摆脱顺序计算的根本约束。</p>
+
+  <p>这篇论文的贡献，是<strong>完全抛弃了循环结构</strong>。Transformer 仅仅依赖注意力机制，就建立起了输入和输出之间的全局依赖。这带来两件事：第一，<span class="hl">并行度大幅提高</span>；第二，在八块 P100 GPU 上仅训练 12 小时，就达到了新的翻译质量 SOTA。</p>
+</div>
+
+<div class="quote">
+  <p>注意力机制已经被广泛使用，但几乎总是和循环网络绑在一起。<br>我们提出的 Transformer，<strong>完全摒弃循环</strong>，只靠注意力。</p>
+  <div class="src">— THE CORE PROPOSAL OF VASWANI ET AL. 2017</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 2 章 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · ARCHITECTURE</div>
+  <h2>模型架构总览</h2>
+  <div class="en-title">The big picture</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Transformer 保留了 seq2seq 时代的<strong>编码器-解码器结构</strong>，但两边各 6 层完全由注意力 + 前馈网络组成。编码器把输入序列映射为连续表示，解码器以<strong>自回归</strong>的方式逐位置生成输出。</p>
+  <div class="terms">
+    <span class="tag">Encoder-Decoder</span>
+    <span class="tag">Auto-Regressive</span>
+    <span class="tag">Residual Connection</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>大多数有竞争力的序列转录模型都是<strong>编码器-解码器结构</strong>。编码器把输入符号序列 $(x_1, ..., x_n)$ 映射到一个连续表示序列 $z = (z_1, ..., z_n)$。给定 $z$，解码器一次生成一个输出符号 $(y_1, ..., y_m)$。每一步都是<strong>自回归</strong>的——把已生成的符号作为额外输入，再生成下一个。</p>
+
+  <p>Transformer 沿用了这个总体框架，但用<strong>堆叠的自注意力层 + 位置式全连接层</strong>替代了之前的 RNN 或 CNN。整个网络的左半边是编码器，右半边是解码器。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 3 章 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · STACKS</div>
+  <h2>编码器与解码器堆栈</h2>
+  <div class="en-title">Encoder and Decoder Stacks</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li>编码器和解码器各 6 层（$N=6$）相同结构</li>
+    <li>每层用<strong>残差连接 + Layer Normalization</strong>包裹</li>
+    <li>解码器多一个子层（编码器-解码器注意力），并在自注意力上加<strong>掩码</strong>防止"看到未来"</li>
+    <li>所有子层输出维度统一为 $d_{model} = 512$</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Sub-Layer</span>
+    <span class="tag">LayerNorm</span>
+    <span class="tag">Masked Attention</span>
+  </div>
+</div>
+
+<div class="body">
+  <p><strong>编码器</strong>由 $N = 6$ 层相同结构堆叠而成。每层有两个子层：第一个是<strong>多头自注意力</strong>机制，第二个是一个位置式的<strong>全连接前馈网络</strong>。每个子层周围加一个残差连接，后接 Layer Normalization。也就是说，每个子层的输出形式是：</p>
+</div>
+
+<div class="math-block">
+$$\text{LayerNorm}(x + \text{Sublayer}(x))$$
+</div>
+
+<div class="body">
+  <p>其中 $\text{Sublayer}(x)$ 是子层本身实现的函数。为了支持这种残差连接，所有子层（包括嵌入层）的输出维度都统一为 $d_{model} = 512$。</p>
+
+  <p><strong>解码器</strong>也由 $N = 6$ 层堆叠。除了编码器里的两个子层之外，解码器在中间插入了<strong>第三个子层</strong>——对编码器输出做多头注意力。我们仍然在每个子层周围加残差连接和 LayerNorm。</p>
+
+  <p>关键的一点：我们要修改解码器里的自注意力子层，<strong>阻止某个位置注意到它之后的位置</strong>。这个掩码操作，再加上输出嵌入<strong>整体右移一位</strong>的设定，保证了对位置 $i$ 的预测，只能依赖位置 $i$ 之前的已知输出。<span class="hl">这就是自回归生成的关键约束。</span></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 4 章 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · ATTENTION</div>
+  <h2>缩放点积注意力</h2>
+  <div class="en-title">Scaled Dot-Product Attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>注意力的本质：把一个 <strong>Query</strong> 和一组 <strong>Key-Value 对</strong> 映射成一个输出。输出是 Value 的加权和，权重由 Query 和对应 Key 的兼容性函数计算。<strong>缩放因子 $1/\sqrt{d_k}$</strong> 是防止 softmax 进入梯度极小区的关键技巧。</p>
+  <div class="terms">
+    <span class="tag">Query / Key / Value</span>
+    <span class="tag">Softmax</span>
+    <span class="tag">Scaling</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>一个注意力函数，可以描述为：<strong>把一个 Query 和一组 Key-Value 对，映射成一个输出</strong>。其中 Query、Keys、Values、输出全都是向量。输出被计算成 Values 的加权和——而<span class="hl">权重，由 Query 和对应 Key 之间的"兼容性函数"算出来</span>。</p>
+
+  <p>论文给这个特定形式起了名字叫 <strong>"Scaled Dot-Product Attention"</strong>（缩放点积注意力）。输入是维度 $d_k$ 的 Queries 和 Keys，以及维度 $d_v$ 的 Values。我们计算 Query 和所有 Keys 的点积，每个除以 $\sqrt{d_k}$，再应用 softmax 得到 Values 的权重。</p>
+
+  <p>实际中，我们会把一批 Queries 打包成矩阵 $Q$，把 Keys 和 Values 也分别打包成矩阵 $K$ 和 $V$，一次计算所有的输出：</p>
+</div>
+
+<div class="math-block">
+$$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^T}{\sqrt{d_k}}\right) V$$
+</div>
+
+<div class="body">
+  <p>这是整篇论文最核心的一个公式。让我们慢慢拆解。$Q K^T$ 计算所有 Query 和所有 Key 的点积相似度，得到一个 $n \times n$ 的"相似度矩阵"。除以 $\sqrt{d_k}$ 做缩放，然后用 softmax 把每一行归一化成概率分布。最后乘以 $V$，得到每个位置的"加权 Values 和"。</p>
+
+  <p>注意力函数有两种常见形式：<strong>加性注意力</strong>和<strong>点积（乘性）注意力</strong>。点积注意力跟我们用的几乎一样，只是没有 $1/\sqrt{d_k}$ 的缩放因子。加性注意力用一个带单隐层的前馈网络计算兼容性函数。两种在理论复杂度上类似，<strong>但点积注意力实际中快得多、内存也省</strong>，因为可以用高度优化的矩阵乘法代码来实现。</p>
+</div>
+
+<div class="note">
+  <div class="label">⚠ 为什么要除以 √dk</div>
+  <p>对于较小的 $d_k$，两种机制表现差不多；但对于较大的 $d_k$，<strong>不带缩放的点积注意力</strong>会比加性注意力差。我们怀疑：当 $d_k$ 变大时，点积的<strong>幅度</strong>会变大，把 softmax 推到梯度极小的区域。为了对抗这个效应，我们用 $1/\sqrt{d_k}$ 做缩放。</p>
+  <p>直观解释：假设 $q$ 和 $k$ 的每个分量都是均值 0、方差 1 的独立随机变量，那么它们的点积 $q \cdot k$ 均值为 0、方差为 $d_k$。所以 $d_k$ 越大，点积的数量级越大——softmax 会饱和。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 5 章 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · MULTI-HEAD</div>
+  <h2>多头注意力</h2>
+  <div class="en-title">Multi-Head Attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>与其用 $d_{model}$ 维做一次大注意力，不如<strong>把 Q、K、V 用不同的可学习线性投影投到 $h$ 份较低维度的子空间</strong>，每个子空间并行做注意力，再拼接结果。这样模型可以同时关注不同表示子空间中、不同位置的信息——<strong>单头注意力会因为平均而抑制这种多样性</strong>。</p>
+  <div class="terms">
+    <span class="tag">Multi-Head</span>
+    <span class="tag">Subspace</span>
+    <span class="tag">h=8</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>与其用 $d_{model}$ 维的 Keys、Values、Queries 做一次注意力，作者发现：把它们<strong>线性投影 $h$ 次</strong>——每次用不同的可学习线性投影投到 $d_k$、$d_k$、$d_v$ 维，然后<strong>并行</strong>地做注意力，得到 $h$ 个 $d_v$ 维的输出。把这些拼接起来，再做一次投影，得到最终结果：</p>
+</div>
+
+<div class="math-block">
+$$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W^O$$
+$$\text{where}\ \text{head}_i = \text{Attention}(Q W_i^Q,\ K W_i^K,\ V W_i^V)$$
+</div>
+
+<div class="body">
+  <p>这里的投影矩阵是参数：$W_i^Q \in \mathbb{R}^{d_{model} \times d_k}$，$W_i^K \in \mathbb{R}^{d_{model} \times d_k}$，$W_i^V \in \mathbb{R}^{d_{model} \times d_v}$，$W^O \in \mathbb{R}^{h d_v \times d_{model}}$。</p>
+
+  <p>论文用了 $h = 8$ 个并行注意力头。对每个头，$d_k = d_v = d_{model} / h = 64$。由于每个头的维度变小了，<span class="hl">总计算成本和单头但全维度的注意力相当</span>。</p>
+</div>
+
+<div class="quote">
+  <p>多头注意力让模型可以同时关注<br>不同位置、不同表示子空间里的信息。<br>单头注意力的"平均效应"，会抑制这种多样性。</p>
+  <div class="src">— THE INTUITION BEHIND MULTI-HEAD</div>
+</div>
+
+<div class="body">
+  <p>Transformer 用了三种不同方式的多头注意力：</p>
+
+  <p><strong>第一种，编码器-解码器注意力。</strong>Queries 来自上一层的解码器，而 Keys 和 Values 来自编码器的输出。这让解码器的每个位置都能"看到"输入序列的所有位置——这正是经典 seq2seq 里那种编码器-解码器对齐的本质。</p>
+
+  <p><strong>第二种，编码器里的自注意力。</strong>Keys、Values、Queries 都来自同一个地方——上一层编码器的输出。编码器里的每个位置都能注意到前一层所有位置。</p>
+
+  <p><strong>第三种，解码器里的（带掩码）自注意力。</strong>同样让每个位置能注意到所有之前的位置，但<strong>必须阻止"看到未来"</strong>——通过在 softmax 输入里把非法连接的位置设为 $-\infty$ 实现。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 6 章 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · POSITION</div>
+  <h2>位置编码</h2>
+  <div class="en-title">Positional Encoding</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>注意力机制本身<strong>没有时序</strong>——把序列打乱，输出不变。要让模型理解"语序"，必须把<strong>位置信息</strong>显式注入嵌入向量里。论文选用了不同频率的<strong>正弦/余弦</strong>函数，因为这种形式让模型容易学到"<strong>相对位置</strong>"，而且能推广到比训练时更长的序列。</p>
+  <div class="terms">
+    <span class="tag">Sinusoidal Encoding</span>
+    <span class="tag">Relative Position</span>
+    <span class="tag">Extrapolation</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这里有一个非常微妙的问题：<span class="hl">Transformer 没有循环、没有卷积——它本质上对输入顺序是<strong>不敏感</strong>的</span>。把句子里的词打乱顺序，自注意力的计算结果一模一样。但词的顺序对语义至关重要——"狗咬人"和"人咬狗"完全不同。</p>
+
+  <p>为了让模型利用序列顺序信息，必须显式注入"位置"。论文的方案是<strong>把"位置编码"加到输入嵌入上</strong>——位置编码的维度和嵌入维度 $d_{model}$ 相同，可以直接相加。</p>
+
+  <p>位置编码有许多种选择，包括"学到的"和"固定的"。论文使用了不同频率的正弦和余弦函数：</p>
+</div>
+
+<div class="math-block">
+$$PE_{(pos,\, 2i)} = \sin\!\left(pos \big/ 10000^{2i/d_{model}}\right)$$
+$$PE_{(pos,\, 2i+1)} = \cos\!\left(pos \big/ 10000^{2i/d_{model}}\right)$$
+</div>
+
+<div class="body">
+  <p>其中 $pos$ 是位置，$i$ 是维度。位置编码每个维度都对应一个正弦曲线，波长从 $2\pi$ 到 $10000 \cdot 2\pi$ 按几何级数排列。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 为什么选正弦/余弦</div>
+  <p>论文给了两个理由。第一，对任何固定的偏移量 $k$，$PE_{pos+k}$ 都能表示成 $PE_{pos}$ 的<strong>线性函数</strong>——这让模型很容易学到"相对位置"的概念。第二，正弦版本<strong>可以外推到比训练时更长的序列</strong>——位置编码不需要训练，纯靠数学定义。</p>
+  <p>作者也实验过<strong>学到的位置嵌入</strong>，两种方案结果几乎一样（见消融表中的 (E) 行）。最终选择正弦版本，是出于可外推性的考虑。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 7 章 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · WHY</div>
+  <h2>为什么用自注意力</h2>
+  <div class="en-title">Why Self-Attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>作者用三个维度对比了<strong>自注意力</strong>、<strong>循环</strong>、<strong>卷积</strong>三种层：每层计算复杂度、可并行化的计算量、长距离依赖的"路径长度"。<strong>结论：自注意力在第二和第三项上全面胜出</strong>——尤其是路径长度只有 $O(1)$，意味着任何两个位置之间一步直达。</p>
+  <div class="terms">
+    <span class="tag">Complexity</span>
+    <span class="tag">Path Length</span>
+    <span class="tag">Long-Range Dependencies</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>为什么要选自注意力？作者从三个维度对比了自注意力层、循环层、卷积层。</p>
+
+  <p><strong>第一</strong>，每层的总计算复杂度。<strong>第二</strong>，可以被并行化的计算量——以"所需的最少顺序操作数"来衡量。<strong>第三</strong>，网络中<strong>长距离依赖的路径长度</strong>。</p>
+
+  <p>第三点尤其关键。<span class="hl">学习长距离依赖，是许多序列转录任务的关键挑战</span>。影响这种学习能力的一个重要因素，就是信号在网络里前向和反向必须穿越的路径长度。路径越短，越容易学到长距离依赖。</p>
+
+  <p>看下面这张表（论文里的 Table 1）：</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>层类型</th><th>每层复杂度</th><th>顺序操作数</th><th>最大路径长度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>自注意力</td><td>$O(n^2 \cdot d)$</td><td>$O(1)$</td><td>$O(1)$</td></tr>
+    <tr><td>循环 (RNN)</td><td>$O(n \cdot d^2)$</td><td>$O(n)$</td><td>$O(n)$</td></tr>
+    <tr><td>卷积</td><td>$O(k \cdot n \cdot d^2)$</td><td>$O(1)$</td><td>$O(\log_k(n))$</td></tr>
+    <tr><td>自注意力（受限到邻域 $r$）</td><td>$O(r \cdot n \cdot d)$</td><td>$O(1)$</td><td>$O(n/r)$</td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>自注意力层用<strong>常数次顺序操作</strong>就把所有位置连起来；而循环层需要 $O(n)$ 次顺序操作。在计算复杂度方面，当序列长度 $n$ 小于表示维度 $d$ 时——这通常是机器翻译里词片表示的情形——<strong>自注意力比循环更快</strong>。</p>
+
+  <p>作为附带好处，<span class="hl">自注意力可能产生更可解释的模型</span>。论文检查了模型的注意力分布，发现不仅每个头能明显学到不同的任务，而且许多头表现出与<strong>句法和语义结构</strong>相关的行为——比如指代消解、动词与远距离修饰语的关联。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 8 章 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · RESULTS</div>
+  <h2>训练与结果</h2>
+  <div class="en-title">Training Recipe &amp; Benchmarks</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li><strong>WMT 2014 英德翻译</strong>：Transformer Big 拿到 28.4 BLEU，比之前所有模型（含集成）高出 2 分以上</li>
+    <li><strong>WMT 2014 英法翻译</strong>：单模型 41.8 BLEU，训练成本只有之前 SOTA 的四分之一以下</li>
+    <li>训练硬件：<strong>8 块 P100 GPU</strong>，基础模型 12 小时，大模型 3.5 天</li>
+    <li>训练技巧：Adam 优化器、热身 + 反平方根衰减学习率、Residual Dropout、Label Smoothing</li>
+    <li>消融实验显示：<strong>多头数量、$d_k$ 大小、Dropout 都关键</strong>；学到的位置嵌入和正弦版几乎一样</li>
+    <li>泛化测试：4 层 Transformer 在英文短语结构解析（WSJ）上也接近 SOTA</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">BLEU</span>
+    <span class="tag">WMT 2014</span>
+    <span class="tag">P100 GPU</span>
+    <span class="tag">Adam Warmup</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>训练数据用了 WMT 2014 标准数据集——英德 450 万句子对，英法 3600 万句子对。词表用<strong>字节对编码（BPE）</strong>，英德 37000 token，英法 32000 token。</p>
+
+  <p>硬件方面，作者用了一台<strong>装有 8 块 NVIDIA P100 GPU</strong> 的机器。对于使用文中超参的基础模型，每步训练约 0.4 秒，训练 10 万步约 12 小时。对于大模型，每步约 1.0 秒，训练 30 万步约 3.5 天。</p>
+
+  <p>优化器用 Adam，关键参数 $\beta_1 = 0.9$、$\beta_2 = 0.98$、$\epsilon = 10^{-9}$。学习率不是固定的，而是按下面的公式变化：</p>
+</div>
+
+<div class="math-block">
+$$lrate = d_{model}^{-0.5} \cdot \min\!\left(step\_num^{-0.5},\ step\_num \cdot warmup\_steps^{-1.5}\right)$$
+</div>
+
+<div class="body">
+  <p>这等于在前 4000 步里<strong>线性增加</strong>学习率（"热身"），之后按步数的反平方根<strong>衰减</strong>。这个"热身 + 衰减"配方后来被大量后续工作沿用。</p>
+
+  <p>正则化用了三招：第一，<strong>Residual Dropout</strong>——每个子层输出在加到子层输入并归一化之前，先做 dropout，基础模型用 $P_{drop} = 0.1$。第二，对嵌入和位置编码相加之后做 dropout。第三，<strong>Label Smoothing</strong>，平滑值 $\epsilon_{ls} = 0.1$——这会让 perplexity 变差，但准确率和 BLEU 反而提升。</p>
+
+  <p>结果令人震撼：在 WMT 2014 英德翻译上，大模型拿到 <strong>28.4 BLEU</strong>，比之前所有公开报告的模型（包括集成）高出 2 分以上。在英法翻译上，单模型拿到 <strong>41.8 BLEU</strong>，<span class="hl">而训练成本不到之前 SOTA 的四分之一</span>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🔬 消融实验告诉我们什么</div>
+  <p>论文做了详尽的消融研究，关键发现：</p>
+  <p>· <strong>单头注意力</strong>比最佳设置差 0.9 BLEU；但太多头也会变差<br>
+  · 减小 attention key 的维度 $d_k$ 会伤害质量——说明"兼容性"的计算不是那么简单<br>
+  · 模型越大越好；dropout 对避免过拟合非常关键<br>
+  · 把正弦位置编码换成<strong>学到的位置嵌入</strong>，结果几乎一样</p>
+</div>
+
+<div class="body">
+  <p>更令人惊讶的是<strong>泛化能力</strong>——作者把 4 层 Transformer 用在英文短语结构解析（WSJ Penn Treebank）上，几乎没有任务特定的调参，<span class="hl">居然在小数据（仅 4 万句）和半监督设定下都超过了大多数之前的方法</span>。这说明 Transformer 的设计不是机器翻译的特例，而是通用的序列建模工具。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 第 9 章 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · LEGACY</div>
+  <h2>总结：里程碑的意义</h2>
+  <div class="en-title">Why this paper rewrote AI</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这篇论文表面上是一个机器翻译模型的改进，<strong>实际上是 AI 历史的转折点</strong>。它做了三件事：第一，证明<strong>纯注意力</strong>架构可以全面超越 RNN；第二，开启了<strong>大规模并行训练</strong>的可能，让后续的百亿、千亿参数模型成为现实；第三，论文末尾那句"我们计划把 Transformer 应用到图像、音频、视频"——精准预言了之后五年的 AI 路线图。</p>
+</div>
+
+<div class="body">
+  <p>2017 年 6 月，这篇论文挂上 arXiv 时，没有人意识到它会改变什么。它的标题甚至带着一丝俏皮——《Attention Is All You Need》（注意力就是你需要的全部）。</p>
+
+  <p>但回头看，<strong>这是过去十年里最重要的一篇 AI 论文，没有之一</strong>。它做了三件深远的事。</p>
+
+  <p><strong>第一件，证明纯注意力架构可以全面超越 RNN。</strong>在当时，把 RNN 彻底扔掉是反共识的——业界默认序列任务就该用 RNN。这篇论文用 BLEU 分数和训练成本数据说服了所有人。</p>
+
+  <p><strong>第二件，让大规模并行训练成为可能。</strong>因为 Transformer 没有顺序计算的瓶颈，整个序列可以一次性塞进 GPU。这直接催生了 BERT、GPT-2、GPT-3、ChatGPT、Claude——所有今天你听过的大语言模型，<span class="hl">底层架构都是这篇论文的直接产物</span>。</p>
+
+  <p><strong>第三件，开启了跨模态的可能性。</strong>论文结尾作者写道："我们计划把 Transformer 扩展到文本之外的模态——图像、音频、视频"。三年后，ViT 把图像切成 Patch 喂进 Transformer，证明这条路完全走得通；今天，多模态大模型已经是默认配置。</p>
+</div>
+
+<div class="quote">
+  <p>这篇论文最重要的贡献，<br>不是它给出的某个数字，<br>而是它给整个 AI 领域指出的一个方向：<br><strong>用最简单的注意力，撬动最复杂的智能。</strong></p>
+  <div class="src">— THE LEGACY OF "ATTENTION IS ALL YOU NEED"</div>
+</div>
+
+<div class="body">
+  <p>如果你今天要研究 AI、用 AI、或者把 AI 整合进自己的产品——这篇论文是<strong>所有故事的起点</strong>。下一集，我们会继续讲它的"图像版"续集——Vision Transformer（ViT）。看 Google 团队是如何把这个为文字设计的架构，用一个简单到令人发笑的技巧——"<strong>把图像切成 16×16 的 Patch</strong>"——直接搬到计算机视觉，最终让 CNN 在某些任务上也开始让位。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">NeurIPS 2017 · GOOGLE BRAIN</div>
+  <div>Attention Is All You Need · 中文版精校</div>
+  <div class="meta">本文译自 Vaswani et al. 2017 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/transformer</div>
+</div>
+
+</div>
+</body>
+</html>

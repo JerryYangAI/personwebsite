@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Transformer：一张图片值 16×16 个词 | 广哥在硅谷</title>
+<meta name="description" content="ICLR 2021 ViT 论文中文精校版。Google Brain 团队用一招极简的「把图像切成 16×16 的 Patch」，把为文字设计的 Transformer 直接搬到计算机视觉，最终在足够大的数据上超过 CNN。这是 CV 的范式转移之始。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Vision Transformer, ViT, Image Recognition, Patch Embedding, ImageNet, JFT-300M, Dosovitskiy, ICLR 2021, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/vit/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Vision Transformer：一张图片值 16×16 个词">
+<meta property="og:description" content="CV 范式转移之始 · ViT 论文中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/vit/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vision Transformer：一张图片值 16×16 个词">
+<meta name="twitter:description" content="CV 范式转移之始 · ViT 论文中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;letter-spacing:.5px;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ICLR 2021 · GOOGLE BRAIN</div>
+  <h1>Vision Transformer<br>一张图片值 16×16 个词</h1>
+  <div class="subtitle-en">An Image is Worth 16×16 Words · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Dosovitskiy et al. · Google</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 30 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2020 年 10 月，Google Brain 团队用一招极简的"<strong>把图像切成 16×16 的 Patch</strong>"，把原本为文字设计的 Transformer 几乎原样地搬到了计算机视觉。在足够大的数据上预训练，<strong>Vision Transformer（ViT）超过了 SOTA 的 CNN</strong>，而所需的训练算力反而更少。这篇论文是 Transformer 横跨模态的关键一跃——它证明了一个深刻的事实：<span><strong>足够大规模的训练，能压倒人为设计的归纳偏置</strong></span>。本文是该论文的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 为什么视觉需要 Transformer<br><span class="en">Why CV needs Transformers</span></a></li>
+    <li><a href="#ch2">核心思想：把图像切成 Patch<br><span class="en">The Patch Embedding Trick</span></a></li>
+    <li><a href="#ch3">Vision Transformer 架构<br><span class="en">ViT Architecture</span></a></li>
+    <li><a href="#ch4">归纳偏置的得与失<br><span class="en">Inductive Bias Trade-off</span></a></li>
+    <li><a href="#ch5">三个模型尺寸 + 实验设置<br><span class="en">Model Variants &amp; Setup</span></a></li>
+    <li><a href="#ch6">关键发现：大规模预训练才是王道<br><span class="en">Scale Trumps Inductive Bias</span></a></li>
+    <li><a href="#ch7">数据集大小决定一切<br><span class="en">Data Requirements</span></a></li>
+    <li><a href="#ch8">ViT 内部到底学到了什么<br><span class="en">Inspecting ViT</span></a></li>
+    <li><a href="#ch9">总结：CV 的范式转移之始<br><span class="en">A Paradigm Shift in CV</span></a></li>
+  </ol>
+</div>
+
+<!-- Ch 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：为什么视觉需要 Transformer</h2>
+  <div class="en-title">From NLP success to CV revolution</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Transformer 已经成为 NLP 的事实标准——超过 1000 亿参数的模型不断刷新性能。但在计算机视觉里，<strong>卷积神经网络（CNN）仍然是统治者</strong>。这篇论文挑战的核心问题是：<strong>视觉真的需要卷积吗？还是只是历史惯性？</strong></p>
+  <div class="terms">
+    <span class="tag">NLP Paradigm</span>
+    <span class="tag">CNN Dominance</span>
+    <span class="tag">Pre-train + Fine-tune</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>自注意力架构——特别是 Transformer——已经成了 NLP 的<strong>不二之选</strong>。主流做法是"先在大语料上预训练，再在小任务数据集上微调"。得益于 Transformer 的高效与可扩展性，业界已经训出了<span class="hl">超过 1000 亿参数的模型</span>，而且<strong>性能还看不到饱和的迹象</strong>。</p>
+
+  <p>但在计算机视觉领域，<strong>卷积架构仍然是霸主</strong>。从 1989 年 LeCun 到 2012 年 AlexNet，再到 2016 年 ResNet——一脉相承。受 NLP 成功的启发，许多工作尝试把 CNN 和自注意力结合，甚至完全用注意力替换卷积。但这些方案要么没在现代加速硬件上跑出规模，要么需要特别复杂的注意力模式才能高效。<strong>在大规模图像识别上，类 ResNet 架构依然是 SOTA</strong>。</p>
+
+  <p>这篇论文的尝试很大胆：<span class="hl">把<strong>标准的 Transformer 直接</strong>用在图像上，做最少的修改</span>。具体做法是——把图像切成多个 patch，每个 patch 的线性嵌入序列作为 Transformer 的输入。<strong>图像 patch 被当成 NLP 里的 token（单词）一样处理</strong>。然后用监督学习方式训练图像分类。</p>
+</div>
+
+<div class="note">
+  <div class="label">⚠ 但有一个关键的"前提条件"</div>
+  <p>在<strong>中等规模</strong>数据集（如 ImageNet）上、<strong>没有强正则化</strong>的情况下，ViT 的准确率比同规模 ResNet <strong>差几个百分点</strong>。这个看似令人失望的结果其实可以预期：Transformer 缺少 CNN 自带的<strong>归纳偏置</strong>（平移等变性、局部性），因此在数据不够时泛化不好。</p>
+  <p>但只要把训练数据规模扩大到 1400 万到 3 亿张图像——故事就完全反转了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · IDEA</div>
+  <h2>核心思想：把图像切成 Patch</h2>
+  <div class="en-title">An image is worth 16×16 words</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>标准 Transformer 接收 1D token 序列作为输入。要处理 2D 图像，ViT 做了一件极简的事：<strong>把图像 reshape 成 patch 序列</strong>——一个 $224 \times 224$ 的图像，用 $16 \times 16$ 的 patch 切，可以得到 $14 \times 14 = 196$ 个 patch。每个 patch 展平后用一个可学习的线性投影映射到 $D$ 维。<strong>这就是论文标题的字面含义——"一张图片值 16×16 个词"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Patch Embedding</span>
+    <span class="tag">Sequence of Tokens</span>
+    <span class="tag">Linear Projection</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>标准 Transformer 接收一个 1D 的 token 嵌入序列。<strong>要处理 2D 图像</strong>，ViT 做的事情极其直接：把图像 $x \in \mathbb{R}^{H \times W \times C}$ 重塑成一个展平的 2D patch 序列 $x_p \in \mathbb{R}^{N \times (P^2 \cdot C)}$，其中 $(P, P)$ 是每个 patch 的分辨率，$N = H W / P^2$ 是 patch 数量——也就是 Transformer 的有效输入序列长度。</p>
+
+  <p>Transformer 在所有层里用恒定的隐向量维度 $D$，所以我们把 patch 展平后，用<strong>一个可训练的线性投影</strong>把它映射到 $D$ 维。论文把这个投影的输出称为 <strong>"patch embeddings"</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>一张 224×224 的图像，<br>切成 14×14 = <strong>196 个 16×16 的 patch</strong>，<br>每个 patch 当作一个 "词"。<br>剩下的事，交给 Transformer。</p>
+  <div class="src">— THE SIMPLEST POSSIBLE IDEA, AND IT WORKS</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · ARCHITECTURE</div>
+  <h2>Vision Transformer 架构</h2>
+  <div class="en-title">ViT in 4 equations</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>ViT 几乎是<strong>原汁原味的 Transformer 编码器</strong>。两个改动：第一，仿照 BERT，在 patch 序列前面<strong>拼一个可学习的 [class] token</strong>，用它在最后输出位置的表示做分类；第二，加上<strong>1D 可学习的位置嵌入</strong>。整个模型用四个方程就能完整描述。</p>
+  <div class="terms">
+    <span class="tag">[class] Token</span>
+    <span class="tag">Position Embedding</span>
+    <span class="tag">LayerNorm</span>
+    <span class="tag">GELU</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>整体架构非常优雅。ViT 借鉴了 BERT 的 <strong>[class] token</strong> 设计——在 patch 嵌入序列<strong>最前面</strong>拼一个可学习的嵌入向量 $x_{class}$，它在 Transformer 编码器输出端的状态 $z_L^0$ 充当整个图像的表示 $y$。</p>
+
+  <p>无论预训练还是微调，分类头都接在 $z_L^0$ 上。预训练时分类头是一个带一个隐层的 MLP，微调时简化为一个线性层。</p>
+
+  <p>位置信息怎么注入？论文用<strong>标准的 1D 可学习位置嵌入</strong>——他们试过更复杂的 2D 位置嵌入，发现性能提升不明显。</p>
+
+  <p>整个 ViT 可以用下面四个方程<strong>完整描述</strong>：</p>
+</div>
+
+<div class="math-block">
+$$z_0 = [\,x_{class};\ x_p^1 E;\ x_p^2 E;\ \cdots;\ x_p^N E\,] + E_{pos}$$
+$$z'_\ell = \text{MSA}(\text{LN}(z_{\ell-1})) + z_{\ell-1}, \quad \ell = 1 \ldots L$$
+$$z_\ell = \text{MLP}(\text{LN}(z'_\ell)) + z'_\ell, \quad \ell = 1 \ldots L$$
+$$y = \text{LN}(z_L^0)$$
+</div>
+
+<div class="body">
+  <p>翻译一下：</p>
+  <p>· <strong>方程 1</strong>：把所有 patch 嵌入 + class token 拼起来，加上位置嵌入，得到第 0 层输入<br>
+  · <strong>方程 2</strong>：每一层先 LayerNorm，再过多头自注意力（MSA），再残差连接<br>
+  · <strong>方程 3</strong>：同一层接着 LayerNorm，再过 MLP（两层带 GELU 激活），再残差连接<br>
+  · <strong>方程 4</strong>：最终输出是 class token 在最后一层的表示，再过一个 LayerNorm</p>
+
+  <p>注意一个细节：<strong>LayerNorm 放在了每个 block 之前</strong>（即 "Pre-Norm" 而非原 Transformer 的 "Post-Norm"）。这是后续 BERT/GPT 系也采纳的更稳定的做法。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · INDUCTIVE BIAS</div>
+  <h2>归纳偏置的得与失</h2>
+  <div class="en-title">What ViT gives up — and gains</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>CNN 把"<strong>局部性、平移等变性、二维邻域结构</strong>"这些归纳偏置<strong>烧进了每一层</strong>。ViT 只在两个时刻用到 2D 结构：开头切 patch 时、微调时调整位置嵌入。其他所有空间关系都得<strong>从数据里学</strong>。<span><strong>这是 ViT 的劣势</strong>——数据少时泛化差；<strong>也是它的潜力</strong>——数据足时不被人为约束</span>。</p>
+  <div class="terms">
+    <span class="tag">Locality</span>
+    <span class="tag">Translation Equivariance</span>
+    <span class="tag">2D Neighborhood</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节作者讨论了一个深刻的问题：<strong>归纳偏置（inductive bias）</strong>。</p>
+
+  <p>CNN 是把图像专用的归纳偏置<strong>烧进了网络结构</strong>的——局部性、二维邻域结构、平移等变性。每一层都自带这些假设。这意味着 CNN 在小数据上能用相对少的样本学到合理的图像表示。</p>
+
+  <p>ViT <strong>放弃了大部分</strong>这种归纳偏置。在 ViT 里，<span class="hl">只有 MLP 层是局部和平移等变的；自注意力层是全局的</span>。二维邻域结构被用得非常"节省"——只在两个时刻：第一，模型开头把图像切成 patch 的时候；第二，微调时为不同分辨率调整位置嵌入。除此之外，<strong>位置嵌入在初始化时不携带任何关于 patch 2D 位置的信息——所有 patch 之间的空间关系，都要从头学</strong>。</p>
+
+  <p>论文还提了一个"混合架构"作为对照：用 CNN 的特征图作为 Transformer 的输入，相当于把 patch embedding 替换成对 CNN 特征图的 patch 提取。后面的实验会比较纯 ViT 和混合架构。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · MODELS</div>
+  <h2>三个模型尺寸 + 实验设置</h2>
+  <div class="en-title">Base / Large / Huge</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>ViT 配置参照 BERT，提供三档：<strong>Base / Large / Huge</strong>。命名约定 ViT-L/16 表示 "Large" 变体 + $16 \times 16$ patch 大小。<strong>patch 越小，序列越长，算力越贵</strong>（序列长度反比于 patch 边长的平方）。</p>
+  <div class="terms">
+    <span class="tag">ViT-Base/16</span>
+    <span class="tag">ViT-Large/16</span>
+    <span class="tag">ViT-Huge/14</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>ViT 的三档配置直接借了 BERT 的设计：</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>模型</th><th>层数</th><th>隐维度 $D$</th><th>MLP 维</th><th>头数</th><th>参数量</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ViT-Base</td><td>12</td><td>768</td><td>3072</td><td>12</td><td>86 M</td></tr>
+    <tr><td>ViT-Large</td><td>24</td><td>1024</td><td>4096</td><td>16</td><td>307 M</td></tr>
+    <tr><td>ViT-Huge</td><td>32</td><td>1280</td><td>5120</td><td>16</td><td>632 M</td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>命名约定：<strong>ViT-L/16</strong> 表示 "Large" 变体 + $16 \times 16$ 的 patch 大小。<span class="hl">注意 Transformer 的序列长度反比于 patch 边长的平方</span>——所以 patch 越小，模型计算成本越高。</p>
+
+  <p>CNN 基线方面，作者用 ResNet 但做了几处修改——把 Batch Normalization 换成 Group Normalization、用 standardized convolutions——记为 "ResNet (BiT)"。混合架构则用 ResNet50 的中间特征图作为 ViT 的输入。</p>
+
+  <p>训练用 Adam，$\beta_1 = 0.9$、$\beta_2 = 0.999$，batch size 4096，weight decay $0.1$。微调时改用带动量的 SGD，batch size 512。预训练在三个数据集上做对比：<strong>ImageNet</strong>（1.3M 图像）、<strong>ImageNet-21k</strong>（14M）、<strong>JFT-300M</strong>（303M，Google 内部数据集）。下游迁移到 ImageNet、CIFAR-10/100、Oxford Pets、Oxford Flowers，以及 19 任务的 VTAB 基准。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · KEY FINDING</div>
+  <h2>关键发现：大规模预训练才是王道</h2>
+  <div class="en-title">Scale trumps inductive bias</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li>JFT-300M 预训练的 <strong>ViT-H/14 在 ImageNet 上达到 88.55%</strong>，在 CIFAR-100 上 94.55%</li>
+    <li>同样在 JFT-300M 预训练，<strong>ViT-L/16 用 ResNet-BiT-L 四分之一的算力，性能全面超过</strong></li>
+    <li>更小的 ImageNet-21k 公开数据集预训练，<strong>ViT-L/16 也能跑出非常有竞争力的结果</strong>——只需 8 核 TPUv3 大约 30 天</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">SOTA</span>
+    <span class="tag">JFT-300M</span>
+    <span class="tag">TPUv3-core-days</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文最重磅的对比，是把最大的两个 ViT 模型（ViT-H/14 和 ViT-L/16）跟当时的 SOTA 卷积模型——Big Transfer (BiT) 和 Noisy Student——放在一起比。</p>
+
+  <p>结果在 JFT-300M 预训练下，<strong>ViT-H/14 在 ImageNet 上达到 88.55%、CIFAR-100 上 94.55%、VTAB 上 77.63%</strong>——几乎所有数据集上都超过了 BiT-L。更惊人的是<strong>训练成本</strong>：ViT-H/14 用了 2500 TPUv3-core-days，<span class="hl">而 BiT-L 用了 9900，Noisy Student 用了 12300</span>。也就是说 ViT 用了不到 BiT-L 三分之一的算力，达到了更好的结果。</p>
+
+  <p>ViT-L/16 更夸张——只用 680 TPUv3-core-days，性能就和 BiT-L 相当。如果换用更小的公开数据集 ImageNet-21k 来预训练 ViT-L/16，只需要标准云上的 8 核 TPUv3 训练大约 30 天，依然能跑出极有竞争力的结果。<strong>这意味着大多数实验室都能复现 ViT 的训练。</strong></p>
+</div>
+
+<div class="quote">
+  <p>在足够大的预训练数据上，<br><strong>ViT 用 1/4 的算力，<br>就能全面超过最好的 ResNet。</strong></p>
+  <div class="src">— THE PAPER'S MOST SHOCKING NUMBER</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · DATA SCALE</div>
+  <h2>数据集大小决定一切</h2>
+  <div class="en-title">When does ViT win?</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>作者做了一个关键实验：把 ViT 和 ResNet 在<strong>不同规模的预训练数据</strong>上对比——9M、30M、90M、300M 张图像。<strong>结论一目了然</strong>：</p>
+  <ul>
+    <li>小数据集（ImageNet 单独）：ViT 比 ResNet <strong>差</strong></li>
+    <li>中数据集（ImageNet-21k）：两者<strong>相当</strong></li>
+    <li>大数据集（JFT-300M）：ViT <strong>全面胜出</strong>，且越大越好</li>
+  </ul>
+  <p>这印证了一个深刻判断：<strong>卷积的归纳偏置在小数据上有用，但大数据足够时，让模型直接从数据里学，反而更好甚至有利。</strong></p>
+  <div class="terms">
+    <span class="tag">Scaling Law</span>
+    <span class="tag">Inductive Bias</span>
+    <span class="tag">Few-Shot Transfer</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节是整篇论文最有"哲学意味"的部分。作者问了一个问题：<strong>ViT 缺少 CNN 的归纳偏置——那它到底需要多少数据才能赢？</strong></p>
+
+  <p>他们做了两组实验。</p>
+
+  <p><strong>第一组</strong>，在三个不同大小的预训练数据集上训 ViT 和 BiT-ResNet，然后都微调到 ImageNet。结果（论文 Figure 3）非常清晰：</p>
+
+  <p>· 用 ImageNet 单独预训练（1.3M 图像）——ViT-Large 比 ViT-Base <strong>更差</strong>，因为大模型缺数据时反而过拟合。<br>
+  · 用 ImageNet-21k 预训练（14M 图像）——两个 ViT 尺寸性能<strong>相当</strong>。<br>
+  · 用 JFT-300M 预训练（300M 图像）——<span class="hl">大模型的优势<strong>完全显现</strong></span>，ViT-H 远超 ViT-L 远超 ViT-B。</p>
+
+  <p><strong>第二组</strong>，在 JFT 的 9M、30M、90M 子集和全量 300M 上对比 ViT 与 ResNet（不加额外正则化）。结果 ViT 在 9M 上明显输给同等算力的 ResNet50；但<strong>到 90M+ 就反超</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>在小数据上，卷积的归纳偏置是有用的拐杖。<br>但在大数据上，<strong>这副拐杖反而成了枷锁</strong>——<br>让模型从数据里自己学规律，更好。</p>
+  <div class="src">— THE DEEP LESSON OF VIT</div>
+</div>
+
+<div class="body">
+  <p>这个发现的意义远超 ViT 本身。它说明——在过去几十年里——<strong>许多被视为"必要"的人工设计，其实只是数据不足时的临时拐杖</strong>。当算力和数据足够大时，让模型自己从数据中学到规律，往往比手工注入归纳偏置更强。<span class="hl">这是后续大模型时代（GPT-3、GPT-4、Claude）背后的核心信念。</span></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · INSIDE VIT</div>
+  <h2>ViT 内部到底学到了什么</h2>
+  <div class="en-title">Inspecting Vision Transformer</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>对 ViT 内部表示的分析揭示了三件有趣的事：</p>
+  <ul>
+    <li><strong>第一层的 patch embedding 滤波器</strong>看起来像合理的低维基函数，类似 CNN 第一层学到的 Gabor 滤波器</li>
+    <li><strong>位置嵌入</strong>自动学到了 2D 拓扑——相近 patch 的嵌入更相似，呈现明显的行列结构</li>
+    <li>有些<strong>注意力头</strong>在最浅层就关注整张图像，证明 ViT 真的在使用全局注意力的能力</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">Attention Distance</span>
+    <span class="tag">Receptive Field</span>
+    <span class="tag">2D Topology</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>要理解 ViT 是怎么处理图像数据的，作者分析了它的内部表示。</p>
+
+  <p><strong>第一层的 patch embedding 滤波器</strong>——展平 patch 之后被线性投影到低维空间。可视化前 28 个主成分，会发现它们<strong>像合理的基函数</strong>——边缘、纹理之类的低层视觉特征。和 CNN 第一层 Gabor 滤波器很相似。这说明 ViT 自己学到了类 CNN 的浅层视觉特征。</p>
+
+  <p><strong>位置嵌入</strong>也很神奇。作者发现，模型学到了用<strong>位置嵌入的相似性</strong>来编码图像中的距离——越近的 patch，嵌入越相似。而且<strong>行列结构</strong>明显出现，更大网格上还能看到正弦曲线般的结构。<span class="hl">这就是为什么手工设计的 2D 位置嵌入没带来提升——模型自己学出来了。</span></p>
+
+  <p>最有意思的是<strong>注意力距离</strong>分析。作者基于注意力权重，计算了每个头平均整合信息的图像空间距离——类似于 CNN 里的"感受野"。发现：</p>
+
+  <p>· 一些注意力头<strong>在最低层就关注整张图像的大部分</strong>，证明 ViT 真的在使用全局信息<br>
+  · 另一些头在低层<strong>始终关注局部</strong>——类似于 CNN 的早期卷积层<br>
+  · 网络越深，注意力距离<strong>普遍越远</strong>——模型从局部走向全局</p>
+
+  <p>而且，从全局来看，<strong>模型确实会关注与分类语义相关的图像区域</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- Ch 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · LEGACY</div>
+  <h2>总结：CV 的范式转移之始</h2>
+  <div class="en-title">A paradigm shift in computer vision</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>ViT 这篇论文的真正意义，不在于刷了多少 SOTA，而在于它<strong>用最少的修改证明了 Transformer 是模态无关的</strong>。从这篇论文之后，CV 进入了 Transformer 时代——DETR、SwinT、DINO、CLIP、SAM、Diffusion Transformer……几乎所有 2021 年后的视觉大模型，都建立在 ViT 的肩膀上。</p>
+</div>
+
+<div class="body">
+  <p>2020 年 10 月，这篇论文出现的时候，业界对它有许多怀疑——"图像和语言不一样"、"卷积才是视觉之神"、"Transformer 在小数据上根本不行"。一年之后，所有这些怀疑都被现实击碎了。</p>
+
+  <p>ViT 的真正意义，<strong>不在于它刷了多少 SOTA</strong>，而在于它证明了一件事：<strong>Transformer 是模态无关的通用架构</strong>。<span class="hl">只要数据足够大，几乎不需要为新模态做架构上的特化</span>。这个结论后来在音频（Audio Spectrogram Transformer）、视频（Video Transformer）、多模态（CLIP）、甚至蛋白质（AlphaFold 的 EvoFormer）上一遍遍被验证。</p>
+
+  <p>从这篇论文之后，CV 进入了 Transformer 时代——<strong>DETR、Swin Transformer、DINO、CLIP、SAM、扩散 Transformer（DiT）</strong>……几乎所有 2021 年后的视觉大模型，都建立在 ViT 的肩膀上。</p>
+</div>
+
+<div class="quote">
+  <p>这篇论文没说一句"我们要统一所有模态"，<br>但它把这件事<strong>用实验做了出来</strong>。<br>从 NLP 到 CV，再到音频、视频、多模态——<br>Transformer 真正成了 AI 的<strong>通用底层架构</strong>。</p>
+  <div class="src">— THE BEGINNING OF THE MULTIMODAL ERA</div>
+</div>
+
+<div class="body">
+  <p>如果说 2017 年的《Attention Is All You Need》是 AI 的第一次大爆炸，那么 2020 年的 ViT 就是<strong>第二次冲击波</strong>——它让 Transformer 从语言走向视觉，再走向一切。今天，当你用 ChatGPT 看图、用 Midjourney 生图、用 Sora 生视频——它们的底层都流着 ViT 的血。</p>
+
+  <p>下一次，我们会接着讲 CLIP——OpenAI 怎么用 4 亿张图文对，把 ViT 和文本 Transformer 联姻，开启了"零样本视觉理解"的时代。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ICLR 2021 · GOOGLE BRAIN</div>
+  <div>An Image is Worth 16×16 Words · 中文版精校</div>
+  <div class="meta">本文译自 Dosovitskiy et al. 2020 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/vit</div>
+</div>
+
+</div>
+</body>
+</html>
