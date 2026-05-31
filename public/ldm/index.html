@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latent Diffusion：Stable Diffusion 论文详解 | 广哥在硅谷</title>
+<meta name="description" content="2022 年 Rombach 等人的 LDM 论文中文精校版。这篇论文催生了 Stable Diffusion，把扩散模型从「上百天 V100 训练」压缩到了「单卡可玩」，开启了 AI 绘画的开源时代。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Latent Diffusion, Stable Diffusion, LDM, Rombach, CVPR 2022, 扩散模型, 文生图, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/ldm/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Latent Diffusion：Stable Diffusion 论文详解">
+<meta property="og:description" content="把 AI 绘画从「上百天 V100」压缩到「单卡可玩」的那篇论文 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/ldm/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Latent Diffusion：Stable Diffusion 论文详解">
+<meta name="twitter:description" content="把 AI 绘画从「上百天 V100」压缩到「单卡可玩」的那篇论文 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">CVPR 2022 · CompVis</div>
+  <h1>Latent Diffusion<br>Stable Diffusion 论文详解</h1>
+  <div class="subtitle-en">High-Resolution Image Synthesis with Latent Diffusion Models · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Rombach et al. · LMU Munich</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2022 年，慕尼黑大学 CompVis 团队的 Rombach 等人发表了 LDM 论文。它做了一件改变历史的事：<strong>把扩散模型从昂贵的像素空间，搬到了高效的潜在空间</strong>——训练成本从「数百 V100 天」压缩到「单 A100 数天」，推理速度提升数倍。基于这篇论文开源的代码与模型，几个月后催生了 <strong>Stable Diffusion</strong>——AI 绘画从此变成了人人可玩的事。本文是该论文的中文精校版，逐章讲透：为什么要去潜在空间、自编码器怎么训、Cross-Attention 如何接入文本条件、压缩比 f 的最佳点是多少。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 像素空间扩散的代价<br><span class="en">The cost of pixel-space diffusion</span></a></li>
+    <li><a href="#ch2">核心洞察 · 感知 vs 语义压缩<br><span class="en">Perceptual vs Semantic Compression</span></a></li>
+    <li><a href="#ch3">两阶段方法总览<br><span class="en">The Two-Stage Approach</span></a></li>
+    <li><a href="#ch4">第一阶段：感知压缩自编码器<br><span class="en">Perceptual Image Compression</span></a></li>
+    <li><a href="#ch5">第二阶段：潜在扩散模型 LDM<br><span class="en">Latent Diffusion Models</span></a></li>
+    <li><a href="#ch6">跨模态条件机制 · Cross-Attention<br><span class="en">Conditioning Mechanism</span></a></li>
+    <li><a href="#ch7">压缩比 f 的最佳点<br><span class="en">The Sweet Spot of f=4-8</span></a></li>
+    <li><a href="#ch8">实验结果与文生图<br><span class="en">Results &amp; Text-to-Image</span></a></li>
+    <li><a href="#ch9">总结：开源如何改变世界<br><span class="en">Open-Source as Disruption</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：像素空间扩散的代价</h2>
+  <div class="en-title">Why pixel-space diffusion is too expensive</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2021 年的扩散模型已经在图像合成上做到了 SOTA，但代价是：<strong>训练一个最强的 DM 需要数百 V100 天</strong>。这种"算力门槛"把这项技术锁在了少数大公司里。LDM 论文要解决的，就是这个民主化问题——让普通研究者也能玩得起扩散模型。</p>
+  <div class="terms">
+    <span class="tag">Diffusion Models</span>
+    <span class="tag">DDPM</span>
+    <span class="tag">UNet</span>
+    <span class="tag">GPU-days</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2021 年，扩散模型已经成为图像合成领域的事实之王。在类别条件生成、超分辨率、修复（inpainting）等任务上全面超过 GAN。它的好处很明显：训练稳定、模式覆盖完整、不易模式坍缩。</p>
+
+  <p>但有一个绕不开的问题——<strong>太贵了</strong>。</p>
+
+  <p>论文里给了一个具体数字：训练一个当时最强的 DM，通常需要 <strong>150 到 1000 个 V100 GPU 天</strong>。即使训练好了，生成 5 万张样本也要在单块 A100 上跑大约 <span class="hl">5 天</span>。原因是扩散模型在<strong>像素空间</strong>反复迭代——一个 512×512 的图像意味着每一步都要在几十万维空间里做完整的 UNet 前向 + 反向，而采样需要几十到上千步。</p>
+
+  <p>这件事有两层后果。第一，<strong>训练这种模型的资源只属于极少数公司和实验室</strong>，AI 绘画无法民主化。第二，即使训练好了，<strong>推理也是慢且贵</strong>——根本没法做实时交互或大规模部署。</p>
+
+  <p>LDM 论文给出的回答是：<span class="hl">既然图像里大部分像素只是「察觉不到的细节」，为什么不先把这些细节压缩掉，只在「语义层面」做扩散？</span></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · INSIGHT</div>
+  <h2>核心洞察：感知 vs 语义压缩</h2>
+  <div class="en-title">Perceptual vs Semantic Compression</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>作者分析了像素空间扩散的"率失真曲线"，发现学习可以划成两个阶段：<strong>感知压缩阶段</strong>（去掉高频细节但语义没变化）和<strong>语义压缩阶段</strong>（学习内容的实际构成）。结论是：<strong>把感知压缩交给一个小模型一次性做完，让昂贵的扩散模型只专注于语义压缩</strong>。</p>
+  <div class="terms">
+    <span class="tag">Rate-Distortion</span>
+    <span class="tag">Perceptual Loss</span>
+    <span class="tag">Semantic Bits</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>整篇论文最深刻的洞察来自一张图——已经训练好的像素空间扩散模型的<strong>率失真曲线</strong>。作者分析后发现，扩散学习过程可以大致划分成两个阶段。</p>
+
+  <p><strong>第一阶段，感知压缩（Perceptual Compression）</strong>。模型在这里去掉的是高频的、几乎无法察觉的细节——纹理噪声、像素级抖动，等等。这些信息占了图像绝大部分比特，但对人类视觉几乎没有意义。</p>
+
+  <p><strong>第二阶段，语义压缩（Semantic Compression）</strong>。模型在这里学的才是真正的"内容"——这是一只猫、是 Picasso 风格、人物站在街道上。这才是生成模型真正应该做的事。</p>
+</div>
+
+<div class="quote">
+  <p>一张数字图像的大部分比特，<br>都对应着我们感觉不到的细节。<br><strong>把感知压缩交给小模型，<br>把语义压缩留给扩散模型。</strong></p>
+  <div class="src">— THE CORE INSIGHT OF LDM</div>
+</div>
+
+<div class="body">
+  <p>问题在于：在像素空间训练扩散模型，意味着这两个阶段都在同一个昂贵的 UNet 里完成——大部分计算资源被浪费在感知压缩上，因为<strong>梯度和网络评估必须在所有像素上做</strong>。这是巨大的浪费。</p>
+
+  <p>解药很自然：<span class="hl">先训练一个独立的"感知压缩器"——一个自编码器，把图像压缩到一个低维但感知等价的潜在空间。然后在这个潜在空间里训练扩散模型</span>。</p>
+
+  <p>这就是 <strong>Latent Diffusion Model（LDM）</strong>的命名由来。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · METHOD</div>
+  <h2>两阶段方法总览</h2>
+  <div class="en-title">The Two-Stage Approach</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>训练分两个独立阶段：<strong>(1) 训练一个通用的自编码器</strong>，把图像压缩到潜在空间 $z$；<strong>(2) 在 $z$ 空间训练扩散模型</strong>。这种解耦的最大好处是——自编码器<strong>只训练一次</strong>，可以被多个不同的扩散模型复用。</p>
+  <div class="terms">
+    <span class="tag">Two-Stage Training</span>
+    <span class="tag">Decoupling</span>
+    <span class="tag">Reusable Encoder</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文的方法可以用一句话概括：<strong>把扩散模型从像素空间搬到由预训练自编码器定义的潜在空间</strong>。</p>
+
+  <p>训练分为两个清晰分离的阶段：</p>
+
+  <p><strong>第一阶段</strong>：训练一个自编码器，由一个编码器 $\mathcal{E}$ 和一个解码器 $\mathcal{D}$ 组成。给定图像 $x \in \mathbb{R}^{H \times W \times 3}$，$\mathcal{E}$ 把它压缩到潜在表示 $z = \mathcal{E}(x)$，$\mathcal{D}$ 再把 $z$ 重建回图像 $\tilde{x} = \mathcal{D}(\mathcal{E}(x))$。</p>
+
+  <p><strong>第二阶段</strong>：在 $z$ 这个低维空间上训练标准的扩散模型——但所有 UNet 的前向/反向计算，都发生在 $z$ 空间而不是像素空间。</p>
+
+  <p>这种解耦有<strong>三个核心好处</strong>：</p>
+
+  <p>第一，<strong>计算效率大幅提升</strong>。UNet 不再在数十万维的像素上做迭代，而是在 $32 \times 32 \times 4$ 这样的小张量上。</p>
+
+  <p>第二，<strong>利用 UNet 的归纳偏置</strong>。LDM 保留了 UNet 在空间数据上的归纳偏置，所以不需要像 VQGAN 那样把空间结构展平成 1D 序列。</p>
+
+  <p>第三，<span class="hl">通用的压缩器训练一次，可以被多次重用</span>——同一个自编码器可以服务于无条件生成、文生图、超分辨率、修复等多个任务的扩散模型。这点对工业部署极为关键。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · STAGE 1</div>
+  <h2>第一阶段：感知压缩自编码器</h2>
+  <div class="en-title">Perceptual Image Compression</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>自编码器用<strong>感知损失 + patch 级对抗损失</strong>训练，避免传统 L2 损失带来的模糊。两种正则化方案：<strong>KL-reg</strong>（类似 VAE，对潜空间施加轻微 KL 惩罚）和 <strong>VQ-reg</strong>（解码器内做向量量化）。下采样因子 $f$ 满足 $f = H/h = W/w$。</p>
+  <div class="terms">
+    <span class="tag">Perceptual Loss</span>
+    <span class="tag">PatchGAN</span>
+    <span class="tag">KL-reg / VQ-reg</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>自编码器训练的关键是<strong>避免重建出"糊"的图像</strong>。如果只用像素空间的 L2 或 L1 损失，重建会偏向模糊的平均值——感知质量很差。</p>
+
+  <p>LDM 的自编码器结合了三种损失：<strong>感知损失</strong>（用预训练 VGG 比较特征图差异）、<strong>patch 级对抗损失</strong>（一个判别器，要求每个 patch 看起来真实）、以及一个轻微的<strong>正则项</strong>。</p>
+
+  <p>设输入图像 $x \in \mathbb{R}^{H \times W \times 3}$。编码器把 $x$ 压成 $z = \mathcal{E}(x)$，其中 $z \in \mathbb{R}^{h \times w \times c}$。下采样因子定义为 $f = H/h = W/w$。论文实验了 $f = 2^m$，其中 $m$ 为非负整数（即 1, 2, 4, 8, 16, 32）。</p>
+
+  <p>为了避免潜空间方差过大、不利于后续扩散建模，作者引入两种正则化：</p>
+
+  <p><strong>第一种，KL-reg</strong>：对学到的潜变量施加一个对标准正态的轻微 KL 惩罚，类似 VAE。</p>
+
+  <p><strong>第二种，VQ-reg</strong>：在解码器里加一层向量量化（Vector Quantization）。可以理解成 VQGAN 但把量化层吸收进解码器。</p>
+
+  <p>注意一个关键设计选择：因为后续的扩散模型<span class="hl">直接利用 $z$ 的二维结构</span>，所以压缩率不需要太激进——这与之前依赖"把潜空间展成 1D 序列再用自回归 Transformer 建模"的工作（如 VQGAN）完全不同。LDM 在保留 2D 结构的同时，可以用相对温和的压缩率，获得更好的重建。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · STAGE 2</div>
+  <h2>第二阶段：潜在扩散模型 LDM</h2>
+  <div class="en-title">Latent Diffusion Models</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>原始扩散损失定义在像素空间 $x$ 上。LDM 把 $x$ 替换成自编码器输出 $z$，损失变成在潜空间上预测噪声。<strong>这是唯一的形式变化——其余 UNet 架构、噪声调度、采样算法都不变</strong>。但实际效果是：训练快 10 倍以上，推理快数倍。</p>
+  <div class="terms">
+    <span class="tag">Denoising Objective</span>
+    <span class="tag">UNet Backbone</span>
+    <span class="tag">Time-Conditional</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>先回顾标准扩散模型的训练目标。扩散模型学习的是逐步去噪一个高斯噪声变量——也就是反向求解一个固定的马尔可夫链。最常用的简化目标是：</p>
+</div>
+
+<div class="math-block">
+$$L_{DM} = \mathbb{E}_{x,\, \epsilon \sim \mathcal{N}(0, 1),\, t}\left[\| \epsilon - \epsilon_\theta(x_t, t) \|_2^2\right]$$
+</div>
+
+<div class="body">
+  <p>其中 $t$ 在 $\{1, ..., T\}$ 上均匀采样，$x_t$ 是 $x$ 在时间步 $t$ 加噪后的版本，$\epsilon_\theta$ 是一个<strong>时间条件 UNet</strong>，预测被加入的噪声。这是 DDPM 标准公式。</p>
+
+  <p>LDM 的修改简洁得令人吃惊——<span class="hl">把 $x$ 全部换成 $z = \mathcal{E}(x)$</span>：</p>
+</div>
+
+<div class="math-block">
+$$L_{LDM} = \mathbb{E}_{\mathcal{E}(x),\, \epsilon \sim \mathcal{N}(0, 1),\, t}\left[\| \epsilon - \epsilon_\theta(z_t, t) \|_2^2\right]$$
+</div>
+
+<div class="body">
+  <p>就这么一个小改动。UNet 架构本身、噪声调度、采样算法（DDIM 之类）——全部不变。</p>
+
+  <p>但实际效果天差地别：</p>
+
+  <p>· UNet 现在工作在 $32 \times 32 \times 4$ 之类的小张量上，而不是 $512 \times 512 \times 3$ 的像素张量<br>
+  · 前向 $z_t$ 可以高效地通过 $\mathcal{E}$ 提前计算（因为前向过程是固定的）<br>
+  · 从 $p(z)$ 采样得到的样本，只需要一次通过 $\mathcal{D}$ 就能解码回像素空间的图像</p>
+
+  <p>这就是整个性能跃升的来源——<strong>"在小张量上跑扩散"比"在大张量上跑扩散"快了一个数量级</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · CONDITIONING</div>
+  <h2>跨模态条件机制 · Cross-Attention</h2>
+  <div class="en-title">How LDM accepts text prompts</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>LDM 通过<strong>在 UNet 里加 Cross-Attention 层</strong>，让扩散模型接受多模态条件输入——文本提示、语义图、布局，都可以。这是 Stable Diffusion 文生图能力的真正来源。条件输入 $y$ 先通过一个领域专属编码器 $\tau_\theta$ 投到中间表示，然后通过 cross-attention 接入 UNet。</p>
+  <div class="terms">
+    <span class="tag">Cross-Attention</span>
+    <span class="tag">Text Conditioning</span>
+    <span class="tag">Domain Encoder</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>能让 LDM 真正破圈的，是它对<strong>条件生成</strong>的设计——尤其是文生图。</p>
+
+  <p>扩散模型原则上可以建模条件分布 $p(z|y)$，做法是把条件 $y$ 接入去噪 UNet 变成 $\epsilon_\theta(z_t, t, y)$。但之前的工作大多只用类别标签或模糊的输入图，没有解决"任意模态条件"的问题。</p>
+
+  <p>LDM 的方案：<span class="hl">用 Cross-Attention 把任意模态的条件接入 UNet</span>。</p>
+
+  <p>具体做法是这样的。给定条件 $y$（比如一段文本），先用一个<strong>领域专属编码器 $\tau_\theta$</strong>（比如 BERT 风格的 Transformer）把它编码成中间表示 $\tau_\theta(y) \in \mathbb{R}^{M \times d_\tau}$。然后通过 cross-attention 接入 UNet 的中间层：</p>
+</div>
+
+<div class="math-block">
+$$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{Q K^T}{\sqrt{d}}\right) V$$
+$$Q = W_Q^{(i)} \cdot \varphi_i(z_t), \quad K = W_K^{(i)} \cdot \tau_\theta(y), \quad V = W_V^{(i)} \cdot \tau_\theta(y)$$
+</div>
+
+<div class="body">
+  <p>翻译一下：<strong>Query 来自 UNet 当前层的图像潜表示</strong>（图像在「问」），<strong>Key 和 Value 来自条件编码</strong>（文本在「答」）。这正是 Transformer 里的标准 cross-attention 模式，只是搬到了扩散 UNet 里。</p>
+
+  <p>条件 LDM 的训练目标随之扩展为：</p>
+</div>
+
+<div class="math-block">
+$$L_{LDM} = \mathbb{E}_{\mathcal{E}(x),\, y,\, \epsilon \sim \mathcal{N}(0, 1),\, t}\left[\| \epsilon - \epsilon_\theta(z_t, t, \tau_\theta(y)) \|_2^2\right]$$
+</div>
+
+<div class="body">
+  <p>其中 $\epsilon_\theta$ 和 $\tau_\theta$ 通过这个损失<strong>联合优化</strong>。这个机制非常灵活——$\tau_\theta$ 可以是任何对应模态的"专家"：文本就用 Transformer、语义图就用 CNN、布局就用 embedding。</p>
+
+  <p>正是这个 Cross-Attention 设计，让<strong>同一套 LDM 框架可以同时支持文生图、图像修复、语义合成、超分辨率</strong>等多种条件任务。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · TRADEOFF</div>
+  <h2>压缩比 f 的最佳点</h2>
+  <div class="en-title">The Sweet Spot of f=4-8</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>下采样因子 $f$ 既不能太小（=1 退化成像素扩散，没省），也不能太大（=32 信息损失太多，限制画质）。<strong>$f = 4$ 到 $f = 8$ 是甜蜜点</strong>——LDM-4 在复杂数据集上效果最好，LDM-8 在更简单数据集和速度敏感场景更优。</p>
+  <div class="terms">
+    <span class="tag">f=4 / f=8</span>
+    <span class="tag">DDIM Sampling</span>
+    <span class="tag">FID Scores</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节是论文的关键消融实验。作者训了 6 个不同压缩比的 LDM（$f \in \{1, 2, 4, 8, 16, 32\}$，LDM-1 等价于纯像素扩散），在固定 A100 算力和训练步数下对比。</p>
+
+  <p>结果非常清晰：</p>
+
+  <p>· <strong>$f = 1, 2$ 训练慢</strong>——把太多感知压缩留给扩散模型自己做，浪费算力<br>
+  · <strong>$f = 16, 32$ 早期就饱和</strong>——第一阶段压缩过激，丢了太多信息，扩散模型再怎么训也救不回来<br>
+  · <strong>$f = 4, 8, 16$ 之间是最佳区间</strong>——在 ImageNet 上训 2M 步后，LDM-1 和 LDM-8 的 FID 差距高达 <span class="hl">38 分</span></p>
+
+  <p>从采样速度看（用 DDIM 采样器对比 FID vs 步数），LDM-4 和 LDM-8 在 CelebA-HQ 和 ImageNet 上都全面碾压 LDM-1——质量更高、速度更快。</p>
+
+  <p>论文给的实践建议很明确：<strong>复杂数据集用 LDM-4 保证质量，更简单的数据集或速度敏感场景用 LDM-8</strong>。Stable Diffusion 后续公开发布的所有模型都使用 LDM-8 配置（潜空间是 $64 \times 64 \times 4$，对应 $512 \times 512$ 的像素图像）。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · RESULTS</div>
+  <h2>实验结果与文生图</h2>
+  <div class="en-title">Benchmarks &amp; Text-to-Image</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li><strong>无条件生成</strong>：CelebA-HQ 拿到 SOTA 5.11 FID，FFHQ 4.98，超过 GAN 系列</li>
+    <li><strong>文生图</strong>：在 LAION 数据集上训练 1.45B 参数的 LDM-KL-8-G，COCO 上 12.63 FID——与 GLIDE 持平但<strong>参数量只有 GLIDE 的 1/4</strong></li>
+    <li><strong>修复（inpainting）</strong>：在 Places 数据集上拿到新 SOTA</li>
+    <li><strong>训练算力</strong>：相比 ADM 节省 4 倍训练资源</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">CelebA-HQ FID 5.11</span>
+    <span class="tag">LAION-400M</span>
+    <span class="tag">COCO</span>
+    <span class="tag">DDIM</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文做了大量实验，覆盖无条件生成、类别条件生成、文生图、修复、超分辨率等多个任务。我挑最有代表性的两类来讲。</p>
+
+  <p><strong>无条件图像生成</strong>。在 $256 \times 256$ 分辨率的 CelebA-HQ 上，LDM-4 拿到 <strong>5.11 FID</strong>，刷新 SOTA——超过了之前所有基于似然的模型和 GAN。在 FFHQ 上 4.98 FID，在 LSUN-Churches 上 4.02 FID。在 LSUN-Bedrooms 上 2.95 FID，与 ADM 接近，<span class="hl">但参数只有 ADM 的一半、训练资源是 ADM 的 1/4</span>。</p>
+
+  <p><strong>文生图</strong>。这是真正破圈的部分。作者在 <strong>LAION 数据集</strong>上训了一个 1.45B 参数的 LDM-KL-8-G 模型，在 MS-COCO 上评估：</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>方法</th><th>FID ↓</th><th>IS ↑</th><th>参数量</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>CogView</td><td>27.10</td><td>18.20</td><td>4 B</td></tr>
+    <tr><td>LAFITE</td><td>26.94</td><td>26.02</td><td>75 M</td></tr>
+    <tr><td>GLIDE</td><td>12.24</td><td>—</td><td>6 B</td></tr>
+    <tr><td>Make-A-Scene</td><td>11.84</td><td>—</td><td>4 B</td></tr>
+    <tr><td><strong>LDM-KL-8-G</strong></td><td><strong>12.63</strong></td><td><strong>30.29</strong></td><td><strong>1.45 B</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>看出门道了吗？LDM-KL-8-G 在 FID 上跟 6B 参数的 GLIDE 几乎打平，<strong>但参数只有它的四分之一</strong>。这意味着：以更低的训练和推理成本，做到了同等水平的文生图能力。</p>
+
+  <p>论文里还展示了大量惊艳的样本——"<em>一只画风像 Picasso 的僵尸</em>"、"<em>一张写着 Latent Diffusion 的街道标志</em>"、"<em>一幅水彩画风的、长得像章鱼的椅子</em>"……这些 prompt 几年前还需要专业插画师工作几小时，现在 LDM 几秒就能给出多种诠释。</p>
+</div>
+
+<div class="quote">
+  <p>1.45B 参数，达到 GLIDE 6B 的水平。<br>开源、可重训、单卡可玩。<br><strong>AI 绘画的民主化时代，从这里开始。</strong></p>
+  <div class="src">— THE DEMOCRATIZATION MOMENT</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · LEGACY</div>
+  <h2>总结：开源如何改变世界</h2>
+  <div class="en-title">Why this paper changed everything</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>LDM 这篇论文的真正影响，不在于刷了多少 FID，<strong>而在于它开源了代码和预训练模型</strong>——几个月后基于它构建的 Stable Diffusion 发布，AI 绘画一夜之间变成了开源生态。今天你听过的所有 AI 绘画应用——Midjourney、ComfyUI、SDXL、Flux、ControlNet——它们的根都扎在这篇 2022 年的 CVPR 论文里。</p>
+</div>
+
+<div class="body">
+  <p>2022 年 4 月，LDM 论文在 arxiv 上发布。同年 8 月，CompVis、Stability AI、Runway 合作把训好的模型作为 <strong>Stable Diffusion v1.4</strong> 公开发布——任何人可以在一张消费级 GPU 上跑、可以微调、可以商用。</p>
+
+  <p>这件事的影响巨大。在 Stable Diffusion 之前，AI 绘画是 OpenAI DALL-E、Google Imagen、Midjourney 这些<strong>闭源 API</strong>的特权。在它之后，一个完整的<strong>开源生态</strong>在几个月内长出来：</p>
+
+  <p>· <strong>ControlNet</strong> 让你能精确控制构图和姿势<br>
+  · <strong>LoRA</strong> 让普通人能训练自己的画风模型<br>
+  · <strong>SDXL、SD3、Flux</strong> 等后续模型不断把质量推向新高<br>
+  · <strong>ComfyUI、Automatic1111</strong> 等工具让非技术用户也能玩</p>
+
+  <p>所有这些，都建立在 LDM 论文奠定的那个核心架构上：<strong>自编码器压缩 + 潜空间扩散 + Cross-Attention 条件</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>一篇 CVPR 论文 + 一次开源发布 = <br>把一个被锁在大公司手里的能力，<br><strong>变成了人人可玩的开源生态</strong>。<br>这就是为什么开源才是 AI 民主化的真正引擎。</p>
+  <div class="src">— THE OPEN-SOURCE DISRUPTION</div>
+</div>
+
+<div class="body">
+  <p>到这里，Transformer 系列三部曲就讲完了——<strong>Transformer</strong> 把序列建模从循环范式中解放，<strong>ViT</strong> 把这个解放扩展到视觉，<strong>LDM</strong> 把生成模型从像素牢笼中解放。三篇论文，三次"<span class="hl">用更简单的方式做更难的事</span>"。</p>
+
+  <p>下一集，我会接着讲计算机视觉的另一根脊梁——<strong>CS231n 的 CNN 讲义</strong>。看看在 Transformer 出现之前，神经网络是怎么征服视觉世界的。它的设计哲学和 ViT 是镜像：<strong>把"位置"作为强归纳偏置烧进结构里</strong>。两种哲学的对照，会让你对深度学习的演化看得更透。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">CVPR 2022 · CompVis</div>
+  <div>High-Resolution Image Synthesis with Latent Diffusion Models · 中文版精校</div>
+  <div class="meta">本文译自 Rombach et al. 2022 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/ldm</div>
+</div>
+
+</div>
+</body>
+</html>

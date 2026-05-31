@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'ldm',
+    url: '/ldm/',
+    category: 'ai',
+    date: '2026-05-31',
+    tag: 'CVPR 2022 · CompVis',
+    title: {
+      zh: 'Latent Diffusion：Stable Diffusion 论文详解',
+      en: 'High-Resolution Image Synthesis with Latent Diffusion Models',
+      ja: 'Latent Diffusion：Stable Diffusion 論文の詳解',
+    },
+    subtitle: {
+      zh: 'Rombach et al. · 中文精校版',
+      en: 'Rombach et al. · Curated Chinese Edition',
+      ja: 'Rombach et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '催生 Stable Diffusion 的奠基论文。CompVis 团队把扩散模型从昂贵的像素空间搬到高效的潜在空间，训练成本下降一个数量级。开源后催生了整个 AI 绘画生态。',
+      en: 'The paper behind Stable Diffusion. CompVis moves diffusion from expensive pixel space to efficient latent space — and open-sourced it, sparking the entire AI art ecosystem.',
+      ja: 'Stable Diffusion を生んだ基礎論文。拡散モデルを高価なピクセル空間から効率的な潜在空間に移し、AI アート全エコシステムを生み出しました。',
+    },
+    meta: {
+      zh: ['9 章', '约 25 分钟', '含公式'],
+      en: ['9 chapters', '~25 min read', 'With formulas'],
+      ja: ['9 章', '約 25 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'cnn',
+    url: '/cnn/',
+    category: 'cs',
+    date: '2026-05-31',
+    tag: 'CS231n · STANFORD',
+    title: {
+      zh: '卷积神经网络详解：从 LeNet 到 ResNet',
+      en: 'Convolutional Neural Networks: From LeNet to ResNet',
+      ja: '畳み込みニューラルネット詳解：LeNet から ResNet まで',
+    },
+    subtitle: {
+      zh: 'CS231n · 中文精校版',
+      en: 'CS231n · Curated Chinese Edition',
+      ja: 'CS231n · 中国語精製版',
+    },
+    desc: {
+      zh: 'CS231n 经典 CNN 讲义。把"图像是二维空间结构"这一归纳偏置烧进网络结构——局部连接、参数共享、池化下采样。一文讲透五大经典架构 LeNet/AlexNet/VGG/GoogLeNet/ResNet。',
+      en: 'The classic CS231n CNN lecture. Local connectivity, parameter sharing, and pooling—how five canonical architectures (LeNet to ResNet) shaped computer vision.',
+      ja: 'CS231n の名講義。局所接続、パラメータ共有、プーリングの 3 つで構成された CNN と、LeNet から ResNet までの 5 つの古典アーキテクチャ。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '含公式与案例'],
+      en: ['8 chapters', '~25 min read', 'Math & case studies'],
+      ja: ['8 章', '約 25 分', '数式と事例'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'vit',
     url: '/vit/',
     category: 'ai',
