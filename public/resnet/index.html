@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResNet：让深度真正深起来的那篇论文 | 广哥在硅谷</title>
+<meta name="description" content="Kaiming He 2015 年 ResNet 论文中文精校版。残差学习用一根「快捷连接」打破了深度的天花板，让 152 层、甚至 1000 层网络成为可能。今天几乎所有视觉模型的祖先。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="ResNet, Residual Learning, Kaiming He, 残差网络, ImageNet, ILSVRC 2015, 深度学习, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/resnet/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="ResNet：让深度真正深起来的那篇论文">
+<meta property="og:description" content="一根快捷连接打破深度天花板 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/resnet/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ResNet：让深度真正深起来的那篇论文">
+<meta name="twitter:description" content="一根快捷连接打破深度天花板 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">CVPR 2016 · MSRA</div>
+  <h1>ResNet<br>让深度真正深起来的那篇论文</h1>
+  <div class="subtitle-en">Deep Residual Learning for Image Recognition · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Kaiming He et al. · Microsoft</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2015 年，Kaiming He 团队用一个看似平淡的想法——「让网络学残差而不是学函数」——彻底打破了深度学习中"网络越深越难训"的天花板。<strong>ResNet 一举把 ImageNet 的网络深度从 30 层推到了 152 层</strong>，把 top-5 错误率压到 3.57%，赢下 ILSVRC 2015 五个任务的冠军。更深远的是，这根"快捷连接"成为了之后所有大模型的标配——Transformer 里有它，扩散模型 UNet 里有它，AlphaFold 里也有它。本文是这篇 CVPR 2016 最佳论文的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 退化问题<br><span class="en">The Degradation Problem</span></a></li>
+    <li><a href="#ch2">残差学习的核心思想<br><span class="en">Residual Learning</span></a></li>
+    <li><a href="#ch3">恒等映射的快捷连接<br><span class="en">Identity Shortcut</span></a></li>
+    <li><a href="#ch4">ResNet 架构家族<br><span class="en">ResNet Family: 18 to 152</span></a></li>
+    <li><a href="#ch5">Bottleneck 设计<br><span class="en">Bottleneck Building Block</span></a></li>
+    <li><a href="#ch6">ImageNet 实验<br><span class="en">ImageNet Experiments</span></a></li>
+    <li><a href="#ch7">CIFAR-10 与上千层验证<br><span class="en">CIFAR-10 &amp; 1000+ Layers</span></a></li>
+    <li><a href="#ch8">总结：快捷连接的统治<br><span class="en">The Reign of Skip Connections</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：退化问题</h2>
+  <div class="en-title">When deeper means worse</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>VGG 时代的共识是"深度是关键"，但实际操作中遇到了一个怪现象——<strong>把网络从 20 层加到 56 层，训练误差反而变大了</strong>。这不是过拟合（测试误差也变大），不是梯度消失（已经被批归一化解决），而是一个新问题：<strong>退化（degradation）</strong>。深度学习的天花板，卡在了"我们的优化器找不到那个深网络的好解"上。</p>
+  <div class="terms">
+    <span class="tag">Degradation Problem</span>
+    <span class="tag">Vanishing Gradient</span>
+    <span class="tag">Batch Normalization</span>
+    <span class="tag">VGG</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>在 ResNet 出现之前，深度学习圈对"深度"已经达成了一个共识：<strong>网络越深，特征越好</strong>。从 AlexNet 的 8 层到 VGG 的 19 层，再到 GoogLeNet 的 22 层，每一次刷新 ImageNet SOTA，背后都是"加深"。</p>
+
+  <p>但有一个问题挡在路上——更深的网络<strong>很难训练</strong>。最初的障碍是<strong>梯度消失或爆炸</strong>，这个问题在 2015 年前已经被两个技术基本解决——<strong>规范化初始化</strong>（如 Xavier、Kaiming）和<strong>批归一化（Batch Normalization）</strong>。有了它们，几十层的网络也能开始收敛。</p>
+
+  <p>然而，当大家把网络加得更深之后，一个新的、出人意料的现象出现了——<span class="hl">网络深度增加时，准确率先达到饱和，然后开始<strong>迅速下降</strong></span>。</p>
+
+  <p>关键的细节是：<strong>这不是过拟合</strong>——训练误差自己就变大了。论文给出了一个最直观的对比：在 CIFAR-10 上，一个 56 层的"普通"网络比 20 层的训练误差还高，测试误差自然也更高。</p>
+
+  <p>作者把这个现象命名为<strong>退化问题（degradation problem）</strong>。它告诉我们一件事——<strong>并不是所有的优化系统都同等容易求解</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>更深的网络不应该比更浅的差，<br>因为我们至少可以构造一个解——<br><strong>多出来的层全是恒等映射</strong>。<br>但实际中，我们的优化器找不到这个解。</p>
+  <div class="src">— THE CONSTRUCTED SOLUTION ARGUMENT</div>
+</div>
+
+<div class="body">
+  <p>作者提出了一个让人无法反驳的逻辑：考虑一个浅层网络 $\mathcal{N}_s$，再考虑它的深层版本 $\mathcal{N}_d$（在 $\mathcal{N}_s$ 基础上加几层）。我们总可以<strong>"构造"</strong>一个 $\mathcal{N}_d$ 的解——把新加的层全部设成恒等映射，前面的层从 $\mathcal{N}_s$ 拷贝过来。这个构造出的深层网络<strong>训练误差至少不应该比浅层网络更差</strong>。</p>
+
+  <p>但实验显示——<strong>SGD 找不到这种解</strong>。这意味着：让一堆非线性层逼近一个恒等映射，对优化器来说出人意料地难。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · IDEA</div>
+  <h2>残差学习的核心思想</h2>
+  <div class="en-title">Learn the residual, not the function</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文的核心想法极其简洁——<strong>与其让几层堆叠去拟合 $H(x)$，不如让它们去拟合<em>残差</em> $F(x) = H(x) - x$</strong>。原映射变成 $F(x) + x$。如果恒等映射是最优解，<strong>把 $F(x)$ 压成零，比让一堆非线性层精确逼近恒等，容易得多</strong>。</p>
+  <div class="terms">
+    <span class="tag">Residual Function</span>
+    <span class="tag">Identity Mapping</span>
+    <span class="tag">Preconditioning</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>面对退化问题，作者提出了一个反直觉的方案——<strong>不要让网络直接拟合想要的映射，让它拟合「残差」</strong>。</p>
+
+  <p>设我们希望几层堆叠拟合的"底层映射"叫做 $\mathcal{H}(x)$，其中 $x$ 是输入。作者的提议是：<span class="hl">让这几层去拟合另一个映射 $\mathcal{F}(x) := \mathcal{H}(x) - x$，然后把原始映射改写成 $\mathcal{F}(x) + x$</span>。</p>
+
+  <p>看上去只是数学等价变形——两种形式都能渐近逼近同样的函数。但<strong>"学习的难易程度可能完全不同"</strong>。</p>
+
+  <p>这个想法的动机正是来自前面讲的退化问题。如果新增层的最优解是恒等映射——那么：</p>
+
+  <p>· <strong>原始形式</strong>需要让 $\mathcal{H}(x) = x$，也就是让一堆非线性层精确"打平"成恒等。难。<br>
+  · <strong>残差形式</strong>只需要让 $\mathcal{F}(x) = 0$。容易。把权重压向零就行。</p>
+
+  <p>论文里有句话点出了核心：<span class="hl">如果最优函数比起"零映射"更接近"恒等映射"，那么以恒等为参考点去找扰动，比把整个函数从零学起，容易得多</span>。</p>
+</div>
+
+<div class="quote">
+  <p>不要让网络从零学一个未知函数，<br>让它<strong>从"什么都不做"出发，<br>学一个小修正</strong>。</p>
+  <div class="src">— THE PHILOSOPHY OF RESIDUAL LEARNING</div>
+</div>
+
+<div class="body">
+  <p>作者还提了一个旁证——他们后续实验里测量了学到的残差函数 $\mathcal{F}(x)$ 的响应幅度，发现<strong>它们普遍很小</strong>。这印证了"恒等映射是个好的预条件"的猜想：实际中大多数层只需要做一些<strong>小的扰动</strong>，不需要做剧烈变换。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · BLOCK</div>
+  <h2>恒等映射的快捷连接</h2>
+  <div class="en-title">Identity Shortcut Connection</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>残差形式 $\mathcal{F}(x) + x$ 在实现上变成一个简单的<strong>跨层"快捷连接"</strong>——把输入 $x$ 跳过几层、直接加到输出上。这种<strong>恒等快捷连接不带任何额外参数，也不增加任何计算量</strong>。可以原样套进任何标准 SGD + 反向传播流程，不用改优化器。</p>
+  <div class="terms">
+    <span class="tag">Shortcut Connection</span>
+    <span class="tag">Skip Connection</span>
+    <span class="tag">Element-wise Add</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>$\mathcal{F}(x) + x$ 这种形式，在实现上可以用前馈神经网络里的"<strong>快捷连接</strong>"实现——一条跨过一层或几层的连接，把输入直接加到输出上。</p>
+
+  <p>论文给出的基本构建块（building block）公式是：</p>
+</div>
+
+<div class="math-block">
+$$y = \mathcal{F}(x, \{W_i\}) + x$$
+</div>
+
+<div class="body">
+  <p>这里 $x$ 是输入向量、$y$ 是输出向量。$\mathcal{F}(x, \{W_i\})$ 是要学习的残差函数。对于论文图 2 里那个两层例子，$\mathcal{F} = W_2 \sigma(W_1 x)$，其中 $\sigma$ 是 ReLU，偏置省略。</p>
+
+  <p>$\mathcal{F} + x$ 这个加法操作通过快捷连接和<strong>逐元素相加</strong>完成。论文在加法之后再套一次非线性激活（也就是 $\sigma(y)$）。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 为什么这个设计这么"贵气"</div>
+  <p>恒等快捷连接<strong>不引入任何额外参数</strong>，也<strong>不增加任何计算复杂度</strong>。这意味着我们可以<strong>公平地比较</strong>"普通网络"和"残差网络"——同样的参数量、同样的深度、同样的宽度、同样的算力——除了那个忽略不计的逐元素加法之外，残差网络的计算和参数都和普通网络一样。</p>
+  <p>这对工程上极其重要——不用换优化器、不用调框架，残差连接可以无缝接到任何现有 CNN 上。</p>
+</div>
+
+<div class="body">
+  <p>当然，有时候输入 $x$ 和残差 $\mathcal{F}$ 的<strong>维度不匹配</strong>——比如卷积层把通道数翻了倍，或者步长 2 把空间分辨率减半了。这时候快捷连接需要做一个线性投影 $W_s$ 来匹配维度：</p>
+</div>
+
+<div class="math-block">
+$$y = \mathcal{F}(x, \{W_i\}) + W_s x$$
+</div>
+
+<div class="body">
+  <p>论文用实验证明：<strong>恒等快捷连接已经足够好——只在需要匹配维度时才使用线性投影</strong>，更经济，效果也不输。这也是 ResNet 论文里反复强调的一个工程原则——<span class="hl">能用恒等的地方就用恒等，不要画蛇添足</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · ARCHITECTURE</div>
+  <h2>ResNet 架构家族</h2>
+  <div class="en-title">ResNet-18 / 34 / 50 / 101 / 152</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文沿用 VGG 哲学（3×3 卷积、深度同构）构造了 "普通网络" 基线，再把它升级成残差版本。从这个模板出发，扩展出了 <strong>ResNet-18 / 34 / 50 / 101 / 152</strong> 五档模型。<strong>34 层 ResNet 计算量只有 VGG-19 的 18%</strong>，但精度更高。</p>
+  <div class="terms">
+    <span class="tag">VGG-Style</span>
+    <span class="tag">3×3 Conv</span>
+    <span class="tag">FLOPs</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>作者怎么设计 ResNet 的具体架构？他们沿用了 VGG 的设计哲学，但更<strong>精简</strong>。</p>
+
+  <p>普通基线（plain baseline）的两条设计规则非常清爽：</p>
+
+  <p><strong>第一条规则</strong>：对于相同的输出特征图大小，所有层的滤波器数量相同。</p>
+
+  <p><strong>第二条规则</strong>：如果特征图空间大小减半，滤波器数量加倍——这样每层的<strong>时间复杂度</strong>保持恒定。</p>
+
+  <p>降采样不用池化，<strong>直接用步长为 2 的卷积</strong>完成。整个网络以一个全局平均池化加一个 1000 路全连接层结尾。</p>
+
+  <p>就这两条规则，构造出了 34 层的普通网络基线。然后把它套上残差快捷连接，就变成了 ResNet-34。</p>
+
+  <p>有意思的是计算量对比——<span class="hl">这个 34 层 ResNet 只有 36 亿次浮点运算（FLOPs），<strong>仅为 VGG-19 的 18%</strong></span>。但精度反而更高。这是 VGG 派"更深、更窄"哲学的胜利。</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>模型</th><th>层数</th><th>FLOPs</th><th>典型用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ResNet-18</td><td>18</td><td>1.8 B</td><td>移动端 / 教学</td></tr>
+    <tr><td>ResNet-34</td><td>34</td><td>3.6 B</td><td>轻量产品</td></tr>
+    <tr><td>ResNet-50</td><td>50</td><td>3.8 B</td><td><strong>最常用 backbone</strong></td></tr>
+    <tr><td>ResNet-101</td><td>101</td><td>7.6 B</td><td>检测 / 分割</td></tr>
+    <tr><td>ResNet-152</td><td>152</td><td>11.3 B</td><td>极限性能</td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>50/101/152 之所以能堆这么深，靠的是下一节要讲的 <strong>bottleneck 设计</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · BOTTLENECK</div>
+  <h2>Bottleneck 设计</h2>
+  <div class="en-title">1×1 → 3×3 → 1×1 sandwich</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>50 层以上的 ResNet 用 <strong>bottleneck 三明治</strong>替代两层 3×3——<strong>1×1（降维）→ 3×3（卷积）→ 1×1（升维）</strong>。$1 \times 1$ 卷积把通道数压下来再放上去，把昂贵的 3×3 卷积塞在中间瘦腰位置。这让 ResNet-152 的计算量竟然比 VGG-19 还少。</p>
+  <div class="terms">
+    <span class="tag">Bottleneck</span>
+    <span class="tag">1×1 Conv</span>
+    <span class="tag">Channel Reduction</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>34 层及更浅的 ResNet 用的是<strong>基本块</strong>（basic block）——两个 3×3 卷积堆起来。但当深度增加到 50 层以上时，作者用了一种更经济的设计——<strong>bottleneck 块</strong>。</p>
+
+  <p>一个 bottleneck 块由三层卷积组成：</p>
+
+  <p>· <strong>第一层 1×1 卷积</strong>：把通道数<strong>压缩到 1/4</strong>（比如从 256 压到 64）<br>
+  · <strong>第二层 3×3 卷积</strong>：在低通道数上做真正的空间运算<br>
+  · <strong>第三层 1×1 卷积</strong>：把通道数<strong>升回原来的 4 倍</strong>（64 升回 256）</p>
+
+  <p>整个块的形状像一个"两头粗中间细"的三明治——这就是"bottleneck"（瓶颈）名字的由来。</p>
+
+  <p>为什么这样设计？<span class="hl">3×3 卷积的计算量正比于「输入通道数 × 输出通道数」</span>——通道翻倍，计算量四倍。如果直接堆 256 通道的 3×3 卷积，会非常贵。但把通道先压到 64 再做 3×3，最后再升回来——总计算量比直接做两层 3×3 还低，但表达能力差不多。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📐 为什么 152 层比 VGG-19 还便宜</div>
+  <p>ResNet-152 用 bottleneck 块堆 50 个，<strong>总计算量约 11.3 G FLOPs</strong>。对比 VGG-19 的 19.6 G FLOPs——<span class="hl">深 8 倍、参数也多，但计算量只有 VGG-19 的 60%</span>。Kaiming 团队同时把"更深"和"更便宜"两件事做到了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · IMAGENET</div>
+  <h2>ImageNet 实验</h2>
+  <div class="en-title">From 34 to 152 layers, all win</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文做了 plain vs ResNet 全对比——<strong>plain 网络越深越差，ResNet 越深越好</strong>。152 层 ResNet 单模型 top-5 错误率 4.49%，集成 6 个模型达到 <strong>3.57%</strong>，赢下 ILSVRC 2015 分类冠军；同期还拿下 ImageNet 检测、定位、COCO 检测、COCO 分割五项第一。</p>
+  <div class="terms">
+    <span class="tag">ILSVRC 2015</span>
+    <span class="tag">3.57% Top-5</span>
+    <span class="tag">5 Tasks First Place</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文最有说服力的实验是 plain vs ResNet 的<strong>对照组对比</strong>——同样的架构、同样的参数量，只是有没有快捷连接。</p>
+
+  <p>在 ImageNet 上的结果非常清晰：</p>
+
+  <p><strong>plain 网络的表现</strong>：18 层 → 27.94% top-1；34 层 → 28.54% top-1。<span class="hl">深的反而更差</span>——退化问题被复现。</p>
+
+  <p><strong>ResNet 的表现</strong>：18 层 → 27.88%；34 层 → 25.03%。<strong>深的明显更好</strong>，绝对提升 3.5%。</p>
+
+  <p>更壮观的是 50/101/152 层的 ResNet——它们一路把 top-5 错误率压到了：</p>
+
+  <p>· ResNet-50：单模型 5.25%<br>
+  · ResNet-101：单模型 4.60%<br>
+  · ResNet-152：单模型 4.49%<br>
+  · <strong>集成 6 个模型：3.57%</strong>，赢下 ILSVRC 2015 分类冠军</p>
+
+  <p>但这只是开始。靠着这套<strong>"极深表征"</strong>，Kaiming 团队同时拿下了 ILSVRC 2015 的<strong>五项第一</strong>——ImageNet 分类、ImageNet 检测、ImageNet 定位、COCO 检测、COCO 分割。<span class="hl">仅靠把 backbone 从 VGG 换成 ResNet，COCO 检测的相对提升就是 28%</span>——一个单一架构改进带来这么大跨任务收益，史上罕见。</p>
+</div>
+
+<div class="quote">
+  <p>同一根快捷连接，<br>同时改写了图像分类、检测、定位、分割五个领域。<br><strong>这就是"通用基础架构"的力量。</strong></p>
+  <div class="src">— THE FIVE WINS OF ILSVRC 2015</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · EXTREME</div>
+  <h2>CIFAR-10 与上千层验证</h2>
+  <div class="en-title">Pushing to 1000+ layers</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>为了证明残差学习不是 ImageNet 的偶然，作者在 CIFAR-10 上把网络推到了<strong>过去想都不敢想的深度</strong>——<strong>110 层、甚至 1202 层</strong>。结论：100+ 层的 ResNet 能稳定训练，1202 层依然能收敛（但开始过拟合）。这证明<strong>残差学习的好处是普遍的，不是数据集 specific 的</strong>。</p>
+  <div class="terms">
+    <span class="tag">CIFAR-10</span>
+    <span class="tag">1000+ Layers</span>
+    <span class="tag">Generalization</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>有人可能会怀疑——ResNet 的好处会不会只在 ImageNet 这种大数据集上成立？作者用 CIFAR-10 做了对照——这是个 6 万张 32×32 小图的简单数据集。</p>
+
+  <p>在 CIFAR-10 上，他们训练了从 20 层到 1202 层的各种深度的 plain 和 ResNet。结果完全印证了 ImageNet 的观察：</p>
+
+  <p>· plain 网络 56 层比 20 层更差<br>
+  · ResNet 一路加深到 110 层都能稳定改善<br>
+  · ResNet-110 训练误差 0.06%，测试误差 6.43%——<strong>SOTA</strong></p>
+
+  <p>更激进的——他们试了 <strong>1202 层的 ResNet</strong>。这个网络<strong>依然能训练收敛</strong>——这在当时是不可想象的。它的测试误差是 7.93%，比 110 层稍差——但<strong>不是因为优化失败，而是因为开始过拟合</strong>（CIFAR-10 太小了，模型容量过剩）。</p>
+
+  <p>这一段实验的真正意义不在于 1202 层有多牛——而在于证明了一件事：<span class="hl">残差学习真正<strong>打破了"网络不能太深"的天花板</strong>。优化问题被解决了，剩下的只是数据和算力的问题</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LEGACY</div>
+  <h2>总结：快捷连接的统治</h2>
+  <div class="en-title">The reign of skip connections</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>ResNet 的真正影响不在于赢了 ILSVRC 2015，而在于<strong>"快捷连接"成为了之后十年所有深度模型的标配</strong>——Transformer 里每个 block 都用它，扩散模型 UNet 里用它，AlphaFold 用它，GPT 也用它。残差连接已经从一篇论文里的创新，变成了深度学习的基础设施。</p>
+</div>
+
+<div class="body">
+  <p>2015 年 12 月，这篇论文挂上 arxiv。半年后拿下 CVPR 2016 最佳论文。但它真正的影响远不止于此。</p>
+
+  <p>如果你今天看任何一个现代深度学习模型——Transformer、扩散模型 UNet、AlphaFold 的 EvoFormer、GPT、Claude——你都能在里面找到这根<strong>"$y = F(x) + x$"</strong>的影子。<span class="hl">残差连接已经从 ResNet 里的一个设计选择，变成了深度学习的<strong>默认元素</strong></span>——任何深度超过几层的网络，几乎都用它。</p>
+
+  <p>为什么？因为它解决的是一个<strong>普遍问题</strong>——优化器在面对"深度叠加"时的脆弱性。无论是 CNN、RNN、Transformer、UNet——任何想堆很多层的架构，都会撞上同样的退化问题。而残差连接给出的解药是<strong>通用的</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>ResNet 真正的贡献，<br>不是发明了一根"快捷连接"，<br>而是教会了整个领域——<br><strong>当优化变难时，<br>不要更聪明地优化，<br>要让问题变得更容易优化。</strong></p>
+  <div class="src">— THE TRUE LEGACY OF RESNET</div>
+</div>
+
+<div class="body">
+  <p>这种思路在工程上有深远启示。我们经常陷入"用更强大的工具去强攻一个困难问题"的思维。但 ResNet 给的回答是另一种——<strong>重新表述问题</strong>，让原本困难的事情变得简单。把"学一个函数"重述为"学一个残差"，看似只是数学变形，实际上重新组织了整个优化地形。</p>
+
+  <p>下一集，我们会讲 ResNet 同一团队（Kaiming He et al.）的另一篇 2015 论文——《Delving Deep into Rectifiers》。看 ResNet 还没问世前，他们就已经做出了两件事：<strong>PReLU 激活函数</strong>和<strong>Kaiming 初始化</strong>。后者是今天每个用 PyTorch 的人都用的 <code>nn.init.kaiming_normal_</code>。是这对师徒级的工程组合——更好的初始化加上残差连接——共同把深度学习推向了真正的"深度"时代。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">CVPR 2016 · MSRA</div>
+  <div>Deep Residual Learning for Image Recognition · 中文版精校</div>
+  <div class="meta">本文译自 He et al. 2015 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/resnet</div>
+</div>
+
+</div>
+</body>
+</html>

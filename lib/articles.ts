@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'resnet',
+    url: '/resnet/',
+    category: 'cs',
+    date: '2026-06-02',
+    tag: 'CVPR 2016 · MSRA',
+    title: {
+      zh: 'ResNet：让深度真正深起来的那篇论文',
+      en: 'Deep Residual Learning for Image Recognition',
+      ja: 'ResNet：本当に深いネットワークを可能にした論文',
+    },
+    subtitle: {
+      zh: 'Kaiming He et al. · 中文精校版',
+      en: 'Kaiming He et al. · Curated Chinese Edition',
+      ja: 'Kaiming He et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '2015 年 Kaiming He 团队用「学残差，不学函数」一招打破深度天花板。152 层 ResNet 赢下 ILSVRC 2015 五项冠军。今天 Transformer、扩散模型、AlphaFold 里那根快捷连接都是它的后代。',
+      en: 'Kaiming He et al. shattered the depth ceiling with one idea — learn the residual, not the function. ResNet won five ILSVRC 2015 titles, and its skip connection lives in every Transformer today.',
+      ja: 'Kaiming He らが「残差を学習する」というアイデアで深さの限界を打ち破った 2015 年の論文。今日の Transformer のスキップ接続もここから。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '含公式'],
+      en: ['8 chapters', '~25 min read', 'With formulas'],
+      ja: ['8 章', '約 25 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'kaiming',
+    url: '/kaiming/',
+    category: 'cs',
+    date: '2026-06-02',
+    tag: 'ICCV 2015 · MSRA',
+    title: {
+      zh: 'PReLU 与 Kaiming 初始化：第一次超越人类',
+      en: 'Delving Deep into Rectifiers: Surpassing Human-Level Performance',
+      ja: 'PReLU と Kaiming 初期化：初めて人間を超えた日',
+    },
+    subtitle: {
+      zh: 'Kaiming He et al. · 中文精校版',
+      en: 'Kaiming He et al. · Curated Chinese Edition',
+      ja: 'Kaiming He et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '2015 年 Kaiming He 团队用两个改进——PReLU 加上 Kaiming 初始化——让深度网络第一次在 ImageNet 上超越人类（4.94% vs 5.1%）。今天每个 PyTorch 用户都在用的 kaiming_normal_ 就出自这里。',
+      en: 'In 2015 Kaiming He showed two tweaks — PReLU + Kaiming init — made deep networks surpass human-level on ImageNet (4.94% vs 5.1%). The kaiming_normal_ you use in PyTorch today is from here.',
+      ja: '2015 年、Kaiming He は PReLU と Kaiming 初期化という 2 つの改良で、深層ネットワークが初めて ImageNet で人間を超えた。今日の kaiming_normal_ もここから。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '含公式与代码'],
+      en: ['8 chapters', '~25 min read', 'Math & code'],
+      ja: ['8 章', '約 25 分', '数式とコード'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'ldm',
     url: '/ldm/',
     category: 'ai',

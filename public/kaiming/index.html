@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PReLU 与 Kaiming 初始化：第一次超越人类 | 广哥在硅谷</title>
+<meta name="description" content="Kaiming He 2015 年《Delving Deep into Rectifiers》中文精校版。两个创新——PReLU 激活函数 + Kaiming 初始化——让深度网络第一次在 ImageNet 上超越人类水平（5.1% top-5）。今天每个 PyTorch 用户都在用的 kaiming_normal_ 就出自这里。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="PReLU, Kaiming Initialization, He Initialization, Rectifier, ReLU, Kaiming He, ImageNet, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/kaiming/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="PReLU 与 Kaiming 初始化：第一次超越人类">
+<meta property="og:description" content="让深度网络在 ImageNet 上首次超越人类的两个改进 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/kaiming/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PReLU 与 Kaiming 初始化：第一次超越人类">
+<meta name="twitter:description" content="让深度网络第一次超越人类的两个改进 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  mjx-container[display="true"]{margin:0 !important;}
+  .code{margin:24px 0;background:#1a1918;color:#e8e6dc;border-radius:10px;padding:20px 22px;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:13.5px;line-height:1.7;overflow-x:auto;border:1px solid #2a2826;}
+  .code .kw{color:#d97757;}.code .cm{color:#7a7972;font-style:italic;}.code .st{color:#a3b186;}.code .num{color:#c0a5cc;}
+  .code .pre{white-space:pre;}
+  .code-label{display:inline-block;background:rgba(106,155,204,.12);color:var(--blue);font-family:'Poppins',Arial,sans-serif;font-size:11px;letter-spacing:2px;padding:3px 10px;border-radius:4px;margin-bottom:-8px;position:relative;left:8px;top:8px;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}.code{font-size:12.5px;padding:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ICCV 2015 · MSRA</div>
+  <h1>PReLU 与 Kaiming 初始化<br>第一次超越人类</h1>
+  <div class="subtitle-en">Delving Deep into Rectifiers · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Kaiming He et al. · Microsoft</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2015 年 2 月，Kaiming He 团队发表了一篇双拳齐出的论文。一拳是 <strong>PReLU</strong>——给 ReLU 加上一个可学习的"负斜率"，让网络自己决定要多少非线性。另一拳是 <strong>Kaiming 初始化</strong>（也叫 He 初始化、MSRA 初始化）——从 ReLU 的数学特性出发，推导出的方差守恒初始化公式 $\text{Var}(w) = 2/n$。这两个看似不起眼的改进合起来，让 ImageNet 上的 top-5 错误率压到 <strong>4.94%</strong>——<strong>人类首次被深度网络超越（5.1%）</strong>。今天每个 PyTorch 用户都在用的 <code>nn.init.kaiming_normal_</code> 就出自这篇论文。本文是这篇 ICCV 2015 论文的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 超越人类的那一天<br><span class="en">The day we beat humans</span></a></li>
+    <li><a href="#ch2">PReLU：参数化的 ReLU<br><span class="en">Parametric ReLU</span></a></li>
+    <li><a href="#ch3">PReLU 学到了什么<br><span class="en">What PReLU Learns</span></a></li>
+    <li><a href="#ch4">为什么 Xavier 对 ReLU 失效<br><span class="en">Why Xavier Fails for ReLU</span></a></li>
+    <li><a href="#ch5">前向方差分析<br><span class="en">Forward Variance Analysis</span></a></li>
+    <li><a href="#ch6">反向方差分析<br><span class="en">Backward Variance Analysis</span></a></li>
+    <li><a href="#ch7">实验结果<br><span class="en">Experimental Results</span></a></li>
+    <li><a href="#ch8">总结：两个改进，一个里程碑<br><span class="en">Two tweaks, one milestone</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：超越人类的那一天</h2>
+  <div class="en-title">The day we beat humans on ImageNet</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2015 年 2 月，Kaiming He 团队第一次在 ImageNet 上把 top-5 错误率压到 <strong>4.94%</strong>——超过了人类基准 5.1%。背后只有两个改进：<strong>PReLU 激活函数</strong>和 <strong>Kaiming 初始化</strong>。两个改进合计可能不到 100 行代码，却把深度学习推进了一个时代。</p>
+  <div class="terms">
+    <span class="tag">ReLU</span>
+    <span class="tag">Activation Function</span>
+    <span class="tag">Weight Initialization</span>
+    <span class="tag">Human-Level</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2015 年 2 月，Kaiming He 团队的这篇论文挂上 arxiv。它在 ImageNet 2012 测试集上拿到了 <strong>4.94% top-5 错误率</strong>——比 ILSVRC 2014 冠军 GoogLeNet 的 6.66% 相对提升了 26%。更具历史意义的是：<span class="hl">人类在 ImageNet 上的基准是 5.1%——这是<strong>第一次</strong>计算机视觉系统在一个通用的、千类分类任务上<strong>超过了人类水平</strong></span>。</p>
+
+  <p>这件事在当时引起了巨大震动。然而背后的"魔法"，其实只有两个看似平淡的改进：</p>
+
+  <p><strong>第一个改进，PReLU 激活函数</strong>——给 ReLU 的负半轴加一个<strong>可学习</strong>的斜率。</p>
+
+  <p><strong>第二个改进，Kaiming 初始化</strong>——从 ReLU 的非线性出发，推导出一个让"很深的网络"也能从零训练起来的初始化方法。</p>
+
+  <p>这两个改进单独看起来都很小——加起来代码可能不到 100 行。但它们解决了当时所有人都遇到的一个问题——<strong>"网络一深就训不动"</strong>。等到深度被解锁后，ImageNet 的精度自然就被推过了人类。</p>
+</div>
+
+<div class="quote">
+  <p>有些改进让模型变更大、变更复杂。<br>有些改进让模型<strong>更容易优化</strong>。<br><strong>后者，往往才是真正的突破。</strong></p>
+  <div class="src">— THE PHILOSOPHY OF KAIMING HE</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · PRELU</div>
+  <h2>PReLU：参数化的 ReLU</h2>
+  <div class="en-title">A learnable negative slope</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>ReLU 把负输入完全砍掉（输出 0）。<strong>PReLU 让网络自己学一个"负斜率" $a_i$</strong>——负输入不再消失，而是按 $a_i$ 衰减。当 $a_i = 0$ 是 ReLU，$a_i$ 是固定小数是 Leaky ReLU，$a_i$ 可学习就是 PReLU。<strong>几乎零额外参数、零额外计算</strong>，但精度提升明显。</p>
+  <div class="terms">
+    <span class="tag">PReLU</span>
+    <span class="tag">Leaky ReLU</span>
+    <span class="tag">Channel-wise</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文给出的 PReLU 公式是这样的——</p>
+</div>
+
+<div class="math-block">
+$$f(y_i) = \begin{cases} y_i, & \text{if } y_i > 0 \\ a_i y_i, & \text{if } y_i \le 0 \end{cases}$$
+</div>
+
+<div class="body">
+  <p>其中 $y_i$ 是第 $i$ 个通道上的激活输入，$a_i$ 是控制负半轴斜率的系数。$a_i$ 上的下标 $i$ 意味着<strong>每个通道可以有不同的斜率</strong>。</p>
+
+  <p>这个公式等价地可以写成：</p>
+</div>
+
+<div class="math-block">
+$$f(y_i) = \max(0, y_i) + a_i \min(0, y_i)$$
+</div>
+
+<div class="body">
+  <p>看清这个家族关系：</p>
+
+  <p>· $a_i = 0$ 时——退化成 ReLU。<br>
+  · $a_i$ 是一个固定的小数（论文里提的 $a = 0.01$）——这是 Leaky ReLU。<br>
+  · $a_i$ <strong>作为可学习参数</strong>，跟其他权重一起被反向传播更新——这就是 PReLU。</p>
+
+  <p>论文还提了一个"通道共享"的变体——同一层所有通道共用一个 $a$，每层只多一个参数。论文最终主推的是"<strong>通道独立</strong>"版本——每个通道独立学一个 $a_i$，但即使是这样，<strong>额外参数总数 = 总通道数</strong>，跟权重总数比可以忽略不计。</p>
+
+  <p>反向传播也很直接。$a_i$ 的梯度来自链式法则：</p>
+</div>
+
+<div class="math-block">
+$$\frac{\partial \mathcal{E}}{\partial a_i} = \sum_{y_i} \frac{\partial \mathcal{E}}{\partial f(y_i)} \cdot \frac{\partial f(y_i)}{\partial a_i}$$
+</div>
+
+<div class="body">
+  <p>其中 $\partial f(y_i) / \partial a_i$ 在 $y_i > 0$ 时是 0，在 $y_i \le 0$ 时是 $y_i$。求和遍历整张特征图上所有空间位置。</p>
+
+  <p>训练细节上有一个微妙的点——<span class="hl">作者更新 $a_i$ 时<strong>不使用权重衰减</strong></span>，因为权重衰减会把 $a_i$ 推向零，相当于"偏向退化成 ReLU"，违背了我们想让模型自己决定斜率的初衷。$a_i$ 的初始化用 0.25。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · WHAT IT LEARNS</div>
+  <h2>PReLU 学到了什么</h2>
+  <div class="en-title">Reading the learned coefficients</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>看 PReLU 学到的 $a_i$ 系数，可以"读懂"网络在干什么——<strong>第一层 conv1 学到的 $a$ 接近 0.6</strong>（接近恒等，因为低层 Gabor 滤波器的正负响应都重要）；<strong>越深的层 $a$ 越接近 0</strong>（越像 ReLU，因为深层需要更强的非线性来做判别）。<span><strong>网络自己学会了"浅层保留信息、深层增强判别"</strong></span>。</p>
+  <div class="terms">
+    <span class="tag">Gabor Filters</span>
+    <span class="tag">Discriminative</span>
+    <span class="tag">Layer Hierarchy</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>PReLU 最有趣的副作用是——<strong>它给了我们一个观察网络在不同深度做什么的窗口</strong>。学到的 $a_i$ 系数，可以直接读。</p>
+
+  <p>论文里给了一张表，列了 14 层网络每一层学到的 $a$。两个非常有趣的现象：</p>
+
+  <p><strong>第一个现象</strong>——第一层卷积（conv1）学到的 $a$ 系数<strong>非常大</strong>：通道共享版是 0.681，通道独立版的平均也是 0.596。这两个数都<strong>明显大于 0</strong>。</p>
+
+  <p>为什么？因为第一层学到的滤波器主要是<strong>Gabor 风格的边缘和纹理检测器</strong>。<span class="hl">这些滤波器的<strong>正负响应都有信息</strong></span>——一个边缘的正响应代表"亮到暗"过渡，负响应代表"暗到亮"过渡。直接砍掉负响应（标准 ReLU 的做法）会丢一半信息。PReLU 学会了<strong>保留负响应</strong>，因为它们承载着方向信息。</p>
+
+  <p><strong>第二个现象</strong>——越深的卷积层，$a$ 系数越接近 0。深层逐渐"逼近 ReLU"。</p>
+
+  <p>这件事透露了网络的工作哲学：<strong>浅层倾向于保留更多信息</strong>——因为低层特征还在做"感知压缩"，每一个 bit 都有用；<strong>深层倾向于变得更有判别性</strong>——把"不像猫"的激活全部压成 0，只让"像猫"的信号传到分类器。</p>
+</div>
+
+<div class="quote">
+  <p>给模型一个旋钮，<br>它会教会你<strong>网络其实在做什么</strong>。</p>
+  <div class="src">— THE DIAGNOSTIC POWER OF PRELU</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · WHY XAVIER FAILS</div>
+  <h2>为什么 Xavier 对 ReLU 失效</h2>
+  <div class="en-title">A flawed assumption</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2010 年 Glorot &amp; Bengio 提出的 Xavier 初始化曾是业内默认。但<strong>它的推导假设激活是线性的</strong>——这对 ReLU 完全不成立，因为 ReLU 把一半输入砍掉了。VGG 团队当年训 8 层以上模型，发现 Xavier 直接训不动。Kaiming 团队要做的，就是从头推导一个<strong>专门为 ReLU 设计</strong>的初始化。</p>
+  <div class="terms">
+    <span class="tag">Xavier / Glorot</span>
+    <span class="tag">Variance Propagation</span>
+    <span class="tag">Linear Assumption</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2015 年之前，<strong>Xavier 初始化</strong>是业内默认。Glorot 和 Bengio 在 2010 年推导出来的公式是 $w \sim \mathcal{N}(0, 1/n)$，其中 $n$ 是某种"扇入"或"扇出"。这个公式来自一个目标——让每一层激活的方差保持稳定，不要因为层数增加而指数爆炸或消失。</p>
+
+  <p>但 Xavier 的推导有一个<strong>致命假设</strong>：<span class="hl">它假设激活函数是线性的</span>。在 sigmoid 那个时代（激活函数在原点附近接近线性）这个假设勉强成立。但<strong>对 ReLU 完全不成立</strong>——ReLU 把一半输入（负数部分）直接砍掉了。</p>
+
+  <p>后果是什么？当你把网络加深到 8 层以上的时候，Xavier 初始化会导致<strong>方差逐层衰减</strong>——因为 ReLU 砍掉了一半信号，每经过一层方差大约减半。8 层之后，信号已经衰减成噪声了。</p>
+
+  <p>VGG 团队就遇到了这个问题。他们的解决办法是——<strong>先训练一个 8 层小模型，再用它的权重初始化更深的模型</strong>。这套"<strong>预训练-延展</strong>"策略费时费力，而且可能陷入次优解。</p>
+
+  <p>Kaiming 团队的目标是——<span class="hl">能不能找一个初始化，让 30 层网络<strong>直接从随机权重训起来</strong>，不需要预训练</span>？</p>
+
+  <p>答案是肯定的——只要把推导里 ReLU 的影响显式建模进去。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · FORWARD</div>
+  <h2>前向方差分析</h2>
+  <div class="en-title">Variance through layers</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>核心推导——让每一层激活方差不变，需要 $\text{Var}(w_l) = 2 / n_l$，其中 $n_l$ 是这一层的扇入。比 Xavier 的 $1 / n$ <strong>多了一个因子 2</strong>——这个 2 正好补偿了 ReLU 砍掉一半信号造成的方差衰减。这就是 <strong>Kaiming 初始化</strong>的核心公式。</p>
+  <div class="terms">
+    <span class="tag">$\sqrt{2/n}$</span>
+    <span class="tag">Forward Pass</span>
+    <span class="tag">Variance Preservation</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>来看核心推导。设第 $l$ 层卷积的响应是：</p>
+</div>
+
+<div class="math-block">
+$$y_l = W_l x_l + b_l$$
+</div>
+
+<div class="body">
+  <p>其中 $x_l$ 是输入向量、$W_l$ 是权重矩阵、$b_l$ 是偏置。让 $n_l = k_l^2 c_l$ 表示一个响应位置上的<strong>输入连接数</strong>（卷积核空间大小平方乘以输入通道数）。假设权重相互独立且分布相同，输入也独立且分布相同，权重和输入相互独立。那么：</p>
+</div>
+
+<div class="math-block">
+$$\text{Var}[y_l] = n_l \cdot \text{Var}[w_l] \cdot \mathbb{E}[x_l^2]$$
+</div>
+
+<div class="body">
+  <p>注意一个细节——<strong>$\mathbb{E}[x_l^2]$ 不等于 $\text{Var}[x_l]$</strong>，除非 $x_l$ 是零均值的。而 $x_l = \max(0, y_{l-1})$ <strong>不是零均值的</strong>——它非负。这正是 Xavier 推导漏掉的地方。</p>
+
+  <p>如果让 $w_{l-1}$ 的分布关于 0 对称，且 $b_{l-1} = 0$，那么 $y_{l-1}$ 是零均值且对称的。这导致——</p>
+</div>
+
+<div class="math-block">
+$$\mathbb{E}[x_l^2] = \frac{1}{2} \text{Var}[y_{l-1}]$$
+</div>
+
+<div class="body">
+  <p>因为 ReLU 把负半轴砍成 0，剩下正半轴的平方期望正好是原方差的一半。代回上式：</p>
+</div>
+
+<div class="math-block">
+$$\text{Var}[y_l] = \frac{1}{2} n_l \cdot \text{Var}[w_l] \cdot \text{Var}[y_{l-1}]$$
+</div>
+
+<div class="body">
+  <p>$L$ 层叠加起来：</p>
+</div>
+
+<div class="math-block">
+$$\text{Var}[y_L] = \text{Var}[y_1] \cdot \prod_{l=2}^{L} \frac{1}{2} n_l \cdot \text{Var}[w_l]$$
+</div>
+
+<div class="body">
+  <p>关键的设计目标——<strong>不让方差指数衰减或爆炸</strong>。$L$ 层连乘要保持稳定，要求<strong>每个因子等于 1</strong>：</p>
+</div>
+
+<div class="math-block">
+$$\frac{1}{2} n_l \cdot \text{Var}[w_l] = 1, \quad \forall l$$
+</div>
+
+<div class="body">
+  <p>解出来：</p>
+</div>
+
+<div class="math-block">
+$$\boxed{\text{Var}[w_l] = \frac{2}{n_l}, \quad \text{i.e., } w_l \sim \mathcal{N}\!\left(0, \frac{2}{n_l}\right)}$$
+</div>
+
+<div class="body">
+  <p>这就是<strong>Kaiming 初始化的核心公式</strong>。标准差是 $\sqrt{2 / n_l}$。</p>
+
+  <p>跟 Xavier 的 $\text{Var}(w) = 1/n$ 对比，<span class="hl">Kaiming 初始化<strong>多了一个因子 2</strong></span>。这个 2 正是为了补偿 ReLU 砍掉一半信号造成的方差衰减。</p>
+</div>
+
+<div class="code"><span class="code-label">PYTORCH</span><pre class="pre">
+<span class="cm"># 今天在 PyTorch 里这样用：</span>
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+nn.init.kaiming_normal_(layer.weight, mode=<span class="st">'fan_in'</span>, nonlinearity=<span class="st">'relu'</span>)
+
+<span class="cm"># 等价于：std = sqrt(2 / n_in)，n_in = k * k * c_in</span></pre></div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · BACKWARD</div>
+  <h2>反向方差分析</h2>
+  <div class="en-title">Backprop variance</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>反向传播的方差守恒也可以同样推导，得到 $\text{Var}(w_l) = 2 / \hat{n}_l$，其中 $\hat{n}_l$ 是<strong>扇出</strong>（输出通道数 × 卷积核大小平方）。$\hat{n}$ 和 $n$ 不一定相等，但论文证明：<strong>用其中一个版本就够了</strong>——前向和反向不会同时失控。这就是为什么 PyTorch 给你 `fan_in` 和 `fan_out` 两个选项，但用哪个都能训。</p>
+  <div class="terms">
+    <span class="tag">Backward Pass</span>
+    <span class="tag">fan_in vs fan_out</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文同样推导了反向传播的方差守恒。卷积层的梯度计算是：</p>
+</div>
+
+<div class="math-block">
+$$\Delta x_l = \hat{W}_l \cdot \Delta y_l$$
+</div>
+
+<div class="body">
+  <p>其中 $\Delta x_l, \Delta y_l$ 是梯度，$\hat{W}_l$ 是按反向传播方式重排的权重矩阵。设 $\hat{n}_l = k_l^2 d_l$ 是<strong>输出通道数</strong>对应的扇出。</p>
+
+  <p>类似的推导得到——</p>
+</div>
+
+<div class="math-block">
+$$\text{Var}[\Delta x_l] = \frac{1}{2} \hat{n}_l \cdot \text{Var}[w_l] \cdot \text{Var}[\Delta x_{l+1}]$$
+</div>
+
+<div class="body">
+  <p>同样要求每个因子等于 1：</p>
+</div>
+
+<div class="math-block">
+$$\frac{1}{2} \hat{n}_l \cdot \text{Var}[w_l] = 1 \quad\Rightarrow\quad \text{Var}[w_l] = \frac{2}{\hat{n}_l}$$
+</div>
+
+<div class="body">
+  <p>这跟前向那一版唯一的区别就是分母——前向用 $n_l = k^2 c_{in}$，反向用 $\hat{n}_l = k^2 c_{out}$。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 重要洞察 · 选一个就行</div>
+  <p>论文证明了一件非常实用的事——<strong>选用前向版本或反向版本之一就够了</strong>。如果你用反向版本 $\text{Var}(w_l) = 2/\hat{n}_l$，那么前向的方差比例最终是 $c_2 / d_L$——这是一个跟深度无关的常数，<strong>不会指数衰减</strong>。反过来也成立。</p>
+  <p>这正是为什么 PyTorch 的 <code>kaiming_normal_</code> 给你两个选项 <code>mode='fan_in'</code> 或 <code>mode='fan_out'</code>——用哪个都能让网络收敛。前者保前向方差守恒，后者保后向。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · RESULTS</div>
+  <h2>实验结果</h2>
+  <div class="en-title">Beating humans on ImageNet</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <ul>
+    <li>14 层小模型：PReLU 比 ReLU <strong>top-1 错误率降低 1.2%</strong>，几乎零计算代价</li>
+    <li>Kaiming 初始化让 <strong>30 层网络可以直接从零训练</strong>——Xavier 在同样条件下不收敛</li>
+    <li>结合 PReLU + Kaiming 初始化的 PReLU-net 在 ImageNet 上：<strong>单模型 5.71%</strong>，多模型集成 <strong>4.94%</strong></li>
+    <li>这是历史上<strong>计算机第一次在 ImageNet 上超过人类</strong>（基准 5.1%）</li>
+  </ul>
+  <div class="terms">
+    <span class="tag">4.94% Top-5</span>
+    <span class="tag">Human-Level</span>
+    <span class="tag">30-layer Network</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文做了三类实验：</p>
+
+  <p><strong>第一类，PReLU vs ReLU 直接对比</strong>。在一个 14 层小模型上，控制其他变量，只换激活函数：</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>激活函数</th><th>Top-1 错误率</th><th>Top-5 错误率</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ReLU</td><td>33.82%</td><td>13.34%</td></tr>
+    <tr><td>PReLU（通道共享）</td><td>32.71%</td><td>12.87%</td></tr>
+    <tr><td>PReLU（通道独立）</td><td><strong>32.64%</strong></td><td><strong>12.75%</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>PReLU 比 ReLU <strong>top-1 提升 1.2%</strong>，top-5 提升 0.6%。考虑到 PReLU 只增加 13 个参数（通道共享版），<strong>这是一个极其经济的提升</strong>。</p>
+
+  <p><strong>第二类，Kaiming 初始化 vs Xavier 初始化</strong>。用同样的 30 层模型从零训练：</p>
+
+  <p>· <strong>Xavier 初始化</strong>：训练损失停留在初始值——<span class="hl">完全不收敛</span><br>
+  · <strong>Kaiming 初始化</strong>：训练损失正常下降——<strong>稳定收敛</strong></p>
+
+  <p>这个对比把 Kaiming 初始化的价值一下子凸显出来——它不是"提升几个百分点"，而是"让原本训不动的网络<strong>能训了</strong>"。</p>
+
+  <p><strong>第三类，把 PReLU 和 Kaiming 初始化结合，扩展到深网络</strong>。最终的 PReLU-net 在 ImageNet 2012 上的成绩：</p>
+
+  <p>· <strong>单模型</strong>：top-5 错误率 5.71% —— 超过当时所有多模型集成结果<br>
+  · <strong>多模型集成</strong>：top-5 错误率 <strong>4.94%</strong></p>
+
+  <p>4.94% 这个数字的意义在于——<span class="hl">人类在 ImageNet 上的基准是 5.1%（Russakovsky 等人的研究）</span>。<strong>这是历史上第一次机器在一个 1000 类的、通用的视觉识别任务上超过人类。</strong></p>
+</div>
+
+<div class="quote">
+  <p>两个看似平淡的改进——<br>一个可学习的斜率，<br>一个调整过的初始化方差——<br><strong>合起来推开了一个时代的门。</strong></p>
+  <div class="src">— THE BIRTH OF SUPERHUMAN VISION</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LEGACY</div>
+  <h2>总结：两个改进，一个里程碑</h2>
+  <div class="en-title">Two tweaks, one milestone</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这篇论文的两个贡献后来走了不同的命运——<strong>PReLU</strong> 在工程上没成主流（被 ReLU、GELU、Swish 等更简单或更精细的替代品取代），但<strong>Kaiming 初始化成为了深度学习的默认配置</strong>。今天每个 PyTorch / TensorFlow 用户、每个训练 Transformer / 扩散模型的人，都在不自觉地用着 Kaiming He 在 2015 年推导出的那个 $\sqrt{2/n}$。</p>
+</div>
+
+<div class="body">
+  <p>2015 年这篇论文发表的时候，大家关注的焦点是"机器第一次超过了人类"。但回头看十年，这篇论文的两个贡献走了完全不同的命运——</p>
+
+  <p><strong>PReLU 的结局</strong>——没有成为主流。原因有几个：BN 的普及让激活函数对初始化的依赖变弱；ReLU 因为简单依然主导；后来 GELU、Swish、SiLU 等"更光滑"的激活在 Transformer 时代占据了主导。但 PReLU 留下的"<strong>可学习激活</strong>"思路，在后续的 Mish、动态激活等工作中延续。</p>
+
+  <p><strong>Kaiming 初始化的结局</strong>——成了深度学习的<strong>默认基础设施</strong>。今天你在 PyTorch 里用 <code>nn.init.kaiming_normal_</code>，在 TensorFlow 里用 <code>HeNormal()</code>——这些都是 2015 年这篇论文的直接产物。你训 Transformer、训扩散模型、训 LLM——<strong>底下都在用 $\sqrt{2/n}$ 这个公式</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>有些贡献是"招"，<br>有些贡献是"道"。<br>PReLU 是招——很巧妙，但容易被替代。<br><strong>Kaiming 初始化是道——<br>它推导出来的方差守恒原则，<br>会被所有后来人沿用。</strong></p>
+  <div class="src">— THE LASTING POWER OF FIRST PRINCIPLES</div>
+</div>
+
+<div class="body">
+  <p>这个对比给我们一个深刻的工程启示——<span class="hl">能从"第一性原理"推导出来的东西，往往比"经验调出来"的东西更持久</span>。Kaiming 初始化的推导从 ReLU 的数学特性出发，每一步都是严格的方差守恒分析。任何想训"更深的 ReLU 网络"的人，最后都会重新推导出同一个 $\sqrt{2/n}$。这就是"道"。</p>
+
+  <p>到这里，CV 系列就有了一个完整的拼图——<strong>CNN 讲架构、Backprop 讲优化、Kaiming 讲初始化、ResNet 讲深度</strong>。这四篇论文（讲义）一起构成了 2012-2015 年深度学习革命的核心。</p>
+
+  <p>下一集，我会回到生成模型的主题，讲 Kaiming He 同期的另一条线——<strong>BatchNorm</strong>。看 Ioffe 和 Szegedy 是怎么用"内部协变量偏移"这个概念，把训练深网络的另一个老大难——梯度爆炸/消失——彻底解决的。这是 ResNet 能成功的另一半基础。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ICCV 2015 · MSRA</div>
+  <div>Delving Deep into Rectifiers · 中文版精校</div>
+  <div class="meta">本文译自 He et al. 2015 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/kaiming</div>
+</div>
+
+</div>
+</body>
+</html>
