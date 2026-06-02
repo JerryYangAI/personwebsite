@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'decaf',
+    url: '/decaf/',
+    category: 'cs',
+    date: '2026-06-03',
+    tag: 'ICML 2014 · UC BERKELEY',
+    title: {
+      zh: 'DeCAF：迁移学习的诞生',
+      en: 'DeCAF: A Deep Convolutional Activation Feature for Generic Visual Recognition',
+      ja: 'DeCAF：転移学習の誕生',
+    },
+    subtitle: {
+      zh: 'Donahue et al. · 中文精校版',
+      en: 'Donahue et al. · Curated Chinese Edition',
+      ja: 'Donahue et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '2013 年 Berkeley 团队证明 ImageNet 预训练的 AlexNet 中间层激活是通用视觉特征——奠定了今天所有"预训练加迁移"范式的根基。配套开源框架后来演化成了 Caffe。',
+      en: 'The 2013 Berkeley paper that showed mid-layer activations of ImageNet-pretrained AlexNet are universal visual features—founding the pre-train + transfer paradigm that powers all modern AI.',
+      ja: '2013 年 Berkeley の論文。ImageNet で事前学習した AlexNet の中間層活性化が汎用視覚特徴になることを示し、現代 AI の「事前学習 + 転移」パラダイムを築いた。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', '含可视化'],
+      en: ['8 chapters', '~20 min read', 'With visualizations'],
+      ja: ['8 章', '約 20 分', '可視化付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'offshelf',
+    url: '/offshelf/',
+    category: 'cs',
+    date: '2026-06-03',
+    tag: 'CVPR 2014 WORKSHOP · KTH',
+    title: {
+      zh: 'CNN Features Off-the-shelf：通用特征的震撼基线',
+      en: 'CNN Features off-the-shelf: an Astounding Baseline for Recognition',
+      ja: 'CNN Features Off-the-shelf：汎用特徴という驚異的なベースライン',
+    },
+    subtitle: {
+      zh: 'Sharif Razavian et al. · 中文精校版',
+      en: 'Sharif Razavian et al. · Curated Chinese Edition',
+      ja: 'Sharif Razavian et al. · 中国語精製版',
+    },
+    desc: {
+      zh: '2014 年 KTH 团队把 OverFeat 现成特征加简单 SVM，在 12 个视觉任务上全面碾压专门设计的方法。从此设定了"任何新方法必须先打过的基线"——彻底改变了视觉研究的工作文化。',
+      en: 'In 2014 KTH used OverFeat off-the-shelf features + linear SVM on 12 vision tasks, beating specialized methods on nearly all. Set the "strong baseline everyone must beat" — reshaping vision research culture.',
+      ja: '2014 年 KTH の論文。OverFeat の既成特徴と単純な SVM を 12 個の視覚タスクに適用、専用手法をほぼ全て打ち負かす。「誰もが超えるべき基線」を設定し、研究文化を変えた。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', '含对话式叙述'],
+      en: ['8 chapters', '~20 min read', 'Conversational style'],
+      ja: ['8 章', '約 20 分', '対話形式'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'resnet',
     url: '/resnet/',
     category: 'cs',

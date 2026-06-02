@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CNN Features Off-the-shelf：通用特征的震撼基线 | 广哥在硅谷</title>
+<meta name="description" content="2014 年 KTH 团队的 CNN off-the-shelf 论文中文精校版。把 OverFeat 的现成特征 + 简单 SVM，用在 12 个视觉任务上，几乎全面碾压专门设计的方法——把 DeCAF 提出的迁移学习推向了极致。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="CNN off-the-shelf, OverFeat, Transfer Learning, Astounding Baseline, Razavian, KTH, CVPR 2014, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/offshelf/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="CNN Features Off-the-shelf：通用特征的震撼基线">
+<meta property="og:description" content="把 DeCAF 思想推向极致的姊妹论文 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/offshelf/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CNN Features Off-the-shelf：通用特征的震撼基线">
+<meta name="twitter:description" content="把 DeCAF 思想推向极致的姊妹论文 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.35) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.08);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.2);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.25) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f6fb 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#f4f7f0;border:1px solid rgba(120,140,93,.25);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">CVPR 2014 WORKSHOP · KTH</div>
+  <h1>CNN Features Off-the-shelf<br>通用特征的震撼基线</h1>
+  <div class="subtitle-en">An Astounding Baseline for Recognition · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Sharif Razavian et al. · KTH</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 20 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2014 年，瑞典皇家理工学院 (KTH) 的 Sharif Razavian 等人发表了一篇结构反传统的论文——全文以「教授和学生对话」的形式展开，把 DeCAF 的迁移学习思想推向了极致。<strong>他们用 OverFeat 网络的现成特征加上一个简单的线性 SVM</strong>，在 12 个不同的视觉识别任务上做实验——从基础物体分类，到细粒度识别、属性检测、场景分类、图像检索——<strong>几乎每一项都打平或超过专门设计的方法</strong>。论文副标题就是大写的 <strong>"AN ASTOUNDING BASELINE"</strong>——令人震惊的基线。这篇论文的结论后来成了所有视觉论文的「最低门槛」：<strong>任何新方法都必须先打过"CNN 特征 + 简单分类器"这个基线</strong>。本文是这篇 CVPR 2014 Workshop 论文的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 一段咖啡室的对话<br><span class="en">A conversation in the coffee room</span></a></li>
+    <li><a href="#ch2">方法 · OverFeat + 线性 SVM<br><span class="en">OverFeat + Linear SVM</span></a></li>
+    <li><a href="#ch3">实验一 · 图像分类<br><span class="en">Image Classification</span></a></li>
+    <li><a href="#ch4">实验二 · 细粒度识别<br><span class="en">Fine-Grained Recognition</span></a></li>
+    <li><a href="#ch5">实验三 · 属性检测<br><span class="en">Attribute Detection</span></a></li>
+    <li><a href="#ch6">实验四 · 图像检索<br><span class="en">Instance Retrieval</span></a></li>
+    <li><a href="#ch7">数据增强的简单技巧<br><span class="en">Simple Augmentation Tricks</span></a></li>
+    <li><a href="#ch8">总结：必须打过的强基线<br><span class="en">The Baseline Everyone Must Beat</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · MOTIVATION</div>
+  <h2>引言：一段咖啡室的对话</h2>
+  <div class="en-title">A conversation in the coffee room</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这篇论文最有趣的地方是它的<strong>叙事结构</strong>——作者把整个研究写成了"教授和学生在咖啡室对话"的形式。教授问"这个深度网络能不能用在你的问题上"，学生先怀疑、再尝试、再被震惊。每一个章节都是一个对话循环——从图像分类到细粒度到属性到检索，<strong>每一次"应该不行了吧"，结果都是"还是好用"</strong>。</p>
+  <div class="terms">
+    <span class="tag">OverFeat</span>
+    <span class="tag">Conversational Paper</span>
+    <span class="tag">Skepticism Testing</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这篇论文的开篇非常特别——作者直接进入一段虚构的对话——</p>
+
+  <p><strong>"深度学习。你觉得它能用在你的计算机视觉问题上吗？"</strong>——这是论文里"教授"在小组咖啡室问的第一句话。这个问题，论文作者说，<strong>"很可能你的研究组里也讨论过"</strong>——有人引用近期的成功案例，有人表示怀疑。你可能离开咖啡室时还在想——"可惜我没时间、没 GPU 编程能力、也没大量标注数据来训自己的网络"。</p>
+
+  <p>但 OverFeat 网络的公开发布——一个由 NYU 团队预训练好的、在 ILSVRC 2013 上拿了定位冠军的 CNN——改变了这个困境。论文作者问的不再是"我能不能训一个深度网络解决我的问题"，<strong>而是</strong>——<span class="hl">能不能用别人在 ImageNet 上训好的网络<strong>提取的特征</strong>，去解决多种多样的视觉问题？</span></p>
+
+  <p>论文接下来的 7 个章节，每一节都是一个"教授提出怀疑、学生尝试、得到震撼结果"的循环——</p>
+
+  <p>· 教授："图像分类应该能行吧，毕竟跟 ImageNet 任务相近？"  → 学生确认能行<br>
+  · 教授："那细粒度识别呢，需要捕捉很微妙的差异？"  → <strong>居然也能行</strong><br>
+  · 教授："属性检测呢，需要 part-based 模型？"  → <strong>简单 SVM 也胜过专门方法</strong><br>
+  · 教授："那图像检索呢？SIFT 和 BoW 是几十年的工程？"  → <strong>也被打过去了</strong></p>
+
+  <p>整篇论文的结构其实就是<strong>"持续的惊讶"</strong>。这个叙事风格本身就传达了一个信号——<strong>2014 年初，整个视觉社区对深度学习的迁移能力还没有共识</strong>。这篇论文是少数把所有人惊讶的过程完整记录下来的工作。</p>
+</div>
+
+<div class="quote">
+  <p>"是不是新派的描述符<br>能在老派的主场里打败老派？"<br>—— 论文里的学生这样问<br><strong>结论：能。</strong></p>
+  <div class="src">— THE CENTRAL QUESTION OF THE PAPER</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · METHOD</div>
+  <h2>方法：OverFeat + 线性 SVM</h2>
+  <div class="en-title">As simple as it sounds</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>方法简单到几乎可以一句话讲完——<strong>用 OverFeat 的第 22 层激活作为 4096 维特征向量，L2 归一化，输入线性 SVM 分类（或 L2 距离做检索）</strong>。整个 backbone 完全冻结，只学一个线性层。论文叫这套方法 <strong>CNN-SVM</strong>。</p>
+  <div class="terms">
+    <span class="tag">OverFeat</span>
+    <span class="tag">Layer 22</span>
+    <span class="tag">4096-dim</span>
+    <span class="tag">L2-normalize</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文用的是 NYU 团队公开的 <strong>OverFeat</strong> 网络。OverFeat 的结构跟 AlexNet 类似，5 个卷积层 + 3 个全连接层，在 ImageNet ILSVRC 2013 上训练，赢下了那年的定位任务。论文用的是 OverFeat 的 "large" 版本，输入是 221×221 的彩色图像。</p>
+
+  <p>方法只有几行——</p>
+
+  <p><strong>第一步</strong>：把任何输入图像 resize 到 221×221。</p>
+
+  <p><strong>第二步</strong>：前向传播到 OverFeat 的<strong>第一个全连接层</strong>（在论文的计数里是第 22 层）。这层输出一个 <strong>4096 维向量</strong>。</p>
+
+  <p><strong>第三步</strong>：对这个 4096 维向量做 <strong>L2 归一化</strong>（让向量长度为 1）。</p>
+
+  <p><strong>第四步</strong>：把归一化后的向量送进一个<strong>线性 SVM</strong>，做下游任务的分类。对于图像检索任务，则直接用 L2 距离做相似度比对。</p>
+
+  <p>就这样。整个 OverFeat 的参数<strong>完全冻结</strong>，<strong>不微调、不重新训练</strong>。下游唯一要学的就是那个线性 SVM 的权重。论文把这套方法叫做 <strong>CNN-SVM</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 为什么这套方法这么"轻"</div>
+  <p>对比 2014 年之前的传统方法——一个细粒度识别 pipeline 可能包括：part 检测器、姿态对齐、多种手工特征（SIFT、HOG、LBP）的提取与编码、Fisher Vector 聚合、再加上 SVM 分类。<strong>少则上千行代码，多则一篇论文一整套</strong>。</p>
+  <p>而 CNN-SVM 总共可能不到 50 行代码——加载 OverFeat、提取一层激活、L2 归一化、scikit-learn 的线性 SVM。<strong>"工程简单"本身就是巨大的工程贡献。</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · CLASSIFICATION</div>
+  <h2>实验一：图像分类</h2>
+  <div class="en-title">PASCAL VOC &amp; MIT Indoor Scenes</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文先在两个分类数据集上验证——<strong>PASCAL VOC 2007</strong>（与 ImageNet 接近）和 <strong>MIT 67 室内场景</strong>（差异较大）。两个任务上 CNN-SVM 都拿到了<strong>明显领先于专门设计方法的成绩</strong>。在 MIT Indoor 上更令人惊讶——一个为 1000 类物体训的网络，居然在<strong>专门的室内场景任务</strong>上超过了所有专门设计的特征。</p>
+  <div class="terms">
+    <span class="tag">PASCAL VOC</span>
+    <span class="tag">MIT 67 Scenes</span>
+    <span class="tag">Object vs Scene</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第一个实验——验证"基本盘"。用两个有不同性质的分类数据集——</p>
+
+  <p><strong>PASCAL VOC 2007</strong>——20 类常见物体（人、狗、自行车、椅子等）。这个任务跟 ImageNet 比较接近，所以 OverFeat 应该有"主场优势"。CNN-SVM 在 VOC 2007 上拿到 <strong>73.9% mAP</strong>，比之前所有非深度学习方法都高。</p>
+
+  <p><strong>MIT 67 Indoor Scenes</strong>——67 类室内场景（厨房、办公室、教堂等）。这个任务跟 ImageNet 差异更大——<strong>是场景分类，不是物体分类</strong>。但 CNN-SVM 依然拿到 <strong>58.4%</strong> 准确率，明显超过当时最强的专门方法。</p>
+
+  <p>这两个结果本身不算特别新鲜（DeCAF 已经做过类似实验），但论文用更系统的方式验证了——<strong>即使在跟 ImageNet 任务差异较大的数据集上，CNN 特征依然能赢</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · FINE-GRAINED</div>
+  <h2>实验二：细粒度识别</h2>
+  <div class="en-title">CUB Birds &amp; Oxford Flowers</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文做了细粒度识别——CUB-200 鸟类和 Oxford Flowers 花卉。CNN-SVM 在 CUB 上拿到 <strong>53.3%</strong>，在 Oxford Flowers 上 <strong>74.7%</strong>，<strong>不带任何 part 对齐</strong>。加上简单的数据增强后，<strong>超过当时所有专门为这两个任务设计的方法</strong>——包括 DPM、Symbiotic、Pose-Pooling 等复杂 pipeline。</p>
+  <div class="terms">
+    <span class="tag">CUB-200</span>
+    <span class="tag">Oxford Flowers</span>
+    <span class="tag">No Part Alignment</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这是论文最让"教授"感到震惊的实验——<strong>细粒度识别</strong>。前面我们在 DeCAF 篇讲过，CUB-200 是区分 200 种鸟的难任务。当时业界为它专门设计了复杂的 pipeline——part 检测、姿态对齐、symbiotic 模型——每一个都是一篇论文级别的工程。</p>
+
+  <p>这篇论文的"学生"问——你觉得通用的 OverFeat 特征能捕捉这么细微的差异吗？比如不同种鸟的喙的弧度、尾羽的纹理？</p>
+
+  <p>结论是——<strong>能</strong>。</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>数据集</th><th>之前最好</th><th>CNN-SVM</th><th>CNN + 数据增强</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>CUB-200 鸟类</td><td>56.8% (DPD)</td><td>53.3%</td><td><strong>61.8%</strong></td></tr>
+    <tr><td>Oxford Flowers</td><td>80.7%</td><td>74.7%</td><td><strong>86.8%</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>注意两件事——</p>
+
+  <p><strong>第一</strong>，"最朴素的 CNN-SVM"在 CUB 上 53.3%，比专门方法稍低（56.8%）。但这是<strong>不用任何细粒度专门设计</strong>得到的结果。</p>
+
+  <p><strong>第二</strong>，加上简单的数据增强（jittering 之类），结果跳到 61.8%——<strong>超过专门方法 5 个点</strong>。在 Oxford Flowers 上更夸张，86.8% vs 之前最好的 80.7%。</p>
+
+  <p>这个结果在 2014 年初的视觉社区掀起了轩然大波——<span class="hl">一个为通用物体分类训的网络，居然在专门的细粒度识别任务上比所有为该任务定制的方法都强</span>。这意味着——<strong>"为任务 X 设计特征 X"的传统思路开始动摇</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · ATTRIBUTES</div>
+  <h2>实验三：属性检测</h2>
+  <div class="en-title">Beating poselets and DPM</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>属性检测——识别人物属性（戴眼镜、穿外套）和物体属性（材质、颜色）——是当时另一个有专门方法的领域，主流方案是 <strong>poselets</strong>（部件结构模型）和 <strong>DPM</strong>（可变形部件模型）。CNN-SVM 不做任何部件对齐，全局提一个 4096 维特征，<strong>居然就超过了 poselets 和 DPM</strong>。论文作者感叹——"哇，它们是怎么做到的？"</p>
+  <div class="terms">
+    <span class="tag">H3D Attributes</span>
+    <span class="tag">Poselets</span>
+    <span class="tag">DPM</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>"接下来挑战属性检测？我们看看 OverFeat 特征是否编码了人和物的语义属性"——论文里教授这样说。</p>
+
+  <p>属性检测的任务是——给一张图像，判断里面的人或物有哪些属性。<strong>H3D 数据集</strong>包含人物属性（戴眼镜？短发？穿外套？穿牛仔裤？）。<strong>UIUC 物体属性</strong>数据集包含物体的视觉属性（金属？毛茸茸？方形？）。</p>
+
+  <p>当时主流方法是 <strong>poselets</strong>——一种基于部件结构的模型。判断"戴眼镜"前先把人脸对齐，判断"穿外套"前先把上半身对齐。这种"先对齐再判断"是当时的金标准。</p>
+
+  <p>论文的"学生"问——<strong>不做任何部件对齐，全局从人物的 bounding box 提一个 CNN 特征，能行吗？</strong>毕竟人有各种姿态和遮挡。</p>
+
+  <p>结果——<strong>CNN-SVM 的平均准确率超过了 poselets 和 DPM</strong>。在物体属性数据集上效果也极好。论文作者忍不住感叹——<strong>"哇，它们是怎么做到的？也许这些 OverFeat 特征真的编码了属性信息？"</strong></p>
+</div>
+
+<div class="quote">
+  <p>不做任何部件对齐、不做任何姿态归一化，<br>就一个全局 CNN 特征加 SVM——<br><strong>超过了 poselets 和 DPM。</strong></p>
+  <div class="src">— THE ATTRIBUTE DETECTION SHOCK</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · RETRIEVAL</div>
+  <h2>实验四：图像检索</h2>
+  <div class="en-title">SIFT &amp; VLAD's home turf</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>图像检索是<strong>SIFT 和 VLAD 的主场</strong>——10 多年的工程优化。论文挑战这块时持谨慎态度——"教授"明说"应该不会赢吧"。结果在 Holidays、Oxford Buildings、UKBench 等基准上，<strong>CNN 特征加上标准的 PCA/whitening/renormalization 处理后，在除了 Sculptures 之外的所有数据集上都超过了 SIFT/VLAD</strong>。"新派描述符在老派主场里打过了老派"。</p>
+  <div class="terms">
+    <span class="tag">SIFT</span>
+    <span class="tag">VLAD</span>
+    <span class="tag">BoW</span>
+    <span class="tag">PCA + Whitening</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这是论文最有挑战性的实验——<strong>图像检索</strong>。给一张查询图像，从数据库里检索"同一物体"或"同一地点"的所有图像。</p>
+
+  <p>这个任务为什么特别？因为——<strong>它是 SIFT 和 VLAD 的家</strong>。SIFT 描述符就是为了这个任务发明的（1999 年 Lowe）。后来 BoW（视觉词袋）、Fisher Vector、VLAD 等一系列方法都是为图像检索精心调优的。这是计算机视觉传统派经过 10 多年优化的<strong>看家本领</strong>。</p>
+
+  <p>论文里"教授"对这块也持谨慎态度——"或许 CNN 特征在这里没机会赢"。"学生"提了一个聪明的限定——"我们不跟带 3D 几何约束的方法比，就比纯描述符的效果。<strong>新派描述符能不能在老派主场里打败老派？</strong>"</p>
+
+  <p>论文测了多个标准检索基准——</p>
+
+  <p>· <strong>Holidays</strong>（个人照片集）：CNN 特征在加上 PCA + whitening + renormalization 处理后<strong>超过 VLAD</strong><br>
+  · <strong>Oxford Buildings</strong>（牛津地标）：<strong>超过</strong><br>
+  · <strong>UKBench</strong>（物体识别）：<strong>超过</strong><br>
+  · <strong>Sculptures</strong>（雕塑）：<strong>失利</strong>——这是唯一一个 SIFT 还赢的数据集，因为雕塑的纹理特征非常依赖局部不变描述符</p>
+
+  <p>除 Sculptures 外的所有数据集，<strong>CNN 特征都超过了低内存占用的传统方法</strong>。论文给出的解释是——<span class="hl">CNN 学到的语义抽象在大多数检索场景里比手工的局部不变描述符更有用</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · AUGMENTATION</div>
+  <h2>数据增强的简单技巧</h2>
+  <div class="en-title">Jittering crops and flips</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文证明，仅在<strong>数据端</strong>做一点简单增强（crop 抖动、水平翻转、几种角度旋转），就能让 CNN-SVM 的成绩再上一台阶——<strong>从"打平 SOTA"变成"超过 SOTA"</strong>。这是几乎免费的提升，因为只是对同一张图多算几次特征再平均，<strong>不动 CNN 本身</strong>。</p>
+  <div class="terms">
+    <span class="tag">Test-Time Augmentation</span>
+    <span class="tag">Jittering</span>
+    <span class="tag">Crop &amp; Flip</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文最实用的一节——<strong>简单的数据增强能再提升一大截</strong>。</p>
+
+  <p>方法朴素到令人发指。对每一张训练或测试图像，做以下事——</p>
+
+  <p>· <strong>抖动 crop</strong>——在原图上以略微偏移的位置裁出多个 221×221 的子图<br>
+  · <strong>水平翻转</strong>——把图像左右翻转一次<br>
+  · <strong>几个简单旋转</strong>——比如 -10 度、+10 度<br>
+  · 对每一个变体提取 4096 维特征，最后<strong>平均或拼接</strong></p>
+
+  <p>就这么简单。但效果非常显著——在大多数任务上，CNN-SVM 加增强能比裸 CNN-SVM <strong>提升 3-8 个百分点</strong>。前面提到的 CUB-200 鸟类，<strong>从 53.3% 跳到 61.8%</strong>，就是靠这个增强。</p>
+
+  <p>这套增强策略有个特别诱人的属性——<strong>它几乎免费</strong>。CNN 本身不需要任何修改、不需要重新训练。增强只是在<strong>推理时</strong>多前向传播几次。今天工业界部署模型时常用的 <strong>test-time augmentation (TTA)</strong>，思路根源就在这里。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LEGACY</div>
+  <h2>总结：必须打过的强基线</h2>
+  <div class="en-title">The baseline everyone must beat</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这篇论文最深的影响不在于刷了 12 个 benchmark，而在于<strong>它设定了一条"任何新方法必须先超过的基线"</strong>。从 2014 年起，任何视觉论文如果不打过"预训练 CNN + 简单分类器"，几乎都不会被审稿人接受。这件事彻底改变了视觉研究的工作方式——<strong>设计专门方法之前，先用预训练特征跑一遍，比较是否有真的提升</strong>。</p>
+</div>
+
+<div class="body">
+  <p>2014 年 3 月，这篇论文挂上 arxiv，5 月在 CVPR DeepVision Workshop 上正式发表。它的影响不是开创了新方法——<strong>方法本身只有几行代码</strong>。它的影响是<strong>开创了一种"严格"的研究文化</strong>。</p>
+
+  <p>从 2014 年起，任何视觉研究者要发表新方法，都必须先回答一个问题——<strong>"你的方法能不能打过 CNN 特征加简单 SVM 这个基线？"</strong>如果不能，审稿人会说——"那你的复杂方法贡献是什么？"</p>
+
+  <p>这件事改变了整个研究的工作流——</p>
+
+  <p>· 之前——研究者会花数月设计一个 specialized 算法，论文里只跟其他 specialized 算法比较<br>
+  · 之后——研究者必须先跑一遍预训练 CNN baseline，看清自己的方法是否真的有"额外贡献"，否则就只是在"复杂方法的内部 reshuffle"</p>
+
+  <p>这种"<strong>baseline-first</strong>"的研究文化对整个领域有<strong>巨大的健康作用</strong>——它把很多"看起来花哨但实际上没有真正提升"的工作过滤掉了。</p>
+</div>
+
+<div class="quote">
+  <p>这篇论文的真正贡献，<br>不是某个新算法，<br><strong>而是给所有人定了一条新地板线——<br>设计专门方法之前，<br>先用预训练特征跑一次。</strong></p>
+  <div class="src">— THE LASTING METHODOLOGICAL IMPACT</div>
+</div>
+
+<div class="body">
+  <p>论文最后一句话总结得非常好——<strong>"It's all about the features."</strong>（一切都是特征的问题。）SIFT 和 HOG 描述符在十年前带来了一次性能跃升，现在深度卷积特征带来了类似的突破。<span class="hl">把成熟的视觉 pipeline 套用到 CNN 表示上，结果还可能继续提升</span>。无论如何，如果你设计任何识别任务的新算法，<strong>都必须跟"通用深度特征 + 简单分类器"这个强基线比较</strong>。</p>
+
+  <p>这两篇姐妹论文——<strong>DeCAF 和 CNN off-the-shelf</strong>——共同标志了 2014 年视觉社区的一次范式转移。从手工特征时代（SIFT、HOG、Fisher Vector）到预训练特征时代（ImageNet pre-trained CNN）。这个转移后来又延伸到了 NLP（BERT/GPT）、语音、多模态——<strong>"在大数据上预训练，再迁移到下游"成了所有现代 AI 系统的基础范式</strong>。</p>
+
+  <p>下一集，我会回到生成式 AI 的主线，讲<strong>BatchNorm</strong>——Ioffe 和 Szegedy 2015 年的另一个关键贡献，让训练超深网络变得切实可行。这也是后续 ResNet 能成功的另一个隐藏前提。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">CVPR 2014 WORKSHOP · KTH</div>
+  <div>CNN Features off-the-shelf · 中文版精校</div>
+  <div class="meta">本文译自 Sharif Razavian et al. 2014 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/offshelf</div>
+</div>
+
+</div>
+</body>
+</html>
