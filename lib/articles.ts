@@ -44,6 +44,35 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'naval-ai-revolution',
+    url: '/naval-ai-revolution/',
+    category: 'thinking',
+    date: '2026-06-04',
+    tag: 'NAVAL PODCAST · 2026',
+    title: {
+      zh: '纳瓦尔：AI 工业革命',
+      en: 'Naval: The AI Industrial Revolution',
+      ja: 'ナバル：AI 産業革命',
+    },
+    subtitle: {
+      zh: 'Naval Ravikant 主持 · 中文精校版',
+      en: 'Hosted by Naval Ravikant · Curated Chinese Edition',
+      ja: 'Naval Ravikant 司会 · 中国語精製版',
+    },
+    desc: {
+      zh: '2026 年 6 月纳瓦尔与三位前沿创始人（Vercel/Boom 超音速/Science Corp）的圆桌对谈中文精校版。从软件工厂、垂直整合、监管前沿到自主公司——四个站在科技最前沿的人现场拆解 AI 工业革命到底在改变什么。',
+      en: 'Naval Ravikant in conversation with three frontier founders (Vercel, Boom Supersonic, Science Corp) on the new means of production. From software factories to regulatory frontier and the autonomous company.',
+      ja: '2026 年 6 月、ナバル・ラビカントが Vercel、Boom Supersonic、Science Corp の創業者 3 名と AI 産業革命について語ったポッドキャストの中国語精製版。',
+    },
+    meta: {
+      zh: ['10 章', '约 30 分钟', '思想类'],
+      en: ['10 chapters', '~30 min read', 'Thinking piece'],
+      ja: ['10 章', '約 30 分', '思想'],
+    },
+    theme: 'green',
+    featured: true,
+  },
+  {
     slug: 'decaf',
     url: '/decaf/',
     category: 'cs',

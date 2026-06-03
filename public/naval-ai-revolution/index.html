@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纳瓦尔：AI 工业革命 | 广哥在硅谷</title>
+<meta name="description" content="纳瓦尔与三位前沿创始人（Vercel 的 Guillermo、Boom 超音速的 Blake、Science Corp 的 Max）的深度对谈中文精校版。聊新时代的"生产资料"、软件工厂、垂直整合、监管前沿、和自主公司。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Naval Ravikant, AI Industrial Revolution, Vercel, Boom Supersonic, Science Corp, 软件工厂, vibe coding, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/naval-ai-revolution/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="纳瓦尔：AI 工业革命">
+<meta property="og:description" content="四位顶级创始人聊新时代的生产资料 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/naval-ai-revolution/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="纳瓦尔：AI 工业革命">
+<meta name="twitter:description" content="四位顶级创始人聊新时代的生产资料 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(120,140,93,.40) 0%,rgba(120,140,93,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--green);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--green);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--green);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--green);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--green);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--green);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--green);background:rgba(120,140,93,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(120,140,93,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(120,140,93,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f4f7f0 0%,#faf9f5 100%);border-left:5px solid var(--green);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--green);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .speaker{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:10px;}
+  .speaker .who{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
+  .speaker p{font-size:15.5px;color:#3a3937;margin:8px 0;line-height:1.85;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--green);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">NAVAL PODCAST · 2026.06</div>
+  <h1>纳瓦尔：AI 工业革命<br>建造你自己的工厂</h1>
+  <div class="subtitle-en">The AI Industrial Revolution · Build Your Own Factory · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Naval Ravikant 主持</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--blue);"></i> 10 章 · 约 30 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 6 月，纳瓦尔在他的播客上邀请了三位前沿创始人——<strong>Vercel 的 Guillermo Rauch</strong>、<strong>Boom Supersonic 的 Blake Scholl</strong>、<strong>Science Corp 的 Max Hodak</strong>——围绕"新时代的生产资料"展开了一场跨越软件、硬件、生命科学、监管、自治公司的深度对谈。这不是一篇技术分析，是四个站在科技最前沿的人对 AI 工业革命的现场思考。本文是该对谈的中文精校版。<strong>读完这篇，你会重新理解"工程师""创始人""工厂""创意"在 2026 年的含义</strong>。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 四位顶级创始人聊新时代的"生产资料"<br><span class="en">The new means of production</span></a></li>
+    <li><a href="#ch2">从 10x 到 1000x · AI 软件工厂的兴起<br><span class="en">AI software factories</span></a></li>
+    <li><a href="#ch3">浪费 Token，节省时间 · 纳瓦尔的工程哲学<br><span class="en">Waste tokens, save time</span></a></li>
+    <li><a href="#ch4">模型反过来指导人 · 从初级到首席的跃迁<br><span class="en">Models instructing humans</span></a></li>
+    <li><a href="#ch5">纯软件已死？开源对中国硬件的加成<br><span class="en">Is pure software dead?</span></a></li>
+    <li><a href="#ch6">Vibe Coding 硬件 · 涡轮叶片上写代码<br><span class="en">Vibe coding a turbine blade</span></a></li>
+    <li><a href="#ch7">人类正在变成验证者<br><span class="en">Humans are becoming verifiers</span></a></li>
+    <li><a href="#ch8">监管前沿 · 从 200 页文档到分钟级合规<br><span class="en">The regulatory frontier</span></a></li>
+    <li><a href="#ch9">自主公司 · 每个人都在训练 Agent<br><span class="en">Your job is to train the agent</span></a></li>
+    <li><a href="#ch10">创意才是终极护城河 · 人加 AI 的时代<br><span class="en">A very large number of small teams</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言：四位顶级创始人聊新时代的"生产资料"</h2>
+  <div class="en-title">The new means of production</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>纳瓦尔的播客邀请了三位前沿创始人——他们的共同点是：<strong>都不靠"现成零件"组装自己的产品，而是从头建造自己的工厂</strong>。这场对谈不关心他们具体做什么，关心的是<strong>他们正在发现什么原理</strong>——什么是 2026 年创业者的 alpha？什么是其他创业者可以学的？</p>
+  <div class="terms">
+    <span class="tag">Naval Podcast</span>
+    <span class="tag">Means of Production</span>
+    <span class="tag">Frontier Founders</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 6 月，纳瓦尔在他的播客上做了一期新的尝试——他没有像往常那样一对一访谈某个人，而是请来了三位"前沿创始人"一起聊。三个人，每个人都在不同的领域里建造着自己的工厂。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Nivi（主持人）</div>
+  <p>欢迎来到 Naval Podcast，你了解新知识的权威来源。今天我们做点新东西。我请到了三位前沿创始人——三个长得不错的家伙——还有第四位长得不错的——纳瓦尔。</p>
+  <p>给大家介绍一下：</p>
+  <p><strong>Guillermo "the G" Rauch</strong>——他正在把 <strong>Vercel</strong> 建成一朵服务 Agent 时代乃至更远未来的 AI 云。</p>
+  <p><strong>Blake Scholl</strong>——他在打造 <strong>Boom Supersonic</strong>——超音速客机，连同他自己的工厂和喷气发动机一起做。</p>
+  <p><strong>Max Hodak</strong>——来自 <strong>Science Corp</strong>，他在做生物-硅混合的脑机接口——在硅芯片上培养活的神经元——先是恢复视觉等感觉功能，最终目标是探索大脑里全新的部分和全新的感官。</p>
+  <p>这三位的共同点是——<strong>他们都不是用现成零件组装自己的产品，而是从头建造自己的工厂</strong>。我们今天不太关心他们具体在造什么，更关心他们在"如何建造"这件事上学到了什么。</p>
+  <p>他们正在发现什么新知识？他们的 alpha 是什么？他们正在摸索哪些其他创始人可以学的原理？</p>
+</div>
+
+<div class="body">
+  <p>纳瓦尔的回应只有一句：<strong>"那就开始玩吧。"</strong>——这就是整场两小时对谈的开场。</p>
+
+  <p>没有 PPT，没有套话，四个站在科技最前沿的人，开始<span class="hl">现场拆解 AI 工业革命到底在改变什么</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · SOFTWARE FACTORIES</div>
+  <h2>从 10x 到 1000x · AI 软件工厂的兴起</h2>
+  <div class="en-title">AI software factories</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Guillermo 提出"<strong>软件工厂</strong>"概念——过去评价工程师看"这个人输出能力如何"，现在看"<strong>这个人能不能造出一座工厂，让工厂输出 B 到 Z 所有能力</strong>"。这是评判标准的根本转变。曾经"10x 工程师"这个说法在 Twitter 上能被骂得狗血淋头，现在变成了 <strong>100x 甚至 1000x 工程师</strong>——而世界还没完全适应这个变化。</p>
+  <div class="terms">
+    <span class="tag">10x → 1000x Engineer</span>
+    <span class="tag">Leverage</span>
+    <span class="tag">Software Factory</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo（Vercel）</div>
+  <p>我有一个想法最近彻底迷住了我——"<strong>软件工厂</strong>"。过去，工程师的工作是：你来上班，你交付输出，公司内部所有问题都是"<strong>A 这个人交付 B 这个输出的能力有多强</strong>"。</p>
+  <p>现在变了。我评判你这个工程师的方式变成了——"<strong>你能不能造出一座工厂，让这座工厂产出 B 到 Z 所有的输出</strong>？"</p>
+  <p>这是一个巨大的转变。我们过去相信——这事一度还有点争议——"10x 工程师"是存在的。<strong>现在显然已经是 100x 甚至 1000x 工程师</strong>。世界还没完全适应过来。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我以前在 Twitter 上说"10x 工程师"会被骂得狗血淋头，因为这违背了那么多"人人平等"的哲学。但现实是——<strong>当你在思想领域、智力领域、虚拟数字领域工作时，差距不是 10 倍，是 100 倍、1000 倍，而且<em>一直如此</em></strong>。</p>
+  <p>Satoshi、Notch（Minecraft 作者）、发明 JavaScript 的 Brendan Eich、John Carmack——他们都是 1000x 程序员。</p>
+  <p>而且——如果你选对了要做的事 vs 选错了要做的事，<strong>差距是无穷大</strong>。这甚至跟"是不是更好的程序员"无关，<span class="hl">只是判断力——选了正确的方向</span>。</p>
+  <p>现在因为有了 AI 杠杆，"1000x"这件事终于没那么有争议了。</p>
+</div>
+
+<div class="quote">
+  <p>过去评价工程师，是看他能输出什么。<br>现在评价工程师，是看他能造出什么<strong>能输出一切的工厂</strong>。</p>
+  <div class="src">— THE NEW STANDARD FOR ENGINEERS</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · WASTE TOKENS</div>
+  <h2>浪费 Token，节省时间 · 纳瓦尔的工程哲学</h2>
+  <div class="en-title">Waste tokens, save time</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>纳瓦尔分享了他用 AI 的核心哲学——<strong>不学任何技巧，不研究任何 prompt 工程，就"野蛮"地使力</strong>。无论模型多贵，都比人便宜。所以——<strong>"浪费 token，节省时间"</strong>。不要把 token 当输入或输出来看，只看你的时间和最终结果。</p>
+  <div class="terms">
+    <span class="tag">Brute Force</span>
+    <span class="tag">Token Cost vs Time Cost</span>
+    <span class="tag">Verifiable Domains</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我一直拒绝学所有那些技巧——"用这个 prompt"、"用 Ralph Wiggum"、"用 plan mode"、"接入这个工具"——这些我一律忽略。</p>
+  <p>我假设<strong>模型变好的速度，比我学会怎么用它的速度更快</strong>。它学会怎么用我的速度，比我学会怎么用它的速度更快。所以我一直对它们粗手粗脚的。</p>
+  <p>我会对它们发脾气，但渐渐发现——<strong>我输入的信息越来越少，做的工作越来越少</strong>，因为我假设可以靠蛮力解决问题。</p>
+  <p>我会把 Codex、Claude、Gemini 同时扔到同一个问题上，<strong>就是浪费 Token</strong>。不管这些模型看起来多贵，它们<strong>都比一个人便宜得多</strong>。所以我会说——<span class="hl">浪费 Token，节省时间</span>。不要把 Token 看作输入或输出，<strong>只看你的时间，和最终结果</strong>。</p>
+  <p>即使它们写的是低质量代码——我知道很多情况下确实是——等到要上线时，我就<strong>再扔更多 Token</strong>："走一遍，看一遍，重写"。</p>
+  <p>它们每一代都会变得更好，我看不到这条路在哪儿终结。只要有可验证领域、有已解决的问题，它们就会把这些问题解决。在未解决问题领域——<strong>除非你是 Terence Tao，站在创造力的最前沿</strong>——你需要跟模型非常紧密地协作。但我在软件工程上不是那个级别的，所以我就是个野蛮人。</p>
+</div>
+
+<div class="quote">
+  <p>模型再贵，<br>也比一个人便宜得多。<br><strong>浪费 Token，节省时间。</strong></p>
+  <div class="src">— NAVAL'S RULE OF AGENTIC WORK</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · GRADUATED</div>
+  <h2>模型反过来指导人 · 从初级到首席的跃迁</h2>
+  <div class="en-title">Models instructing humans</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>过去给模型一个 prompt，它就像 next-token prediction 一样跑路。<strong>现在模型会"规划"——它会回过头来问"你这个需求有三条路可走，权衡如下"</strong>。Guillermo 用了一个生动的比喻——<strong>模型已经从初级工程师"毕业"成了首席工程师</strong>。它会作为同事和你来回辩论。</p>
+  <div class="terms">
+    <span class="tag">Planning Mode</span>
+    <span class="tag">Trade-off Analysis</span>
+    <span class="tag">Principal Engineer</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo</div>
+  <p>最近发生了一件事，跟你说的特别契合。过去你给模型一个 prompt，它就经典的 next-token prediction 一路跑下去，按你的想法跑偏。</p>
+  <p><strong>现在模型有一种本能的"规划模式"</strong>——你不用让它规划，它自己就会回过头来跟你说："看，你要的这个东西，我们可以走这三条路。这是权衡矩阵。"</p>
+  <p>这就是 Twitter 上那个梗的瞬间——"<strong>我们现在有 PhD 级别的工程师模型了</strong>"。</p>
+  <p>这些模型在某个时刻"毕业"了。<strong>它们曾经是初级工程师，现在是首席工程师</strong>——因为它们会带着一组权衡回到你身边。当然它们有时候会胡说八道，特别搞笑——它告诉你"这要三周时间""要这么多 Token"，预估错得离谱。但<strong>我对模型更尊重了，把它当作可以在智力上来回辩论的同行</strong>。</p>
+  <p>还是有差距。如果你是真正熟练的工程师或架构师，你仍然能从它身上榨出更多东西。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Max（Science Corp）</div>
+  <p>我观察到的现象是——<strong>Claude 或 ChatGPT 基本上跟你在某个领域里的能力一样强</strong>。如果你是一个真正能干的开发者，这些东西会变得超级强大。如果你是初级开发者，它就更像一个初级开发者。</p>
+  <p>你给它的反馈——偶尔的那些小提示——好像极其重要。这些小更新似乎完全决定了你从它身上能得到的表现类型。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>Guillermo 你最早提到的那个问题——"<strong>人在什么时候不再是补全模型，而是反过来被模型指挥</strong>"？比如它跟你说："去给我拿这个 API key，因为只有你能拿。"</p>
+  <p>这只是<strong>暂时的失常</strong>。很快每一个好的 SaaS 公司或托管商都会有可以让模型直接用的 CLI 和 API。它们甚至不需要 API——只要是基于文本的、基于 Unix 的，<strong>Agent 可以自己 hack 出自己的 API</strong>。</p>
+  <p>钱的部分——你插入加密代币、Bitcoin，模型就去自己付钱买它需要的东西。已经有人在做这个了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · IS SOFTWARE DEAD</div>
+  <h2>纯软件已死？开源对中国硬件的加成</h2>
+  <div class="en-title">Is pure software dead?</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>纳瓦尔抛出一个问题——<strong>"纯软件"是不是已经死了？</strong>因为模型现在直接说"英语"——你不用学代码也能跟它沟通。那软件创始人的护城河在哪？答案变成了——硬件成了红利，因为<strong>有了 AI，硬件公司也能轻松写出好软件</strong>。<strong>中国大力做开源 AI 模型</strong>，本质上是把自己在硬件上的优势翻倍——"<span><strong>如果我能按需生成软件，那我对硅谷的劣势就不存在了</strong></span>"。</p>
+  <div class="terms">
+    <span class="tag">Pure Software</span>
+    <span class="tag">Open Source AI</span>
+    <span class="tag">China Hardware</span>
+    <span class="tag">DeepSeek / Qwen</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我现在在思考一件事——<strong>纯软件已经死了吗？纯软件工程是不是已经过时了</strong>？这就像"说英语"。模型现在会说英语了。我们过去得学代码才能跟它们沟通。现在模型说英语——模糊的、马虎的、像人类一样的英语——它们能理解事物。</p>
+  <p>那一个创始人的护城河在哪？硬件？这是个红利——你以前要造硬件，同时再做一家软件公司很难。Patrick Collison 说："软件是艺术，雇艺术家很难。"</p>
+  <p>现在作为硬件创始人——很好，<strong>你可以很快开发出很好的软件</strong>。</p>
+  <p>如果你做模型，也许那才是新的软件工程——训练、调整、后训练、微调。但<strong>经典软件工程死了吗</strong>？纯软件还值得投资吗？纯软件还能围绕它组织一家公司、一支团队、拿到杠杆吗？</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval（继续）</div>
+  <p>在硬件这一面，这对所有那些<strong>软件写得很烂的小玩具公司、零件公司</strong>是个大红利。现在它们能写出"够好"的软件。或者甚至不需要软件有人类的前端——可能就是完全 Agentic 的，一个 Agent 通过语音去控制硬件。</p>
+  <p>这就是为什么<strong>中国大力做开源模型</strong>的原因之一。它们全押在开源上，因为<strong>它们有硬件优势</strong>。它们有非常复杂的供应链和零件链。它们基本上在说——"嘿，<span class="hl">如果我能按需生成软件，那我对硅谷的劣势就不存在了</span>"。</p>
+  <p>当然这不是唯一原因。它们也在追赶、蒸馏模型、共享资源。但中国政府历来善于资助那些能帮整个生态系统的努力，尤其是网络效应业务上。它们想集中所有资源，在 AI 上追上来，<strong>然后用 AI 给它们的硬件产业一个巨大的助推</strong>。</p>
+  <p>讽刺的是——它们做开源，是因为 OpenAI 不开源。Grok 发布模型但落后一两代。Google 有一些本地模型，没什么有竞争力的。Anthropic 据我所知没有任何开源模型。所以<strong>开源的全部重头都来自中国</strong>。这帮了我们的硬件创始人，但更帮了它们的硬件创始人和工厂。</p>
+</div>
+
+<div class="quote">
+  <p>如果我能按需生成"够好"的软件，<br>那我对硅谷的劣势就不存在了——<br><strong>这就是中国大力做开源 AI 的真正原因。</strong></p>
+  <div class="src">— THE HIDDEN STRATEGY BEHIND OPEN-SOURCE AI</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · VIBE CODING HARDWARE</div>
+  <h2>Vibe Coding 硬件 · 涡轮叶片上写代码</h2>
+  <div class="en-title">Vibe coding a turbine blade</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Blake 描述了 Boom 超音速正在做的事——把传统硬件工程从"<strong>1990 年代的 Excel 邮件协作</strong>"变成"<strong>软件工程师搭架构，硬件工程师 vibe code 自己的部件</strong>"。一个具体例子——设计一个涡轮叶片，过去一个工程师一天处理一个叶片的一个分析维度，一台喷气发动机有 1000 片叶片——你做不动。<strong>现在两个工程师就能设计整台喷气发动机</strong>。这是"小团队的爆炸性生产力"。</p>
+  <div class="terms">
+    <span class="tag">Vibe Coding</span>
+    <span class="tag">Turbine Blade</span>
+    <span class="tag">Boom Supersonic</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Blake（Boom Supersonic）</div>
+  <p>这彻底改变了软件和硬件开发者的角色。从第一天起我们就尝试把很多传统的工程工作流——硬件工程工作流——变成软件。</p>
+  <p>如果你没接触过硬件工程，让我说清楚。<strong>很多硬件工程是在工程师笔记本上的 Excel 表格里发生的，每个人自己干，孤立的</strong>。非常复杂的电子表格，有时候带 VBScript 代码。所有这些其实都是软件，但被当成不是软件来对待。<strong>没有版本控制，没有自动化测试</strong>。如果你想把空气动力学工程师的工作交给结构工程师，那就用电子表格通过邮件传——<span class="hl">这是 1990 年代。糟糕透了</span>。</p>
+  <p>所以我们开始搭软件框架，让硬件工程流程自动化和可复现，目的是降低迭代成本。但进展很慢——我们永远雇不起足够多的软件工程师。</p>
+  <p><strong>现在我们走到了一个炸裂式不同的模式</strong>——软件工程师创造架构，因为他们懂系统、算法、关注点分离；然后<strong>硬件工程师可以用他们的硬件工程知识 vibe code 自己的部件</strong>。结果是小团队的炸裂式生产力。</p>
+  <p>举个例子。如果你设计一个涡轮叶片——经典做法是——叶片冷启动时是冷的，运转起来变热、变大。你必须同时设计冷形态和热形态的空气动力学和结构。你必须在冷热之间、结构和气动之间来回转换。</p>
+  <p>过去这要<strong>一个工程师一天，处理一个叶片的一个分析维度</strong>。一台喷气发动机大约有 <strong>1000 片叶片</strong>。你做不动什么。</p>
+  <p>现在，软件人和硬件人协作创造出解决方案——<strong>你可以改一改叶片几何，实时看到结构和空气动力学的结果</strong>。<span class="hl">两个工程师就能设计整台喷气发动机</span>。差距是惊人的。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Max（Science Corp）</div>
+  <p>我个人已经几乎完全从 Excel 转到了 Python 模型，可以拿到可信的仿真结果。AI 还没触及但我觉得明年内（应该是 2026 年内）会发生、并且会非常激动人心的事情是——现在它可以生成软件，<strong>很快它将能生成 STEP 文件和 PCB 布局</strong>。当 AI 进入机械工程和电气工程时，那又是一个全新的世界，我们还没看到。非常酷。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · VERIFIERS</div>
+  <h2>人类正在变成验证者</h2>
+  <div class="en-title">Humans are becoming verifiers</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>过去问律师"这文档行不行"，律师的价值不在于代码内容，而在于"<strong>他是一个可信的权威</strong>"——他上过法学院，把信誉押上。<strong>软件工程正在变得一样——你不再需要读每一行 PR 的代码，而是你能签字证明"我理解这个 PR 的后果，我对它负责"</strong>。整个旧职业（律师、初级工程师、运营人员）的功能正在转变成<strong>"验证栈是否大致正确"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Verifier</span>
+    <span class="tag">Spaghetti Code</span>
+    <span class="tag">Trusted Authority</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>Max 提到的监管相关的事让我意识到——<strong>我已经很久没用律师生成过基础的法律文档了</strong>。我不再让律师写 NDA、签字、做这个研究。<strong>所有基础法律任务都没了</strong>。</p>
+  <p>有个老笑话——法律就像"意大利面条代码"——非常复杂的代码用英语写出来。它跟这边的代码矛盾，又得拼到那边的代码上。<strong>没有真正的 API</strong>。</p>
+  <p>对于初级工程师和初级工程——<strong>初级工程师基本上升职为高级工程师了，而初级工程的工作被 Agent 接走了</strong>。同样地——在法律领域可以说"律师助理被解雇了"，也可以说"<strong>律师助理升职为资深律师了，他们现在可以花时间思考法律本身</strong>"。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo</div>
+  <p>仔细想想"软件工程演化"和"律师演化"之间的平行非常有趣。你永远不知道律师确切往这些文档里放了什么——你就是信任他们。"嘿律师，你能看看这个文档吗？能告诉我它合不合法吗？能做红线吗？"</p>
+  <p>你在律师关系里看重的是<strong>他是一个可信的权威</strong>。他上过法学院。他把自己的信誉押上了。</p>
+  <p>软件工程有平行。<strong>今天最大的问题是这座 PR 山——一堆糟糕代码组成的拉取请求</strong>。Twitter 上有各种段子——"想当年我们读每一行 PR 的代码"。</p>
+  <p>在我的世界里——基础设施——<strong>我希望工程师能说"我理解"那个 PR 的每一行</strong>。这不意味着你读了每一行。意味着你能说："<strong>我理解这个 PR 的后果。我签字确认我理解了它的后果</strong>。"或者："我写了测试框架、仿真、证明、类型检查器——即使不读，我也有信心签字它在生产环境里是安全的。"</p>
+  <p>有一个世界——我们接受一切都将是我们不完全理解的"意大利面条代码"，但我们写下评估器，让我们有信心，<strong>然后依靠人——那些基础设施生产工程师——来说"好，这个我同意发到 prod"</strong>。如果你的系统崩了会有人被传呼叫醒。</p>
+  <p>另一件人们低估的事——创造软件很简单，从 0 到 1。但想想<strong>从今天起一千天后</strong>，你的软件长什么样？它安全吗？测过吗？能上生产吗？性能够吗？你还有动力投入所有那些 Token 去维护它在 prod 里跑吗？</p>
+</div>
+
+<div class="quote">
+  <p>人类正在变成验证者。<br>过去人的功能——律师、工程师、运营——<br><strong>都在变成"验证这个栈大致正确，我大致愿意为它背书"</strong>。</p>
+  <div class="src">— THE NEW ROLE OF HUMANS</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · REGULATORY</div>
+  <h2>监管前沿 · 从 200 页文档到分钟级合规</h2>
+  <div class="en-title">The regulatory frontier</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Blake 给了一个具体例子——认证一架飞机抗雷击的合规文档大概 <strong>200 页</strong>。过去要"<strong>雇一个不太聪明、愿意像猴子一样敲键盘几个月</strong>"的工程师。现在用 RAG 几分钟搞定。<strong>更深的影响是二阶——如果改飞机设计，从前要重新写两个月文档（所以你害怕改），现在分钟级——你可以勇敢地改</strong>。监管负担反而成了 Agent 的测试套件。但纳瓦尔警告——这会变成"Red Queen race"，<strong>监管方也会用 Agent，最后是 Agent 对 Agent 的战争</strong>。</p>
+  <div class="terms">
+    <span class="tag">Regulatory Compliance</span>
+    <span class="tag">RAG</span>
+    <span class="tag">Red Queen Race</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Blake</div>
+  <p>关于监管，我们看到的一件事——<strong>它极大减少了对"改变"的抗拒，提升了迭代速度</strong>。</p>
+  <p>例子——你要给一架飞机做适航认证。其中一个无数项任务是证明它能扛住雷击。这个测试计划的监管文档大约 200 页。</p>
+  <p>古典做法是——<strong>雇一个不太聪明、愿意像猴子一样敲键盘、用几个月时间写 200 页合规文档的工程师</strong>。要花几个月。而且如果你改了飞机，你只想哭——又要重新写两个月的合规文档。</p>
+  <p>我们发现可以搭一个 RAG 系统，<strong>分钟级</strong>把整个工作 prompt 出来。</p>
+  <p>一阶效应——你省了大量时间。<strong>二阶效应——如果你改飞机规格，现在只需要分钟而不是几个月。所以你愿意改了</strong>。<strong>三阶效应——你可以炒掉那些不太聪明的工程师，留下少数真正有创造力的人，他们可以快速迭代</strong>。</p>
+  <p>因为改变成本下降了。某种意义上，<span class="hl">真正阻碍迭代的整个监管负担——崩塌了</span>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Max（Science Corp）</div>
+  <p>这是 AI 现在被严重低估的故事。硅谷的共识是——监管糟糕透了，我们想跑得更快，我们想实现那个惊人的未来。任何让那个未来变慢的东西都该避免。当然我们过度监管了——在很多地方做任何物理的东西都已经完全疯了。</p>
+  <p>但<strong>很多监管本身不是问题</strong>。如果你认真读了很多这些东西——没有雾霾窒息的城市很好。能游泳的河很好。这些都是进步。<strong>问题是人类很难处理"理解和遵守"这件事</strong>，每次你跟政府交换一封信，你要等好几个月。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>直到监管方也开始喷 Token 回来。然后你会从监管方收到巨量的文档要遵守，<strong>这变成了 Agent 对 Agent 的战争</strong>。但至少这是公平的对决。</p>
+</div>
+
+<div class="note">
+  <div class="label">⚠ Red Queen Race</div>
+  <p>纳瓦尔继续——这会变成"<strong>红皇后赛跑</strong>"（爱丽丝梦游仙境里的典故：你必须拼命跑才能停留在原地）。<strong>它们有 Agent，我们有 Agent</strong>。我觉得我们可能有更好的 Agent——这很好，比人对人强。但它们的周期时间、响应时间，可能反而会变长。App Store 现在被垃圾淹没。专利局应该也是。这些机构会是 AI 的慢采纳者——它们会被聪明创业者用大量文档 DDoS。<strong>有可能"批准时间"反而会拉长，因为系统被海量文档涌入压垮了</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · TRAINING THE AGENT</div>
+  <h2>自主公司 · 每个人都在训练 Agent</h2>
+  <div class="en-title">Your job is to train the agent</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Blake 在 Boom 做了一个实验——<strong>停了所有项目工作一周，让从前台到工程师每个人"用 AI 造你觉得最重要的东西"</strong>。结果出乎意料——大量"改变轨迹"的项目，包括前台用 AI 写了一个自动化（公司居然真的开始用）。<strong>结论：每个人脑子里都有"什么东西如果存在世界会更好"的想法，但他们的一阶想法往往很蠢，得让他们能从"想法"走到"实物"才能迭代</strong>。Guillermo 把它推向极致——<strong>"如果整个劳动力的工作都不是直接做事，而是训练 Agent 替自己做事呢？"</strong></p>
+  <div class="terms">
+    <span class="tag">Hackathon</span>
+    <span class="tag">Receptionist Builds Automation</span>
+    <span class="tag">Skills Marketplace</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Blake</div>
+  <p>我们做了一个版本的这个实验。<strong>我把全公司所有项目工作停了一周</strong>，告诉大家："<strong>每个人——从前台到工程师——造你觉得最重要的东西</strong>。唯一要求——你必须用 AI，你必须给全公司演示。"</p>
+  <p>我预期会看到大量蠢项目和少量真正有价值的。结果是<strong>反过来——大量"改变轨迹"的项目，很少蠢的</strong>。两三个是直接改变公司方向的。</p>
+  <p>最让我惊讶的——<strong>前台（负责从卡车上接货然后给收件人发邮件的那个人）写了一个自动化</strong>。我们真的在用了。</p>
+  <p>我得出的结论——<strong>每个人都有"什么东西如果存在世界会更好"的想法，但他们的一阶想法往往很蠢，他们自己也无法投射出来看见</strong>。但如果他们能从"想法"走到"实物"，他们就能反应、迭代。给他们一周，到最后他们造出了真正合理的东西。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo</div>
+  <p>想象一下如果所有工作都是这样。<strong>你怎么搭一支劳动力，他们不直接干活——他们只做一件事，就是训练替他们干活的 Agent？</strong></p>
+  <p>你要不断提醒人们、办 hackathon。<strong>有一个文化变迁正在发生</strong>——很多新人本能地知道，<strong>他们的工作不是做事本身，而是训练做事的 Agent</strong>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>这件事可以变得更疯狂。也许你直接打开所有摄像头，<strong>Agent 看着一切发生的事，看到收发货流程低效，然后写一个 app 拿出来给你看</strong>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo</div>
+  <p>我们很可能要给 AI Gateway 加一个功能——让人们选择保留输入和输出。然后你可以说——"对我所有输入输出，<strong>提取技能</strong>——从我的工作里学，把它输出成我可以下载的技能。"</p>
+  <p>你可以想象——公司里的人们会想分享、汇集这些技能。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>有意思——对我来说这是无法想象的，<strong>因为我自己的工作不重复</strong>。我一直找东西自动化，<strong>我自己工作里几乎没什么剩下可自动化的了</strong>。</p>
+  <p>我希望这是大家最终的归宿——<strong>你一直在你的"创造力和兴趣最大化区"工作</strong>。如果还有什么可以自动化的，自动化掉、从你生活里去掉——它会解放你去做创造性的事，而这就是你产生所有价值的地方。</p>
+  <p>这在"工作-职业"的思维里很难看见，因为<strong>过去你雇人是为了让他做同一件事一遍又一遍——而这正在消失</strong>。这让人害怕——人们问："那我要做什么？"<strong>你要做创造性的事</strong>。你不必每天都想出新东西——那不可能——但偶尔你会想出一个新东西，创造一个杠杆点。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 10 -->
+<div class="chapter" id="ch10">
+  <div class="chapter-num">CHAPTER 10 · CREATIVITY</div>
+  <h2>创意才是终极护城河 · 人加 AI 的时代</h2>
+  <div class="en-title">A very large number of small teams</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>对话最后转向哲学命题——<strong>AI 时代人独有的价值是什么？</strong>纳瓦尔的定义——"<strong>艺术是把情感传递给另一个人</strong>"，所以"<strong>谁创造了它"这件事本身就构成意义</strong>。AI 可以生成完全相同的图像，但意义来自创造者的<strong>意图</strong>。Max 则定义为"<strong>有意义的分布外行为</strong>"——超出训练数据的、能改变你未来轨迹的东西。Guillermo 抛出未来畅想——"<strong>给我下一个《指环王》</strong>"。结论——<strong>"未来不是机器对人，是机器加人对纯机器"</strong>。最重要的——<strong>未来是大量小团队的爆炸式增长</strong>。</p>
+  <div class="terms">
+    <span class="tag">Creativity</span>
+    <span class="tag">Out-of-Distribution</span>
+    <span class="tag">Human + AI</span>
+    <span class="tag">Small Teams</span>
+  </div>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>那么人类独特能做什么？这触及核心问题。Max，你是 AGI 极大化主义者——所以对你来说就是"啥也没有"，<strong>Agent 会做一切</strong>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Max</div>
+  <p>我不是反人类。但<strong>如果你的身份是"我多聪明、多有创造力"——你日子会不好过</strong>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我还在另一边。<strong>创造力是让你惊讶的东西——你跳出系统，做一件在系统内甚至无法想象的事</strong>。它在训练数据之外，在喂给系统的分布之外。这种事永远会有空间。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo</div>
+  <p>你注意到每一个 Claude 网站都长一样吗？人们已经调出了"Claude 网站长什么样"——衬线字体、棕色和米色、特定间距的等宽字体。一段时间后你拿到一个分布，你说："<strong>这不是创造力。这是 Claude 出来的垃圾</strong>。"</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Max</div>
+  <p>明确说——我不觉得这是<strong>人 vs 计算机</strong>，是<strong>人加计算机 vs 纯计算机</strong>。但计算机会产出疯狂的超级刺激——它会做娱乐。TikTok 已经是弱化版了。</p>
+  <p>我个人对艺术的定义——<strong>有意义的分布外行为</strong>。某种让人惊讶的、像在 Z 轴上移动的东西。"有意义"意味着——<strong>它改变了你未来在宇宙里的轨迹——你的生活因为你想过它而变得不同</strong>。</p>
+  <p>你的艺术定义是什么？</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我有几个定义。<strong>艺术是传递情感——你内心感受到了什么，把它传给另一个人；你创造一件物品，捕捉了你内心的情感</strong>。按这个定义，<strong>计算机几乎不可能创造艺术——一模一样的艺术品如果背后没有意图，就是无意义的</strong>。</p>
+  <p>你可以说自然是艺术——夕阳——但那是纯智能不带动机地工作，所以不涉及自我，你的大脑识别出一个复杂系统。<strong>人类意义上的艺术是——有人感受到了什么，想让你也感受到</strong>。所以<strong>"谁创造了它"这件事本身就构成意义</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>艺术是把内心的情感传递给另一个人。<br>同一张图片，如果背后没有意图——<br><strong>就是无意义的。</strong></p>
+  <div class="src">— NAVAL'S DEFINITION OF ART</div>
+</div>
+
+<div class="speaker">
+  <div class="who">Max</div>
+  <p>历史上，回报是 70% 智力，30% 主动性。<strong>现在会变成 70% 主动性，30% 智力——并且随模型变好继续向主动性倾斜</strong>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval</div>
+  <p>我说反话，Max。<strong>我觉得是 99% 智力、1% 主动性——因为 Agent 会去行使主动性</strong>。你会直接说："嘿 Agent，我在做聪明决策、思考大想法；你去实现。"</p>
+  <p>有时候我想给一个我正在 vibe code 的 app 加功能，我会问 Agent："<strong>我下一步应该建什么功能？去看日志</strong>。"</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval（继续 · 终章）</div>
+  <p>人类会有巨量价值——<strong>更多的价值</strong>。这里每个人，我们的生产力都飞涨。<strong>基础经济学告诉你——当生产力提高，你会变得更富有、雇<em>更多</em>人，而不是更少</strong>。如果有人真的擅长用 AI、真的聪明又有创造力，<strong>我比以往任何时候都更想雇他</strong>，因为有那个杠杆。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Guillermo（终章）</div>
+  <p>这是一个新要求。<strong>我们雇初级和超资深，前提是他们真的擅长用 Agent、能快速适应</strong>。</p>
+  <p>我的假设是——<strong>我们最终会得到大量小团队</strong>。任何特定任务所需的人数大幅下降。只看一阶效应的人会说——"所有工作都消失了——我可以用两个人造一个喷气发动机而不是 1000 个；998 个工作没了"。</p>
+  <p>但实际意味的是——<strong>你可以造很多种不同的喷气发动机</strong>。<span class="hl">我们会得到创业精神的大爆炸，创始人的大爆炸，以及大量极小的团队</span>。</p>
+</div>
+
+<div class="speaker">
+  <div class="who">Naval（结语）</div>
+  <p>AI 提供了基础智力和领域知识，把行业黑话切穿；现在 Agent 提供了大量主动性。所以剩下的是——<strong>创造力、品味</strong>——是的，你需要足够的主动性去开始、去坚持，但你不再需要花二十年学一件事才能贡献。<strong>这个门槛下降意味着——通才迎来盛宴</strong>。</p>
+  <p>说到底我们都是通才——我们都喜欢思考一切。Max 在这里聊意识、聊 FDA、聊脑科学、聊创造力。Twitter 上那些喜欢说"专家、证书、来源"的人正在被伤害，<strong>因为专业性越来越不重要了</strong>。</p>
+  <p>你花五到十年读个 PhD——希望它培养了你的创造力、本能、品味、判断——<strong>如果它只让你记住黑话和脚手架，AI 一刀切穿</strong>。这是"大脑的自行车"，被加速过了。所以这是<strong>用 AI 的人 vs 不用 AI 的人</strong>——<strong>你能为自己做的唯一最好的事就是变得真正擅长用这些工具，并且永远知道它们能做什么和不能做什么的边界。而那是一个移动的靶子</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>未来不是机器对人，<br>是<strong>机器加人对纯机器</strong>。<br><strong>你能为自己做的最好的事——<br>就是变得真正擅长用 AI，<br>并永远知道它能做什么和不能做什么的边界。</strong></p>
+  <div class="src">— THE FINAL TAKEAWAY</div>
+</div>
+
+<div class="footer">
+  <div class="brand">NAVAL PODCAST · 2026</div>
+  <div>The AI Industrial Revolution · 中文版精校</div>
+  <div class="meta">译自 Naval Ravikant 主持的 2026.06 圆桌对谈 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/naval-ai-revolution</div>
+</div>
+
+</div>
+</body>
+</html>
