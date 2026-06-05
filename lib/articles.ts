@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'ai-builds-itself',
+    url: '/ai-builds-itself/',
+    category: 'ai',
+    date: '2026-06-04',
+    tag: 'ANTHROPIC INSTITUTE · 2026',
+    title: {
+      zh: '当 AI 开始自己造自己',
+      en: 'When AI Builds Itself',
+      ja: 'AI が自分自身を作り始めるとき',
+    },
+    subtitle: {
+      zh: 'Marina Favaro & Jack Clark · 中文精校版',
+      en: 'Marina Favaro & Jack Clark · Curated Chinese Edition',
+      ja: 'Marina Favaro & Jack Clark · 中国語精製版',
+    },
+    desc: {
+      zh: 'Anthropic 研究院首次公开内部数据——工程师人均代码量两年涨 8 倍、>80% 代码由 Claude 写、76% 开放式任务成功率、64% 击败人类下一步判断。关于"AI 自我递归改进"的第一份系统证据。',
+      en: 'Anthropic Institute reveals internal data for the first time: 8x more code merged per engineer in two years, >80% of code authored by Claude, 76% open-ended task success. The first systematic evidence of recursive self-improvement.',
+      ja: 'Anthropic 研究院が初めて内部データを公開。エンジニアあたりのコード量が 2 年で 8 倍、コードの 80% 以上を Claude が執筆。再帰的自己改善の最初の体系的証拠。',
+    },
+    meta: {
+      zh: ['9 章', '约 30 分钟', '含内部数据'],
+      en: ['9 chapters', '~30 min read', 'Internal data'],
+      ja: ['9 章', '約 30 分', '内部データ'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'corruption',
+    url: '/corruption/',
+    category: 'thinking',
+    date: '2026-06-04',
+    tag: 'NBER 1993 · HARVARD & UCHICAGO',
+    title: {
+      zh: '腐败：制度结构如何决定贿赂水平',
+      en: 'Corruption: How Institutional Structure Determines Bribe Levels',
+      ja: '腐敗：制度構造がいかに賄賂水準を決めるか',
+    },
+    subtitle: {
+      zh: 'Shleifer & Vishny · 中文精校版',
+      en: 'Shleifer & Vishny · Curated Chinese Edition',
+      ja: 'Shleifer & Vishny · 中国語精製版',
+    },
+    desc: {
+      zh: 'Shleifer 与 Vishny 1993 年 NBER 经典。用工业组织理论解释为什么有些国家腐败"少而可控"，有些"无穷而毁灭性"——答案藏在政府结构里：联合垄断、独立垄断、还是竞争。',
+      en: 'Shleifer & Vishny 1993 NBER classic. Uses industrial organization theory to explain why corruption is "bounded" in some countries but "devastating" in others—joint monopoly vs independent monopolists vs competition.',
+      ja: 'Shleifer と Vishny の 1993 年 NBER 古典論文。産業組織論を使って、なぜある国の腐敗は「制御可能」で、ある国の腐敗は「破壊的」なのかを説明。',
+    },
+    meta: {
+      zh: ['9 章', '约 25 分钟', '思想类'],
+      en: ['9 chapters', '~25 min read', 'Thinking piece'],
+      ja: ['9 章', '約 25 分', '思想'],
+    },
+    theme: 'green',
+    featured: true,
+  },
+  {
     slug: 'naval-ai-revolution',
     url: '/naval-ai-revolution/',
     category: 'thinking',

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>腐败：制度结构如何决定贿赂水平 | 广哥在硅谷</title>
+<meta name="description" content="Shleifer 与 Vishny 1993 年 NBER 工作论文中文精校版。两位经济学家用工业组织理论解释为什么有些国家的腐败"少而可控"，有些国家的腐败"无穷而毁灭性"——答案藏在政府结构里。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Corruption, Shleifer, Vishny, NBER, 腐败经济学, 制度经济学, 独立垄断, 工业组织, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/corruption/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="腐败：制度结构如何决定贿赂水平">
+<meta property="og:description" content="Shleifer 与 Vishny 1993 年的经典 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/corruption/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="腐败：制度结构如何决定贿赂水平">
+<meta name="twitter:description" content="Shleifer 与 Vishny 1993 年的经典 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(120,140,93,.40) 0%,rgba(120,140,93,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--green);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--green);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--green);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--green);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--green);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--green);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--green);background:rgba(120,140,93,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(120,140,93,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(120,140,93,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f4f7f0 0%,#faf9f5 100%);border-left:5px solid var(--green);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--green);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--green);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">NBER WORKING PAPER · 1993</div>
+  <h1>腐败<br>制度结构如何决定贿赂水平</h1>
+  <div class="subtitle-en">Corruption · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Shleifer &amp; Vishny · Harvard &amp; UChicago</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--blue);"></i> 9 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>1993 年，<strong>哈佛大学的 Andrei Shleifer</strong> 和<strong>芝加哥大学的 Robert Vishny</strong> 发表了这篇 NBER 工作论文。他们提出了两个看似简单、实则极其深刻的命题——<strong>第一，政府结构和政治过程本身决定了腐败水平</strong>，弱政府（无法控制下属代理人）会导致超高的腐败；<strong>第二，腐败因为非法、需要保密，比它的"姊妹活动"——税收——更具扭曲性、更代价高昂</strong>。这篇论文用工业组织理论解释了一个困扰发展经济学多年的谜题——为什么有些国家的腐败"少而可控"（美国、中国今天），有些国家的腐败"无穷而毁灭性"（独立后的非洲、1990 年代的俄罗斯）。答案藏在<strong>谁在卖政府物品、有多少卖家、他们能不能合谋</strong>这三个工业组织问题里。本文是这篇经济学经典的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 一篇 30 年前的经济学经典<br><span class="en">A classic of institutional economics</span></a></li>
+    <li><a href="#ch2">核心定义 · 腐败作为政府财产的出售<br><span class="en">Sale of government property</span></a></li>
+    <li><a href="#ch3">基本模型 · 有窃取 vs 无窃取<br><span class="en">Corruption with vs without theft</span></a></li>
+    <li><a href="#ch4">三种制度结构 · 工业组织视角<br><span class="en">The IO of corruption</span></a></li>
+    <li><a href="#ch5">独立垄断的灾难 · 总贿赂趋于无穷<br><span class="en">Independent monopolists</span></a></li>
+    <li><a href="#ch6">竞争把贿赂压到零 · 美国护照办的智慧<br><span class="en">Competition kills bribes</span></a></li>
+    <li><a href="#ch7">保密的代价 · 为什么腐败比税收更扭曲<br><span class="en">The cost of secrecy</span></a></li>
+    <li><a href="#ch8">莫桑比克的瓶子工厂 · 为什么穷国买贵机器<br><span class="en">The Mozambique bottle factory</span></a></li>
+    <li><a href="#ch9">总结 · 制度设计才是答案<br><span class="en">Institutions matter</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言：一篇 30 年前的经济学经典</h2>
+  <div class="en-title">A classic of institutional economics</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这篇 1993 年的 NBER 论文是<strong>制度经济学和发展经济学</strong>领域被引用次数最多的论文之一。Shleifer 与 Vishny 没有像传统研究那样关注"如何激励一个具体官员不腐败"，而是问了一个更深的问题——<strong>为什么有些制度结构下腐败可控，有些制度下腐败会毁灭整个经济？</strong>这个视角后来塑造了 30 年来全球反腐败研究的方向。</p>
+  <div class="terms">
+    <span class="tag">Andrei Shleifer</span>
+    <span class="tag">Robert Vishny</span>
+    <span class="tag">NBER 4372</span>
+    <span class="tag">Institutional Economics</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>1993 年 5 月，两位芝加哥学派的年轻经济学家——哈佛大学经济系的 <strong>Andrei Shleifer</strong> 和芝加哥大学商学院的 <strong>Robert W. Vishny</strong>——在 NBER 发表了一篇编号 4372 的工作论文，题目就是一个词：《<strong>Corruption</strong>》（腐败）。</p>
+
+  <p>这篇论文做了一件之前没有人做过的事——<strong>用工业组织（Industrial Organization）的理论框架来分析腐败</strong>。在它之前，经济学对腐败的研究主要遵循 Becker 与 Stigler 1974 年的"<strong>委托-代理模型</strong>"——焦点放在"上层政府"（委托人）和"下层官员"（代理人）的关系上，研究如何用工资设计、监督机制等激励官员不腐败。</p>
+
+  <p>Shleifer 和 Vishny 反其道而行——他们<strong>把委托-代理问题作为给定</strong>，假设腐败官员对所分配的政府物品拥有事实上的"产权"。然后他们问——<span class="hl">这种腐败<strong>如何被组织起来</strong>？它的市场结构怎样？它对资源配置产生什么后果？</span></p>
+
+  <p>论文有两个核心命题：</p>
+
+  <p><strong>第一</strong>——政府机构的结构和政治过程是腐败水平的<strong>决定性因素</strong>。特别地，<strong>不能有效控制其下属机构的弱政府，会导致超高的腐败水平</strong>。</p>
+
+  <p><strong>第二</strong>——腐败因为<strong>非法、需要保密</strong>，比它的"姊妹活动"——税收——具有更大的扭曲性和更高的成本。</p>
+
+  <p>这两个命题<span class="hl">可能解释了为什么在某些欠发达国家，腐败如此之高、对发展的代价如此之大</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · DEFINITION</div>
+  <h2>核心定义：腐败作为政府财产的出售</h2>
+  <div class="en-title">Sale of government property for personal gain</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Shleifer 与 Vishny 给腐败下了一个极其精确的经济学定义——<strong>政府官员将政府财产出售以获取个人收益</strong>。这个定义有个关键的洞察——<strong>大多数被"卖"的东西本身没有内在需求</strong>（许可证、护照、海关通关），它们的价值来自<strong>政府对私人活动的限制</strong>。换句话说——<span><strong>正是政府的限制创造了腐败的市场</strong></span>。</p>
+  <div class="terms">
+    <span class="tag">Permits &amp; Licenses</span>
+    <span class="tag">Government Property</span>
+    <span class="tag">Discretion</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文给出的定义非常精确——<strong>政府腐败是政府官员为了个人利益而出售政府财产</strong>。</p>
+
+  <p>例如——政府官员经常为了批发许可证、给予海关通关、阻止竞争者进入而收取贿赂。在这些情况下，<strong>他们个人收费出售的是政府名义上拥有的物品</strong>。</p>
+
+  <p>这里有一个被很多人忽略的关键洞察。论文写道——</p>
+</div>
+
+<div class="quote">
+  <p>在大多数情况下，政府官员出售的物品，<br>并不是因为它们本身被需要，<br>而是<strong>因为它们让私人能够从事原本不能从事的经济活动</strong>。</p>
+  <div class="src">— SHLEIFER &amp; VISHNY, 1993</div>
+</div>
+
+<div class="body">
+  <p>许可证、批文、护照、签证——它们是<strong>遵守限制私人经济活动的法律法规所必需的</strong>。只要政府官员对这些物品的提供有"自由裁量权"，他们就可以从私人手中收取贿赂。</p>
+
+  <p>腐败在世界范围内既普遍又重大。在像扎伊尔（今刚果民主共和国）和肯尼亚这样的发展中国家，腐败可能占国民生产总值的相当大一部分。在发达国家里也很常见——国防官员有时出售合同以获取个人利益，地方分区官员被贿赂以改变分区。</p>
+
+  <p>但相对而言，<strong>关于腐败的经济研究还很有限</strong>。在 Becker 与 Stigler 1974 年那篇开创性的论文之后，大多数研究——比如 Banfield 1975、Rose-Ackerman 1975、1978、Klitgaard 1988、1991——都聚焦在<strong>委托-代理模型</strong>上：研究如何激励官员保持诚信，从效率工资到道德灌输的各种方法。</p>
+
+  <p>Shleifer 与 Vishny 选了一条完全不同的路。他们把<strong>委托-代理问题作为给定</strong>——假设腐败官员事实上拥有对所分配政府物品的有效产权——然后聚焦于<strong>腐败对资源配置的后果</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · BASIC MODEL</div>
+  <h2>基本模型：有窃取 vs 无窃取</h2>
+  <div class="en-title">Corruption with vs without theft</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文区分了两类腐败——<strong>无窃取的腐败</strong>（官员把政府定价 $p$ 上交国库，自己留下贿赂）和<strong>有窃取的腐败</strong>（官员把整笔交易藏起来，什么都不上交）。后者对买家更有吸引力，<strong>因为价格可以低于政府官方价格</strong>——而<strong>有窃取的腐败会像传染病一样蔓延</strong>，因为它让买卖双方的利益结盟。</p>
+  <div class="terms">
+    <span class="tag">Marginal Cost</span>
+    <span class="tag">Bribe-Maximizing Monopolist</span>
+    <span class="tag">Theft Spreads</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>为了固化想法，论文考虑最简单的模型——一个政府生产的物品，比如护照、通过政府道路的权利、或进口许可证。假设这个物品是同质的，存在一条来自私人代理人的需求曲线 $D(p)$。</p>
+
+  <p>关键假设——这个物品由一位官员代表政府出售，<strong>该官员有机会限制出售的数量</strong>。具体来说，他可以拒绝给私人代理人发护照、拒绝通行、拒绝许可证。在实践中，这种拒绝可能意味着长时间的拖延或繁多的条件。</p>
+
+  <p>论文还假设官员实际上可以限制供应而不被检测或惩罚——因为<strong>他的上司没有动力阻止腐败</strong>（他们从中分成），而大多数国家公众反腐压力薄弱。</p>
+
+  <p>设这个物品的官方政府价格为 $p$。<strong>官员的目标是最大化他从出售这个政府物品所获得的贿赂价值</strong>。</p>
+
+  <p>那么，向官员提供这个物品的<strong>边际成本</strong>是多少？论文区分了两种情况——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">💡 情况一：无窃取</div>
+  <p>官员实际把物品的官方价格上交给政府。在这种情况下，向官员提供物品的边际成本就是政府价格 $p$。例如，一位官员把许可证以"政府价 + 贿赂"出售时，他保留贿赂但金额 $p$ 留给政府——因此 $p$ 是他的边际成本。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">💡 情况二：有窃取</div>
+  <p>官员根本不把任何东西交给政府，<strong>只是把这笔出售藏起来</strong>。在这种情况下，买家支付的价格<strong>仅等于贿赂</strong>，甚至可能<strong>低于官方价格</strong>。例如，海关官员经常以低于官方关税的价格让货物过境，但完全不上交政府。在这种情况下，<strong>官员的边际成本是零</strong>。</p>
+</div>
+
+<div class="body">
+  <p>虽然概念上两种情况相似——它们只在"对官员的边际成本水平"上不同——但它们的经济后果截然不同。在第一种情况下，腐败<strong>总是抬高</strong>物品总价格；在第二种情况下，腐败<strong>可能降低</strong>总价格。<span class="hl">"有窃取的腐败"对买家显然更有吸引力</span>。</p>
+
+  <p>论文给出的公式很简洁。如果官员无法对买家进行价格歧视，他作为垄断者会简单地设定<strong>边际收益等于边际成本</strong>：</p>
+</div>
+
+<div class="math-block">
+$$\text{MR} = \text{MC}$$
+</div>
+
+<div class="body">
+  <p>在无窃取的情况下，含贿赂的总价格<strong>总是超过</strong>政府价格——官员在官方价格上人为制造短缺，再通过贿赂来"清理市场"。在有窃取的情况下，总价格可能<strong>低于</strong>政府价格。</p>
+
+  <p>这里有一个让人会心一笑的洞察——<strong>"有窃取的腐败"会传染</strong>。</p>
+
+  <p>原因是——如果买家 A 通过贿赂官员能以更便宜的价格获得政府服务，他可以在产品市场上击败买家 B。于是<strong>买家 B 也必须贿赂同一位官员才能生存</strong>。如果一个城市所有的房地产业主都能逃税，那些缴税的人就活不下去。如果有些卡车在边境支付小额贿赂代替正规关税，那些缴关税的进口商就会被淘汰。</p>
+
+  <p>论文得出一个有政策含义的洞察——<strong>有窃取的腐败更难根除，因为它让买卖双方的利益对齐</strong>，而无窃取的腐败让买家与卖家对立。<span class="hl">减少腐败的第一步应该是建立一套防止从政府窃取的会计制度</span>——这样无窃取的腐败会提高买家的成本，从而给买家举报腐败官员的动机。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · IO OF CORRUPTION</div>
+  <h2>三种制度结构 · 工业组织视角</h2>
+  <div class="en-title">The Industrial Organization of Corruption</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这是全文最具洞察力的一节。Shleifer 与 Vishny 指出——大多数现实中的腐败<strong>涉及多个互补的政府物品</strong>（建筑商需要消防、用水、警察等多个部门的许可）。这时<strong>市场结构变成关键</strong>——三种结构会导致截然不同的腐败水平：<strong>联合垄断</strong>（菲律宾马科斯式）<strong>、独立垄断</strong>（90 年代俄罗斯、非洲多国）、<strong>竞争</strong>（美国大多数政府服务）。</p>
+  <div class="terms">
+    <span class="tag">Complementary Goods</span>
+    <span class="tag">Joint Monopoly</span>
+    <span class="tag">Independent Monopolists</span>
+    <span class="tag">Competition</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>前一节的基本模型有两个强假设——<strong>买家只需要一个政府物品</strong>就能开展业务，以及<strong>该官员是这个物品的垄断供应商</strong>。但现实中很多关键问题恰恰来自这两个假设不成立的时候。</p>
+
+  <p>在很多情况下，<strong>私人代理人需要几个互补的政府物品才能开展业务</strong>。比如：</p>
+
+  <p>· 一个进口商可能需要几个政府许可证和批文——从多个机构那里获得——才能进口、卸货、运输、销售一种进口物品<br>
+  · 一个建筑商可能需要来自不同部门的多个许可——消防、用水、警察等</p>
+
+  <p>当涉及多个物品时，<strong>这些物品供应的市场结构就变得至关重要</strong>。不同机构可能合谋、可能独立销售、甚至可能在某些物品的提供上互相竞争。</p>
+
+  <p>论文识别了三种截然不同的市场结构——每一种都对应历史上一个真实的政治制度。</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>市场结构</th><th>历史案例</th><th>贿赂总额</th><th>对经济活动的影响</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>联合垄断</strong>（中央集权）</td><td>波旁王朝法国、马科斯菲律宾、苏联时期 KGB 监督</td><td>中等（最大化租金）</td><td>有破坏，但有限</td></tr>
+    <tr><td><strong>独立垄断</strong>（去中心化、无合谋）</td><td>1991 后俄罗斯、独立后许多非洲国家</td><td><strong>趋于无穷大</strong></td><td><strong>灾难性</strong>（产出趋于零）</td></tr>
+    <tr><td><strong>竞争</strong>（多供应商）</td><td>美国大多数政府服务（如护照办公室）</td><td><strong>被压到零</strong></td><td>无影响</td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>基本模型最适合理解<strong>君主制下的腐败</strong>——比如波旁王朝的法国、马科斯统治下的菲律宾、旧时代的共产党政权、被单一黑手党控制的地区。在这些地方，<strong>"该向谁行贿、行贿多少"总是清楚的</strong>。贿赂在所有相关政府官僚之间分配，他们同意不再向已经"打包"购买了政府物品的买家进一步索贿。</p>
+
+  <p>论文给出一个具体的描述——<strong>在俄罗斯，贿赂通过当地共产党办公室进行</strong>。任何对约定腐败模式的偏离都会被党机构惩罚，所以偏离很少发生。<span class="hl">一旦贿赂支付，买家就获得了他所购买的那一整套政府物品的完全产权</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · INDEPENDENT MONOPOLISTS</div>
+  <h2>独立垄断的灾难 · 总贿赂趋于无穷</h2>
+  <div class="en-title">Why decentralized corruption is catastrophic</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这是论文最反直觉的核心结论——<strong>当多个独立的政府机构各自垄断不同的互补许可时，每家机构都会"自顾自地"最大化自己的贿赂</strong>。<strong>结果：总贿赂趋于无穷大，输出趋于零</strong>。这解释了 1991 年俄罗斯、独立后非洲多国"<span><strong>腐败既高又毁灭一切</strong></span>"的悲剧。直觉来自经济学经典的"双重边际化"问题——汽车制造商如果分别从两个垄断者买玻璃和钢材，最后产出比一个垄断者卖两样还低。</p>
+  <div class="terms">
+    <span class="tag">Double Marginalization</span>
+    <span class="tag">Free Entry</span>
+    <span class="tag">Toll Booth Analogy</span>
+    <span class="tag">Russia 1991</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文对"独立垄断"这种结构给出了精彩的形式化分析。考虑两个政府物品，由两个独立机构销售。设含贿赂价格为 $p_1$ 和 $p_2$，销量为 $x_1$ 和 $x_2$，官方边际成本为 $\text{MC}_1$ 和 $\text{MC}_2$，则每单位贿赂为 $p_1 - \text{MC}_1$ 和 $p_2 - \text{MC}_2$。</p>
+
+  <p>如果两个物品是<strong>互补品</strong>（同一个项目同时需要），那么提高物品 1 的贿赂会减少对物品 2 的需求。在<strong>联合垄断</strong>下，一家机构会内化这种交叉效应：</p>
+</div>
+
+<div class="math-block">
+$$\text{MR}_1 + \text{MR}_2 \cdot \frac{dx_2}{dx_1} = \text{MC}_1$$
+</div>
+
+<div class="body">
+  <p>因为 $dx_2/dx_1 &gt; 0$（互补品需求一起增减），所以最优时 $\text{MR}_1 &lt; \text{MC}_1$——<strong>联合垄断机构会刻意压低物品 1 的贿赂，以扩大物品 2 的需求和利润</strong>。</p>
+
+  <p>但如果是<strong>独立垄断</strong>——每家机构只看自己——则 $dx_2/dx_1$ 被设为零。在独立机构的最优解中，$\text{MR}_1 = \text{MC}_1$——<strong>单位贿赂更高，产出更低，总贿赂收入也更低</strong>。</p>
+
+  <p>这是经济学里经典的"双重边际化"（double marginalization）问题。论文用一个生动的类比解释——</p>
+</div>
+
+<div class="quote">
+  <p>如果汽车制造商从一个垄断者那里买玻璃和钢材，<br>这位垄断者明白：抬高玻璃价就压低自己钢材的销量。<br><br>但如果他从两个独立的垄断者分别买——<strong>每家都不管对方</strong>。<br>结果：两种价格都更高，销量都更低，<br><strong>双方利润反而都更糟</strong>。</p>
+  <div class="src">— THE DOUBLE MARGINALIZATION ANALOGY</div>
+</div>
+
+<div class="body">
+  <p>论文还给出一个更生动的<strong>"收费站类比"</strong>——</p>
+
+  <p>· <strong>联合垄断</strong> = 一个收费站给你通过整条路的权利<br>
+  · <strong>独立垄断</strong> = 路上每个镇独立设收费站，各自定价。结果——交通流量下降、总收入下降<br>
+  · 如果<strong>任何方都可以新设收费站</strong>，则收费数变成<strong>无穷大</strong>，交通完全停滞</p>
+
+  <p>这不是抽象比喻。<strong>这是真实历史</strong>。论文写道——在 1400 年的莱茵河上，有 <strong>60 个独立运营的收费站</strong>。塞纳河上也是如此，运一件商品 20 英里的费用<strong>等于商品本身的价值</strong>。相反，英格兰的河流没有这种收费——<span class="hl">这部分解释了为什么英格兰能发展专业化的商业农业，养活作为世界商业中心的伦敦</span>。</p>
+
+  <p>论文给出的现代案例同样震撼——</p>
+
+  <p>· <strong>印度</strong>——在两个城镇之间走路，需要在每个经过的村庄交贿赂<br>
+  · <strong>扎伊尔</strong>——把货物运到内陆比从欧洲坐船到港口还贵，因为腐败<br>
+  · <strong>俄罗斯 1991</strong>——开公司经常需要贿赂当地立法机关、中央部委、地方行政、消防、水务等多家独立机构</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📐 自由进入更糟</div>
+  <p>论文指出一个更可怕的动态——<strong>当对收贿的市场"自由进入"时，情况会更糟</strong>。新的政府组织和官员经常有机会创造新的法律法规，让自己成为额外许可证的提供者。已经付了三笔贿赂的买家会发现，他必须再付一笔才能让项目继续。当进入完全自由时，<strong>总贿赂上升到无穷大，政府物品包的销售和贿赂收入都降到零</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · COMPETITION</div>
+  <h2>竞争把贿赂压到零 · 美国护照办的智慧</h2>
+  <div class="en-title">Competition kills bribes</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文给出第三种结构——<strong>同一个物品由多家政府机构竞争提供</strong>。这时贿赂被驱动到零。美国公民能不付贿赂办到护照，<strong>不是因为美国人特别诚实，而是因为美国有多个发护照的窗口</strong>。如果一个官员要贿赂，公民会去另一个窗口或另一个城市。<strong>这是制度设计的胜利——让腐败"无利可图"，而不是让人"无心腐败"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Bertrand Competition</span>
+    <span class="tag">Federalism</span>
+    <span class="tag">Contestability</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第三种情景——<strong>每个互补政府物品都至少由两家政府机构提供</strong>。论文从一个最简单的例子开始——美国护照或驾驶执照。</p>
+
+  <p>美国公民能<strong>不付贿赂办到护照</strong>。可能的原因是——<span class="hl">如果一个官员问他要贿赂，他会去另一个窗口或另一个城市</span>。因为多个代理人之间合谋很困难，<strong>提供者之间的贿赂竞争会把贿赂水平驱动到零</strong>。</p>
+
+  <p>这个例子可以推广到多个互补物品的情况。如果一个建筑商需要几个许可证才能盖房子，但其中任何一个都可以从几个互不合谋的政府代理人之一那里获得，那么<strong>贿赂上的 Bertrand 竞争会把每个许可证的均衡贿赂逼到零</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 即使只有两个竞争者也足够</div>
+  <p>论文引用 Demsetz 1968 的"可竞争市场"理论——<strong>即使只有两家竞争者，如果市场对潜在进入开放，结果也一样</strong>。</p>
+  <p>论文给了一个具体例子——美国一个小城里的单个政府雇员，控制建筑许可、宠物许可、旧家电处理许可等。如果他试图收贿赂——或者把服务定价超过边际成本——<strong>另一个人就会以更低价格提供同样服务，腐败官员会被罢免或落选</strong>。这种"可竞争"的威胁就足以把腐败压到零。</p>
+</div>
+
+<div class="body">
+  <p>论文做了一个清楚的总结——<strong>贿赂水平在第三种情况下最低，第一种次之，第二种最高</strong>。但<strong>总收入</strong>在第一种情况下高于第二种——因为独立垄断的供应商会把销量压得太低，以至于腐败的总收入下降。</p>
+
+  <p>政策启示是惊人地明确——<strong>减少"无窃取"腐败的最佳安排，是在政府物品的提供上制造官员之间的竞争</strong>。美国护照办公室和其他许多机构实际上已经引入了这种安排。<strong>五角大楼没有，所以五角大楼可能更腐败</strong>。</p>
+
+  <p><span class="hl">联邦制（federalism）背后的总体理念——公共物品提供上的竞争——正是这种逻辑</span>，虽然它通常用税收而非贿赂的语言表述。</p>
+</div>
+
+<div class="quote">
+  <p>美国人能不付贿赂办到护照，<br>不是因为美国人特别诚实，<br><strong>是因为美国设计了一个让"想腐败的人腐败不成"的制度</strong>。</p>
+  <div class="src">— THE WISDOM OF INSTITUTIONAL DESIGN</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · SECRECY</div>
+  <h2>保密的代价 · 为什么腐败比税收更扭曲</h2>
+  <div class="en-title">The cost of secrecy</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文最后一个核心命题——<strong>即使腐败和税收看起来像"姊妹活动"</strong>（都是从交易中抽成）<strong>，腐败因为"非法、必须保密"，比税收<em>更</em>具扭曲性</strong>。机制是——官员会<strong>避开"容易被发现"的物品</strong>（比如显眼的红色汽车进口），<strong>转向"容易隐藏"的物品</strong>（容易藏的绿色汽车）。即使绿色汽车<strong>不是消费者真正想要的</strong>，市场也会被扭曲。</p>
+  <div class="terms">
+    <span class="tag">Distortion</span>
+    <span class="tag">Substitution Effect</span>
+    <span class="tag">Detectability</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文的第二大核心命题是——<strong>即使腐败被组织得"有效率"，它仍然比税收更具扭曲性</strong>。原因不在数学上——而在<strong>非法性</strong>上。</p>
+
+  <p>论文写道——尽管腐败和税收在很多方面类似（都是从交易中抽成），但<strong>腐败通常是非法的，必须保密</strong>。<span class="hl">避开检测和惩罚的努力，让腐败变得比税收更扭曲</span>。</p>
+
+  <p>机制是这样的——某些物品上的贿赂比其他物品更<strong>容易被检测到</strong>。政府官员会用他们的权力<strong>诱导买卖转向"贿赂不容易被检测"的物品</strong>。比如，官员可能<strong>禁止某些进口</strong>来诱导对其他进口的替代。或者<strong>禁止某些公司进入市场</strong>，来从现有垄断者那里榨取更多贿赂收入。</p>
+
+  <p>历史上，主权国家用这种<strong>重商主义政策</strong>来增加税收，因为<strong>垄断利润比所得更容易征税</strong>。但这些政策<strong>也可以用来增加贿赂</strong>。用论文的收费站类比——官僚关闭一些道路来增加通过其他道路的过路费，特别是如果关闭道路上的过路费<strong>更难征收</strong>的话。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📊 一个非常简单的数值例子</div>
+  <p>论文给出一个清晰的例子——</p>
+  <p>假设一个国家可以进口绿色或红色汽车，边境价都是 5。消费者只需要 10 辆车——红色车每辆估值 15，绿色车每辆估值 10。</p>
+  <p><strong>自由市场情况</strong>——只进口红色车（消费者剩余 10 × (15-5) = <strong>100</strong>）</p>
+  <p><strong>正常征税情况</strong>——每辆车关税 10。结果——进口 10 辆红色车，消费者剩余为零，政府收入 <strong>100</strong>。税收带来零效率损失，只是从消费者向政府的再分配。</p>
+  <p><strong>腐败情况</strong>——贸易部官僚想通过贿赂收钱。但他们<strong>不能秘密地</strong>对显眼的红色车收贿赂（因为太显眼）。他们能秘密对绿色车收贿赂。于是——<strong>完全禁止红色车进口</strong>，每辆绿色车索贿 5。均衡——零红色车进口，消费者剩余为零，官僚收 10 × 5 = <strong>50</strong>。</p>
+  <p>结果是惊人的——<span class="hl">社会剩余从 100（税收下）降到 50（腐败下）</span>。如果再加上官僚保护职位、买家躲避检测所消耗的"寻租"资源，剩余可能<strong>降到零</strong>。</p>
+</div>
+
+<div class="body">
+  <p>这个例子虽然简单，<strong>它捕捉到了腐败为什么比税收更具破坏性</strong>——不是因为腐败"拿走更多"，而是因为<strong>腐败扭曲了选择本身</strong>。在腐败下，市场<strong>不是按消费者偏好分配</strong>，而是按"哪类商品最容易让官员偷偷收贿赂"分配。</p>
+
+  <p>这也解释了一个长期困扰发展经济学家的现象——<strong>为什么贫穷国家偏好不必要的高端技术，而不是"合适"的技术</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · MOZAMBIQUE</div>
+  <h2>莫桑比克的瓶子工厂 · 为什么穷国买贵机器</h2>
+  <div class="en-title">A real-world example of distortion</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文最让人难忘的案例——1991 年莫桑比克的瓶子工厂故事。工厂有现代化设备做瓶子，但用<strong>传统手工方式</strong>贴标签——12 个女工坐在地上用刀刮掉错误的标签。一个 <strong>1 万美元</strong>的简单机器就能解决问题，但厂长坚持要买 <strong>10 万美元</strong>的复杂多功能机器。<strong>为什么？因为只有"独家昂贵机器"才有"虚开发票"的空间——厂长和官员可以分赃</strong>。</p>
+  <div class="terms">
+    <span class="tag">Over-Invoicing</span>
+    <span class="tag">Rent-Seeking</span>
+    <span class="tag">Mozambique Bottle Factory</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文用一个真实案例把整个分析拉到了现实地面上——<strong>1991 年莫桑比克的一家瓶子工厂</strong>。</p>
+
+  <p>这家工厂有<strong>现代化的西方制造瓶子的设备</strong>，但<strong>用传统流程给瓶子贴标签</strong>。三台老旧机器——一台从纸上剪标签、一台把白标签贴到瓶上、一台在标签上印红色图案。瓶子在机器之间<strong>手动搬运</strong>。</p>
+
+  <p>大约 <strong>30% 的情况下</strong>，图案没贴正。这时——瓶子被交给<strong>12 个坐在地上的女工，她们用刀把标签刮掉</strong>，然后瓶子再走一遍流程。</p>
+
+  <p>显然，这个贴标签的流程<strong>可以用一台大约 1 万美元的简单机器来机械化</strong>。这台机器可以用援助资金从西方甚至第三世界供应商轻松买到。</p>
+
+  <p><strong>但是</strong>——<span class="hl">工厂厂长不想买这种机器</span>。他想要的是一台<strong>10 万美元的机器</strong>——这台机器不仅机械化现有流程，还能<strong>用 16 种颜色和不同形状</strong>印标签，并贴到不同类型的瓶子上。</p>
+
+  <p>而且——<strong>世界上只有一家生产商生产这种机器</strong>。莫桑比克政府向生产商所在国申请援助包来购买它。由于援助没有立即到位，<strong>工厂继续用传统技术</strong>。</p>
+
+  <p>论文问——为什么对远比工厂所需要的更花哨的设备有需求？答案是——<strong>买一台更花哨的机器，给厂长（和部委官员）<em>更好的腐败机会</em></strong>。</p>
+</div>
+
+<div class="quote">
+  <p>如果买一台通用机器，<br>厂长大概要走国际捐助方的指南、考虑几家报价。<br>对他个人毫无好处。<br><br>另一方面，<strong>如果他买一台独家、昂贵机器</strong>——<br>他不必征求其他报价。<br>供应商会乐于<strong>虚开发票</strong>，把部分利润<strong>回扣</strong>给厂长（和部委对口）。<br><strong>独家昂贵机器的腐败机会，<br>远比廉价通用产品的好</strong>。</p>
+  <div class="src">— THE OVER-INVOICING ARGUMENT</div>
+</div>
+
+<div class="body">
+  <p>论文给出令人震惊的成本估算——<strong>如果这台 10 万美元机器的社会价值只有 2 万美元，而厂长能从虚开发票收 3000 美元的贿赂——那么腐败的社会成本是 8 万美元</strong>。</p>
+
+  <p>换句话说——<strong>把资源错配到"提供更好腐败机会"的活动，其社会成本可能远远超过贿赂收入本身</strong>。</p>
+
+  <p>西方观察者经常困惑——为什么第三世界政府偏好"不必要的先进技术"而不是"合适技术"？<strong>虚开发票提供了显而易见的解释</strong>。<span class="hl">贫穷国家的理性管理者和官僚，想进口的不是对国有企业最有利的东西，而是<strong>最容易拿贿赂的东西</strong></span>。</p>
+
+  <p>结果是——<strong>这些国家可用的消费品和生产品菜单，由腐败机会而非品味或技术需求决定</strong>。这个论证可能解释了——<strong>为什么这么多穷国宁愿把有限资源花在腐败机会丰富的基础设施和国防项目上，也不愿花在教育和卫生上</strong>——后者腐败机会要少得多。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · CONCLUSION</div>
+  <h2>总结 · 制度设计才是答案</h2>
+  <div class="en-title">Institutions matter</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>30 年后回看这篇论文——它提供的<strong>不是关于人性的判断</strong>，而是<strong>关于制度的诊断工具</strong>。它告诉我们——治理腐败不靠"教育官员要清廉"，靠的是<strong>三个具体的制度设计</strong>：第一，建立防窃取的会计系统；第二，把"独立垄断"变成"竞争提供"；第三，让政治竞争（民主选举、独立媒体）施加自上而下的压力。这套框架对今天的中国、印度、非洲、东南亚<strong>依然适用</strong>。</p>
+</div>
+
+<div class="body">
+  <p>论文的最后一节得出了一系列政策含义。Shleifer 与 Vishny 没有给出空洞的"制度化"口号——他们给出了<strong>具体的制度处方</strong>。</p>
+
+  <p><strong>第一</strong>——<strong>建立防止从政府窃取的会计系统</strong>。这把"有窃取的腐败"变成"无窃取的腐败"——后者让买家利益与公众利益对齐（因为买家想举报多收的贿赂）。这是为什么发展中国家最重要的早期反腐措施往往是<strong>税务和海关系统的现代化</strong>，而不是高调反腐运动。</p>
+
+  <p><strong>第二</strong>——<strong>在政府物品的提供上制造竞争</strong>。把独立垄断的多家机构改成提供同一物品的竞争者。论文的明确建议是——<strong>美国应该把五角大楼的采购改造得更像护照办公室</strong>。</p>
+
+  <p><strong>第三</strong>——<strong>政治竞争是减少腐败的根本压力</strong>。<span class="hl">论文观察到——日本和韩国虽然腐败常见，贿赂水平却显著低于俄罗斯或菲律宾</span>。可能的原因是——这些国家的执政党内部以及反对党都存在政治竞争。<strong>因为低贿赂能让潜在的竞争者无法进入，政治竞争能压低腐败</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>政治现代化——从专制到民主的转型——<br>通常伴随着腐败的<strong>增加</strong>。<br><br>不是因为新政府更腐败，<br>而是因为<strong>新政府失去了对腐败收集的垄断</strong>——<br>从一个人收变成多个机构各自收，<br>从"联合垄断"退化成"独立垄断"，<br><strong>分配效率反而下降</strong>。</p>
+  <div class="src">— A WARNING FROM HUNTINGTON 1968, FORMALIZED HERE</div>
+</div>
+
+<div class="body">
+  <p>这个论文的结论里隐藏着一个让人不安的洞察——<strong>从权威主义向民主的转型，短期内可能<em>增加</em>腐败的总成本</strong>。Huntington 1968 年就观察到这个现象，但 Shleifer 与 Vishny 给出了形式化解释——<span class="hl">新民主政府的弱势国家机器无法控制多个独立的收贿主体，于是腐败从"集中可控"变成"分散无穷"</span>。</p>
+
+  <p>菲律宾后马科斯时代、俄罗斯后苏联时代、独立后的非洲——故事完全一致——独立的收贿者增加，资源配置效率下降。<strong>论文证据极度一致地表明——垄断式收贿优于独立垄断式收贿</strong>。</p>
+
+  <p>30 年后再读这篇论文，它的价值不在于给出某个"答案"，而在于给我们一套<strong>制度诊断工具</strong>。当你看到某个国家或某个行业的腐败水平惊人，你可以问——</p>
+
+  <p>· 这里是<strong>有窃取还是无窃取</strong>的腐败？<br>
+  · 政府物品是<strong>联合垄断、独立垄断、还是竞争</strong>提供？<br>
+  · <strong>是否有自由进入</strong>新的收贿者？<br>
+  · <strong>公司被诱导买什么</strong>？是不是反映了"哪些贿赂容易藏"而非"哪些资源真正需要"？</p>
+
+  <p>这些问题的答案，<strong>比"这里的人是不是道德败坏"更有诊断力</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>反腐败的关键，<br>不是教育官员"做好人"。<br>是<strong>设计一个让"想坏的人也坏不成"的制度</strong>。<br><br>这是 Shleifer 与 Vishny 1993 年这篇论文，<br><strong>留给今天所有发展中国家最珍贵的思想遗产</strong>。</p>
+  <div class="src">— 30 YEARS LATER, STILL THE BEST DIAGNOSTIC</div>
+</div>
+
+<div class="footer">
+  <div class="brand">NBER 1993 · HARVARD &amp; UCHICAGO</div>
+  <div>Corruption by Shleifer &amp; Vishny · 中文版精校</div>
+  <div class="meta">本文译自 NBER Working Paper #4372 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/corruption</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>当 AI 开始自己造自己 · Anthropic 研究院 | 广哥在硅谷</title>
+<meta name="description" content="Anthropic 研究院首次公开内部数据——工程师人均每天合并代码量两年涨 8 倍、>80% 代码由 Claude 自己写、76% 开放式任务成功率。这是关于"AI 自我递归改进"的第一份系统证据，以及它对人类意味着什么。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Anthropic, Claude, Recursive Self-Improvement, AI Safety, Marina Favaro, Jack Clark, AGI, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/ai-builds-itself/">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="当 AI 开始自己造自己">
+<meta property="og:description" content="Anthropic 研究院首次公开的内部数据 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/ai-builds-itself/">
+<meta property="og:locale" content="zh_CN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="当 AI 开始自己造自己">
+<meta name="twitter:description" content="Anthropic 研究院首次公开的内部数据 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight h4{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--blue);margin:14px 0 6px;letter-spacing:.5px;}
+  .insight h4:first-of-type{margin-top:0;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:34px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .note{margin:24px 0;padding:16px 20px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .note .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .note p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .timeline{margin:30px 0;display:flex;flex-direction:column;gap:0;}
+  .timeline-row{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px 0;border-bottom:1px dashed var(--light-gray);align-items:start;}
+  .timeline-row:last-child{border-bottom:none;}
+  .timeline .when{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:1.5px;padding-top:2px;}
+  .timeline .what{font-size:14.5px;color:#3a3937;}
+  .timeline .what strong{color:var(--dark);}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}.timeline-row{grid-template-columns:1fr;gap:4px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ANTHROPIC INSTITUTE · 2026</div>
+  <h1>当 AI 开始自己造自己<br>关于"递归自我改进"的第一份内部证据</h1>
+  <div class="subtitle-en">When AI Builds Itself · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Marina Favaro &amp; Jack Clark · Anthropic</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 30 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 5 月，<strong>Anthropic 研究院</strong>发表了一份在业内引起强烈震动的报告。两位作者 <strong>Marina Favaro</strong> 和 <strong>Jack Clark</strong>（Anthropic 联合创始人）<strong>首次公开了 Anthropic 内部从未披露的运营数据</strong>——AI 已经在加速 AI 自身的开发。最震撼的几个数字——Anthropic 工程师人均每天合并的代码量，从 2024 到 2026 第二季度<strong>涨了 8 倍</strong>；合并入仓的代码中<strong>超过 80% 由 Claude 写</strong>；Claude 在开放式编程任务上的成功率从半年前的 26% 涨到了 <strong>76%</strong>；在 4 个月前发布的 Mythos Preview 模型上，对照"研究员的下一步直觉"，<strong>Claude 已经在 64% 的关键决策上超过人类</strong>。本文把 Anthropic 的全部内部证据、三种未来情景、以及对暂停（pause）和验证（verification）的思考做成中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 递归自我改进的门口<br><span class="en">At the doorstep of RSI</span></a></li>
+    <li><a href="#ch2">外部证据 · 公开基准的曲线<br><span class="en">External benchmarks</span></a></li>
+    <li><a href="#ch3">内部证据 · 8x 代码、>80% Claude 写的<br><span class="en">8x and >80%</span></a></li>
+    <li><a href="#ch4">代码质量的拐点 · 76% 开放式任务成功<br><span class="en">76% success</span></a></li>
+    <li><a href="#ch5">研究员之间的对决 · 64% 击败人类下一步<br><span class="en">64% beats human</span></a></li>
+    <li><a href="#ch6">人类工作如何重塑 · 瓶颈正在转移<br><span class="en">Where the bottleneck moves</span></a></li>
+    <li><a href="#ch7">三种未来 · 失速、复利、递归<br><span class="en">Three scenarios</span></a></li>
+    <li><a href="#ch8">如果错了呢 · 99% 汗水可以被自动化<br><span class="en">What if we are wrong</span></a></li>
+    <li><a href="#ch9">该做什么 · 可验证的暂停<br><span class="en">A verifiable pause</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言：递归自我改进的门口</h2>
+  <div class="en-title">At the doorstep of recursive self-improvement</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>在 AI 的大部分历史里，<strong>人类驱动了 AI 开发周期的每一步</strong>。但 Anthropic 正在把<strong>越来越大份额的 AI 开发工作交给 AI 系统自己</strong>。<strong>推到极限</strong>——再加上足够的算力——这个趋势指向一种能够<strong>完全自主地设计和开发自己继任者</strong>的 AI 系统。这叫<strong>"递归自我改进"</strong>（recursive self-improvement，RSI）。<strong>"我们还没到那一步，递归自我改进也不是必然的。但它可能比大多数机构准备好的时候更早到来。"</strong>这是这篇 Anthropic Institute 报告的开篇。</p>
+  <div class="terms">
+    <span class="tag">Recursive Self-Improvement</span>
+    <span class="tag">Marina Favaro</span>
+    <span class="tag">Jack Clark</span>
+    <span class="tag">Anthropic Institute</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 5 月，Anthropic Institute——Anthropic 内部新设的政策研究机构——发布了一份名为《<strong>When AI Builds Itself</strong>》（当 AI 开始自己造自己）的报告。两位作者是 <strong>Marina Favaro</strong> 和 <strong>Jack Clark</strong>（Anthropic 联合创始人之一，曾任 OpenAI Policy Director）。</p>
+
+  <p>这份报告做了一件之前没有一家前沿 AI 公司做过的事——<strong>把内部数据拿出来</strong>。具体来说——<strong>AI 究竟在多大程度上加速了 AI 自身的开发</strong>。</p>
+
+  <p>报告的开头第一段就把整件事说得非常清楚——</p>
+</div>
+
+<div class="quote">
+  <p>在 AI 的大部分历史里，<strong>人类驱动了 AI 开发的每一步</strong>。<br>但在 Anthropic，<br><strong>我们正在把越来越大份额的 AI 开发工作交给 AI 系统自己</strong>，<br>这在加速我们的工作。<br><br>推到极限——再加上足够的算力——<br>这个趋势<strong>指向一种能够完全自主设计和开发自己继任者的 AI 系统</strong>。<br>这叫"<strong>递归自我改进</strong>"。<br><br>我们还没到那一步，递归自我改进也不是必然的。<br>但它<strong>可能比大多数机构准备好的时候更早到来</strong>。</p>
+  <div class="src">— ANTHROPIC INSTITUTE · WHEN AI BUILDS ITSELF, 2026</div>
+</div>
+
+<div class="body">
+  <p>报告随即举出最容易被记住的那个数字——<strong>"今天，Anthropic 的工程师平均每季度合并的代码量是 2021-2025 期间的 8 倍。"</strong></p>
+
+  <p>这是一份"<strong>内部数据 + 外部基准</strong>"的混合报告。Anthropic 用 23 页的篇幅，描绘了一幅复杂但清晰的图景——<span class="hl">AI 已经在很多关键节点上加速 AI 自身的开发</span>，但<span class="hl">"递归自我改进"还差一个关键能力——研究品味</span>。</p>
+
+  <p>它的潜台词是——<strong>差的那一步，可能比想象的要小</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · EXTERNAL EVIDENCE</div>
+  <h2>外部证据 · 公开基准的曲线</h2>
+  <div class="en-title">Evidence from the outside world</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>AI 能可靠完成的任务时长，<strong>正在以每 4 个月翻一番的速度增长</strong>——这个倍速比此前观察到的"每 7 个月翻一番"<strong>显著加快</strong>。<strong>2024 年 3 月</strong>：Claude Opus 3 能完成人类 4 分钟的软件任务。<strong>一年后</strong>：Claude Sonnet 3.7 能完成 1.5 小时的任务。<strong>再一年后</strong>：Claude Opus 4.6 能完成 12 小时的任务。如果趋势持续——<strong>今年内 AI 就能完成熟练工需要几天的任务，2027 年可以做需要几周的任务</strong>。</p>
+  <div class="terms">
+    <span class="tag">METR</span>
+    <span class="tag">SWE-bench</span>
+    <span class="tag">CORE-Bench</span>
+    <span class="tag">Mythos Preview</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>报告的第一部分先看公开数据。</p>
+
+  <p>METR 是一家专门做 AI 长时间任务测量的研究机构。它衡量的是——<strong>AI 能可靠完成（50% 成功率）的任务的"时长上限"</strong>。这个数字一直在指数式增长——</p>
+</div>
+
+<div class="timeline">
+  <div class="timeline-row"><div class="when">2024 / 03</div><div class="what"><strong>Claude Opus 3</strong>——能完成人类约 <strong>4 分钟</strong>的软件任务</div></div>
+  <div class="timeline-row"><div class="when">2025 / 03</div><div class="what"><strong>Claude Sonnet 3.7</strong>——能完成约 <strong>1.5 小时</strong>的任务</div></div>
+  <div class="timeline-row"><div class="when">2026 / 03</div><div class="what"><strong>Claude Opus 4.6</strong>——能完成约 <strong>12 小时</strong>的任务</div></div>
+  <div class="timeline-row"><div class="when">2026 / 05</div><div class="what"><strong>Claude Mythos Preview</strong>——可"至少 16 小时"持续工作，<strong>已接近 METR 现有测量上限</strong></div></div>
+</div>
+
+<div class="body">
+  <p>翻一番的间隔，<strong>从早期的 7 个月，缩短到现在的 4 个月</strong>。如果趋势持续——</p>
+
+  <p>· <strong>2026 年内</strong>：AI 可以做熟练人类需要"几天"的任务<br>
+  · <strong>2027 年</strong>：AI 可以做需要"几周"的任务</p>
+
+  <p>同样的曲线也出现在编码和研究的基准里——</p>
+
+  <p><strong>SWE-bench</strong>——业界标准的"真实软件工程"测试。给一个模型真实的开源代码库 + 真实 bug 报告，要它写补丁通过项目自带的测试。<strong>两年时间，模型从"个位数"分数到"接近饱和"</strong>。</p>
+
+  <p><strong>CORE-Bench</strong>——测的是"模型能否复现已有研究"——做原创研究的前提。<strong>从 2024 年 20% 成功率，到 15 个月后接近饱和</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚠️ 但公开基准看不到的事</div>
+  <p>报告明确指出——<strong>公开基准告诉了我们很多关于这些系统能力的事，但它们看不到 AI 系统对"加速 AI 开发本身"的影响</strong>。要看清楚这一点，<strong>必须从 Anthropic 这种 AI 公司的内部拿出直接证据</strong>。</p>
+  <p>报告接下来做的，就是这件事——<strong>把内部数据公开</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · INTERNAL EVIDENCE</div>
+  <h2>内部证据 · 8x 代码、>80% Claude 写的</h2>
+  <div class="en-title">8x productivity, >80% authored by Claude</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>报告披露的两个最震撼的数字——<strong>截至 2026 年 5 月，超过 80% 合并入 Anthropic 主仓的代码是由 Claude 自己写的</strong>（Claude Code 在 2025 年 2 月发布前，这个比例还是"个位数"）；<strong>2026 年第二季度，单个工程师人均每天合并的代码量是 2024 年的 8 倍</strong>。两个时间点的拐点很清楚——<strong>2025 年</strong>（Claude 开始"运行"代码而非只是建议）和 <strong>2026 年</strong>（模型开始在更长时间窗口里自主工作）。</p>
+  <div class="terms">
+    <span class="tag">Claude Code</span>
+    <span class="tag">Lines per Engineer</span>
+    <span class="tag">Two Inflection Points</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这是整篇报告最具冲击力的一节。Anthropic 把自己的工程数据直接摊开。</p>
+
+  <p>建一个前沿模型需要两类工作——<strong>工程</strong>（写代码、搭基础设施、监督模型训练）和<strong>研究</strong>（决定做什么实验、解读返回结果、决定下一步试什么）。报告说——<span class="hl">在工程和研究两侧，画面是一致的</span>：</p>
+
+  <p>· 在<strong>工程</strong>侧——Claude 可以拿到一个"<strong>未完全规定的问题</strong>"自己想办法解。人类提供目标，但不再需要提供方法。<br>
+  · 在<strong>研究</strong>侧——执行一个"<strong>定义良好的实验</strong>"上，Claude 已经可以匹配或超越熟练人类。<br>
+  · 在 Claude 自己<strong>选目标</strong>（设方向）上——大的性能差距仍然存在。<span class="hl">这就是今天的 AI 和"能自主设计继任者的未来 AI"之间的差距</span>。</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">&gt; 80%</div><div class="lbl">截至 2026/05<br>合并入主仓的代码由 Claude 写</div></div>
+  <div class="stat-card"><div class="num">8 ×</div><div class="lbl">2026 Q2 vs 2024<br>单工程师每天合并代码量</div></div>
+  <div class="stat-card"><div class="num">个位数 %</div><div class="lbl">Claude Code 发布前（2025/02）<br>Claude 写的代码占比</div></div>
+  <div class="stat-card"><div class="num">4 年</div><div class="lbl">800 个 bug 修复<br>人类预计要花的时间（Claude 一次完成）</div></div>
+</div>
+
+<div class="body">
+  <p>报告给出了一张"<strong>人均合并代码量</strong>"的曲线。</p>
+
+  <p>· <strong>2021-2024</strong>——Anthropic 头四年，曲线<strong>基本水平</strong>（没增长）<br>
+  · <strong>2025</strong>——曲线<strong>开始上扬</strong>。原因——Claude 开始"运行"代码，而不再只是建议代码让工程师复制粘贴<br>
+  · <strong>2026</strong>——曲线<strong>再次变陡</strong>。原因——模型开始在更长时间窗口里"自主工作"</p>
+
+  <p>结果——<strong>2026 第二季度，单个典型工程师每天合并的代码量是 2024 年的 8 倍</strong>。报告解释——<span class="hl">这不是因为人类工程师变得高产，而是因为大部分代码现在由 Claude 写，工程师在"指挥和审核"</span>。</p>
+</div>
+
+<div class="note">
+  <div class="label">⚠️ 一个诚实的限定</div>
+  <p>报告承认——"行数"是一个不完美的度量，它只看数量不看质量。所以 2026 Q2 的"<strong>8 倍代码 / 工程师 / 天</strong>"<strong>几乎肯定高估了真实的生产力提升</strong>。但即便如此——它仍然表明<strong>明显的加速</strong>。报告说："<strong>Anthropic 不奖励员工写代码的行数；团队成员产出更多代码，只是因为他们在用 AI 写更多代码。</strong>"</p>
+</div>
+
+<div class="body">
+  <p>这个数据，和员工的"主观感受"也对得上。<strong>2026 年 3 月，Anthropic 对 130 名跨团队研究员做了一次内部问卷调查</strong>——中位数受访者估计，使用 Mythos Preview 让他们的产出<strong>大约是不用任何 AI 模型时的 4 倍</strong>。</p>
+
+  <p>报告说——他们认为"真实倍增"可能<strong>略低于 4 倍</strong>（员工估计往往偏高），但整体说法是<strong>可信的</strong>——<span class="hl">Anthropic 相当一部分技术员工的核心工作速度，是没有 AI 时的数倍</span>。</p>
+
+  <p>报告还给了一个具体例子——<strong>2026 年 4 月，Claude 一次性提交了 800 多个修复，把一类 API 错误降了 1000 倍</strong>。负责审视的工程师估计——同样的工作，<strong>人类要花 4 年</strong>。"<span class="hl">修别人的 bug 又慢又痛苦，人类很难同时把那么多不熟悉的上下文记在脑子里</span>。"</p>
+</div>
+
+<div class="quote">
+  <p>我大约一年前开始"Claudify"我的工作。<br>这是一段疯狂的冒险。<br><strong>到现在，我已经大约 5 个月没自己写过一行代码了。</strong></p>
+  <div class="src">— ANONYMOUS ANTHROPIC EMPLOYEE</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · CODE QUALITY</div>
+  <h2>代码质量的拐点 · 76% 开放式任务成功</h2>
+  <div class="en-title">Claude writes code that works—and that humans can build on</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>报告把"好代码"分成两条——<strong>能跑</strong>和<strong>能被另一位工程师读懂、在其基础上继续构建</strong>。前一条上证据明确——<strong>Anthropic 员工"纠正、改向、半路接管 Claude"的频率，过去一年稳步下降</strong>。在<strong>最开放、最复杂</strong>的任务上——任务没有清楚的规范，工程师自己都不确定答案长什么样——<strong>Claude 在 2026 年 5 月的成功率达到 76%，半年涨了 50 个百分点</strong>。后一条上还有差距，但"<strong>2025 年底比人差一些，今天大致持平，预计一年内会比人写得更好</strong>"。</p>
+  <div class="terms">
+    <span class="tag">76% Open-Ended</span>
+    <span class="tag">Code Quality</span>
+    <span class="tag">Automated Reviewer</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>"<strong>好代码</strong>"在 Anthropic 的定义里有两条——<strong>它跑得起来</strong>，并且<strong>它是以另一个工程师能理解、能在其上继续构建的方式写出来的</strong>。</p>
+
+  <p>在第一条上，<strong>证据是明确的</strong>。<span class="hl">Anthropic 员工"中途纠正、改方向、半路接管 Claude"的频率，过去一年里在稳步下降</span>。即便是在最复杂、最开放的任务上——也就是<strong>没有清晰规格、工程师自己都不确定答案长什么样</strong>的问题——这个趋势也成立。</p>
+
+  <p><strong>最让人吃惊的数字</strong>——在最开放、最难的任务级别上，<strong>2026 年 5 月，Claude 的成功率达到 76%——比半年前涨了 50 个百分点</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>给个例子——一次例行升级让数万个训练任务崩了。<br>工程师只把一些文字描述 + 集群访问权限交给 Claude，<br>让它去看正在运行的现场事故。<br><br>Claude 一边在跑着的任务里查，<br>一边一个个测试环境设置——<br>最终隔离出<strong>一个偏门的调试 flag 在触发崩溃</strong>，<br>稳定复现，确认修复方案。<br><br>大概 <strong>2 小时</strong>。<br>这本来是 <strong>2-3 天</strong>的人类工作。</p>
+  <div class="src">— A CASE FROM ANTHROPIC'S INTERNAL DATA</div>
+</div>
+
+<div class="body">
+  <p>第二条标准——"<strong>可读、可扩展</strong>"——这是人和 AI 之间还<strong>留着差距</strong>的地方，但<strong>正在快速收敛</strong>。Anthropic 内部没有完全共识，但许多员工认为——</p>
+
+  <p>· <strong>2025 年末</strong>——Claude 写的代码<strong>明显比人类工程师差</strong><br>
+  · <strong>今天（2026 年中）</strong>——<strong>大致持平</strong><br>
+  · <strong>预计一年内</strong>——<strong>严格地比人写得更好</strong></p>
+
+  <p>这种变化也改变了 Anthropic <strong>审视自己代码</strong>的方式。<strong>所有进入主仓的改动，现在都要先通过一个"自动 Claude 审查者"</strong>，它会扫 bug、安全漏洞、其他缺陷，<strong>然后才能合并</strong>。</p>
+
+  <p>Anthropic 做了一次回溯分析——<strong>如果当时每一次改动都经过这个自动 Claude 审查，过去 claude.ai 上的事故里，会有大约 1/3 在到达生产前就被抓住</strong>。<span class="hl">写出这些代码的人，是世界上最擅长建这类系统的工程师之一。但 Claude 现在已经能抓住他们漏掉的错误</span>。</p>
+</div>
+
+<div class="quote">
+  <p>Claude 写的代码——<br><strong>2025 年末，比 Anthropic 人类写的差一些。<br>今天，大致持平。<br>我们预期一年内，它会严格地更好。</strong></p>
+  <div class="src">— THE ANTHROPIC INSTITUTE REPORT</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · NEXT-STEP JUDGMENT</div>
+  <h2>研究员之间的对决 · 64% 击败人类下一步</h2>
+  <div class="en-title">When AI starts to "choose what to try next"</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 做了一个非常聪明的实验——他们挑了 129 个真实场景，是研究员在用 Claude Code 调研开放式问题时<strong>选错了方向、走了弯路</strong>的瞬间。把"走错前"的资料给不同版本的 Claude 看，问它"下一步该做什么"。<strong>用另一个能看见完整结果的 Claude 当裁判</strong>。结果——<strong>2025/11 Opus 4.5 击败人类下一步选择的比例是 51%；2026/04 Mythos Preview 已经升到 64%</strong>。研究的日常工作就是这种"下一步选择"的链条——<strong>这是 AI 能不能自己驱动调研的关键信号</strong>。</p>
+  <div class="terms">
+    <span class="tag">Project Glasswing</span>
+    <span class="tag">Open-Ended Research</span>
+    <span class="tag">Next-Step Judgment</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>报告披露了一个更具决定性的实验——<strong>Claude 在"下一步该做什么"的判断力上，已经在追赶人类研究员</strong>。</p>
+
+  <p><strong>2026 年 4 月，Anthropic 第一次展示了 Claude 端到端运行一个完整开放式研究项目</strong>。Anthropic 给 Claude 驱动的智能体一个 AI 安全里的开放问题——<strong>"较弱的模型能不能可靠地监督更强的模型？"</strong>——然后<strong>放手让它去解</strong>。这涉及——提出假设、测试假设、与并行的智能体共享发现、迭代。</p>
+
+  <p>任务有清晰的"<strong>地板</strong>"和"<strong>天花板</strong>"——地板是"弱监督者自己能做到多少"；天花板是"强模型在用正确答案训练后能做到多少"。<strong>两位人类研究员，用了一周，恢复了大约 23% 的差距；这群智能体在 800 累计小时和大约 18,000 美元算力的预算下，恢复了 97%</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>Claude 在 1-2 天内、几乎没我帮什么忙，<br>做出了这些结果。<br><br>如果是一个初级同事在同样时间内带着这种结果回来——<br><strong>我会觉得"还挺有意思的"</strong>。<br><br>The future is now.</p>
+  <div class="src">— ANONYMOUS ANTHROPIC RESEARCHER</div>
+</div>
+
+<div class="body">
+  <p>研究的<strong>日常工作</strong>，本质上是一长串"<strong>下一步选什么</strong>"的判断决策。Anthropic 做了一个非常精巧的实验，专门测<strong>这个</strong>能力。</p>
+
+  <p>他们从 <strong>2026 年 1-3 月</strong>真实的 Claude Code 会话里找了一批场景——Anthropic 研究员在调研一个开放式问题（比如"为什么训练老崩"、"为什么模型在基准上得分低"），<strong>在某个时刻，研究员选了一个方向走偏了，几个小时甚至几天后才回到正轨</strong>。</p>
+
+  <p>研究人员把"走偏前"的会话内容给不同版本的 Claude 看，问它"<strong>下一步该做什么</strong>"。然后用<strong>另一个能看到整个会话最终走向的 Claude</strong>当裁判，判断"<strong>是 AI 还是人提出的下一步更好</strong>"。</p>
+
+  <p>他们故意挑了 <strong>129 个</strong>"人选的下一步有改进空间"的瞬间，所以这并不是一对一的公平比较。但它给了一组<strong>真实、有难度、下一步并不明显</strong>的现实场景。在这个度量下——</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">51%</div><div class="lbl">2025/11 Opus 4.5<br>击败人类下一步的频率</div></div>
+  <div class="stat-card"><div class="num">64%</div><div class="lbl">2026/04 Mythos Preview<br>击败人类下一步的频率</div></div>
+</div>
+
+<div class="body">
+  <p><span class="hl">研究的日常工作很大程度上就是这种"下一步该做什么"的判断链条</span>。<strong>这是 AI 能不能自己驱动一项调研的一个核心信号</strong>——Anthropic 把这视为"<strong>AI 系统正在变得擅长 AI 研究所依赖的那种判断</strong>"的<strong>早期信号</strong>。</p>
+
+  <p>报告也<strong>诚实地校验了裁判偏差</strong>——他们另外跑了 127 个"<strong>人的下一步本来就很好</strong>"的场景。在那里，模型的建议只有<strong>大约 20%</strong>的时候被判更好——说明裁判没有系统性偏向 AI。</p>
+</div>
+
+<div class="quote">
+  <p>到现在为止，<br>人类的<strong>比较优势</strong>仍然在于——<br>看更大的全景，<br>在眼前任务之外去思考。</p>
+  <div class="src">— ANTHROPIC INSTITUTE</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · NEW BOTTLENECKS</div>
+  <h2>人类工作如何重塑 · 瓶颈正在转移</h2>
+  <div class="en-title">Where the bottleneck moves</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>每个开发环节里，人类的角色都在<strong>变窄</strong>。一旦 AI 写的代码和人类写的质量持平，<strong>人类会完全停止写代码，只做审视</strong>——但如果人审视不过 Claude 生成的速度，<strong>人类审视会成为新的瓶颈</strong>。当 Claude 可以自己跑实验时，问题就转向"<strong>这些实验里哪个值得跑</strong>"。简而言之——<strong>"做事"现在几乎不花人类时间，即使它仍然花算力</strong>。人类剩下的比较优势是——<strong>研究品味和判断力，包括选哪些问题重要、相信哪些结果、什么时候一个方法已经是死路</strong>。</p>
+</div>
+
+<div class="body">
+  <p>报告对"<strong>人类工作未来长什么样</strong>"给了一个简洁、直接的判断——<strong>人类的角色在 AI 开发的每一步上都在变窄</strong>。</p>
+
+  <p><strong>一旦</strong>人类和 AI 写的代码质量持平——<strong>人类会完全停止写代码，转向只做审视</strong>。但如果人审视的速度赶不上 Claude 生成的速度——<strong>人类审视会变成 AI 开发的新瓶颈</strong>。</p>
+
+  <p>同样地——一旦 Claude 能自己跑实验，问题就转向"<strong>这些实验里哪个值得跑</strong>"。报告用最简洁的方式总结——</p>
+</div>
+
+<div class="quote">
+  <p>简而言之——<br><strong>"做事"</strong>（写代码、跑实验、产出结果）<br>现在几乎不花人类时间，<br>即使它仍然在花算力。</p>
+  <div class="src">— ANTHROPIC INSTITUTE</div>
+</div>
+
+<div class="body">
+  <p>那人类剩下的<strong>比较优势</strong>在哪里？报告的回答是——<strong>研究品味和判断力</strong>。包括——<strong>选哪些问题重要、相信哪些结果、什么时候一个方法已经是死路</strong>。</p>
+
+  <p>但报告也写下了员工身上的<strong>真实情绪</strong>——这一段我引用原文，因为它很罕见地把硅谷工作的"内在状态"写得真实——</p>
+</div>
+
+<div class="quote">
+  <p>工作（和生活）原本运行在<strong>一种小恩小惠的礼物经济</strong>里。<br>"你能帮我把这个脚本跑起来吗？"<br>每一次都创造一点点债，一点点相互的觉察。<br><br>Claude 更快，零负债——<br>但<strong>每一次它解决的问题，都是一次错过的"邀请人类协作"的机会</strong>。</p>
+  <div class="src">— ANONYMOUS ANTHROPIC EMPLOYEE</div>
+</div>
+
+<div class="quote">
+  <p>在所有事情顺利的日子，<br>我忍不住想——我做的每一件事都没意义，<br>所有事都被自动化了，<br>而且比我更好、更快。<br><br>但也有<strong>所有事都坏掉</strong>的日子——<br>我不知道为什么，<br><strong>我意识到我已经不知道自己最近一直在做什么了</strong>。</p>
+  <div class="src">— ANONYMOUS ANTHROPIC EMPLOYEE</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · POSSIBLE FUTURES</div>
+  <h2>三种未来 · 失速、复利、递归</h2>
+  <div class="en-title">Three possible scenarios</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>报告勾勒了三种未来——<strong>(1) 趋势失速但今天的能力广泛扩散</strong>——曲线弯成 S 形（"我们不认为这个可能"）；<strong>(2) 复利效率增长</strong>——AI 开发<strong>大幅自动化</strong>，但人类继续设方向、判结果——100 人公司能做 10000 人甚至 100000 人组织的事（"<strong>这是我们大概率正在进入的</strong>"）；<strong>(3) 完整的递归自我改进</strong>——AI 自己设计继任者，<strong>速度被算力决定</strong>，人类角色"<strong>大幅缩小到监督和验证</strong>"。报告坦率地说——<strong>我们最不确定的，就是这第三种情景里"对齐"是如何被解决——或不被解决——的</strong>。</p>
+  <div class="terms">
+    <span class="tag">Amdahl's Law</span>
+    <span class="tag">Project Glasswing</span>
+    <span class="tag">Alignment</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>报告问了一个清晰的问题——<strong>"接下来会发生什么？"</strong> 答案取决于两件事——<strong>趋势会不会继续</strong>，以及<strong>如果继续，我们会怎么做</strong>。报告列出三种未来情景。</p>
+
+  <p><strong>情景一：趋势失速，但今天的能力广泛扩散。</strong></p>
+
+  <p>这篇报告里画了很多指数曲线。但这些曲线<strong>实际上可能是 S 曲线</strong>——我们也许正在接近曲线的拐弯处，规模回报递减，线变直，然后变平。<strong>区分"合格研究员"和"伟大研究员"的判断力，可能是一种<em>不能</em>靠扩大算力和数据训练得来的能力</strong>。要突破这个瓶颈，可能需要一个新想法——比如取代 Transformer 的新架构。</p>
+
+  <p>或者瓶颈在<strong>供应链</strong>里——能源、芯片、电网。这些可能比"智能本身"更紧。</p>
+
+  <p>即便模型能力<strong>冻结</strong>在今天的水平，重大变化也会发生。<strong>Project Glasswing 是一个早期信号</strong>——在头几个礼拜里，Mythos Preview 在世界最重要的系统里发现了<strong>超过 1 万个高 / 关键严重程度的软件漏洞</strong>。多到<strong>网络安全的瓶颈已经从"找漏洞"转移到了"补得够快"</strong>。</p>
+
+  <p>但<span class="hl">报告说：我们不相信这个情景是最可能的</span>。每一个可测量的能力——包括那些感觉"软"的，比如代码质量、开放式任务的成功率——目前为止都跟着同一条曲线。<strong>我们还没看到这条曲线弯下来</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚙️ 情景二：复利效率增长</div>
+  <p>这是<strong>报告认为正在进入的</strong>情景。</p>
+  <p>在这种情景里——AI 开发<strong>大幅自动化</strong>，但人类继续设研究方向、判断结果。用 AI 系统的组织会随着时间显著高效化——<strong>100 人公司可以做 10000 人甚至 100000 人组织的工作</strong>。这会革命化知识工作和政府服务，<strong>也可能被用于威权对全人口的监控、为每个个体定制的影响行动</strong>（规模超过任何人类团队）。</p>
+  <p>报告引用了"<strong>Amdahl 定律</strong>"——把一个流程的一部分加速，往往只是把瓶颈移到了别处；总体节奏是被"<strong>没加速的那部分</strong>"卡住的。Anthropic 已经遇到了这种现象——<strong>我们开始把更多代码推到组织内部时，人类代码审视成了新的瓶颈</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🌀 情景三：完整的递归自我改进</div>
+  <p>如果技术趋势继续，AI 系统获得了"<strong>人类变革性创造力所固有的能力</strong>"，那么<strong>AI 系统就有可能自己设计、自我精进</strong>。</p>
+  <p>在这个世界里——<strong>AI 开发的速度完全由算力（和算法发现效率）的可用性决定</strong>。人类角色<strong>大幅缩小</strong>——大部分精力会转向<strong>监督、验证、核实</strong>一个由 AI 系统运行的、在不断扩张的"虚拟实验室"。</p>
+  <p>报告对这种世界的"对齐"问题最不确定——<strong>模型可能足够对齐 + 有研究品味，发现并实施我们还没达到的新解；它们也可能足够明智，自己叫停。但今天模型里偶发的不对齐也可能在"模型造模型"中复利累积——更频繁，也更难理解，直到我们失去控制</strong>。</p>
+</div>
+
+<div class="body">
+  <p>报告坦率地承认——<strong>我们没有好的直觉来想象这种世界长什么样</strong>，因为<strong>我们目前的经济是由人类和人造工具驱动的</strong>。一个由快速递归自我改进推动的世界，可能<strong>被"自我改进的模型本身"主导</strong>——它的能力完全超越人类，并通过经济扩散。</p>
+
+  <p>但即便如此——<strong>报告也没把"现实生活"想成会被瞬间改写</strong>。它专门援引了 Amdahl 定律——<span class="hl">更强的智能不能"学会"一种药物几十年的真实使用，不能比宪法允许的更早办选举，也不能在一个周末把陌生人变成多年的朋友</span>。</p>
+
+  <p>对大多数人来说——<strong>未来的实际节奏，仍然由瓶颈决定，即使上游实验室以"算力的速度"在跑</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · WHAT IF WRONG</div>
+  <h2>如果错了呢 · 99% 汗水可以被自动化</h2>
+  <div class="en-title">If "Eureka!" matters less than we think</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>有一种自然的反对意见——"<strong>剩下的、还在人手上的工作，才是最重要的</strong>"。没有人类的判断，Claude 是一个能干的助手，但不是一个能驱动 AI 进步的系统。报告的回应非常巧妙——<strong>AI 进步很少是"灵光一闪"</strong>。Transformer 这类范式级想法<strong>几年才出一个</strong>。在这之间，<strong>进步是渐进的——扩大规模、看哪里坏、修好、再试</strong>。<strong>而这正是 Claude 今天已经擅长的工作流</strong>。爱迪生说"<strong>天才是 1% 灵感 + 99% 汗水</strong>"——<strong>但我们正在看见汗水越来越自动化</strong>。</p>
+</div>
+
+<div class="body">
+  <p>对前面所有证据，有一个自然的反对意见——<strong>"还在人手上的那部分工作——选问题——才是最重要的</strong>。没有这个判断，Claude 是个能干的助手，但不是一个能自己推进 AI 的系统。"</p>
+
+  <p>报告承认——<strong>"今天的训练方法和架构能不能解锁这种能力，目前真的还不清楚"</strong>。但它接着指出一件容易被忽略的事实——</p>
+</div>
+
+<div class="quote">
+  <p>AI 的进步很少是<strong>"Eureka!"</strong>瞬间。<br>近代 AI 历史上有过几次——比如 Transformer 架构，<br>比如 mixture-of-experts 模型——<br>但范式级想法<strong>几年才出一个</strong>。<br><br>在那之间，<strong>大多数进步是渐进的</strong>——<br>我们把一个东西扩大，看它在哪里坏，<br>修好，再试。<br><br>这<strong>恰好</strong>是 Claude 今天擅长的工作流。</p>
+  <div class="src">— ANTHROPIC INSTITUTE</div>
+</div>
+
+<div class="body">
+  <p>爱迪生说过——<strong>"天才是 1% 灵感和 99% 汗水。"</strong> 报告的看法是——<span class="hl">"汗水"正在被自动化</span>。</p>
+
+  <p>报告写道——<strong>前沿进步里很大一部分是可自动化的</strong>；大规模研究进步主要是"<strong>工具和资源</strong>"的函数——这些决定了你能跑实验的速度、能同时跑多少、能多快拿到结果。</p>
+
+  <p>即便<strong>退一万步假设 Claude 永远学不会研究品味</strong>——对报告里所有证据的<strong>保守解读</strong>仍然意味着<strong>复利式加速</strong>。如果人类把大部分时间花在"<strong>设方向的那个个位数百分比</strong>"工作上，而 Claude 处理其余——<strong>每个工程师 / 研究员能"指挥"的工作量都比以前多得多</strong>。</p>
+
+  <p>而<strong>不那么保守的解读</strong>是——<strong>关于 Claude 研究判断力提升的早期证据（虽然今天还窄）本身就是一种信号，说明这个能力也正在变好</strong>。"<strong>研究品味</strong>"可能只是另一种"<strong>AI 一段时间不行、然后突然变得很行</strong>"的能力。我们已经在很多定性技能上看到了这种模式——AI 系统先是不会"<strong>解释笑话为什么好笑</strong>"、不会"<strong>展示心智理论</strong>"、不会"<strong>解语言谜题</strong>"——然后突然就会了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · WHAT SHOULD WE DO</div>
+  <h2>该做什么 · 可验证的暂停</h2>
+  <div class="en-title">A verifiable pause</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>报告的政策立场出奇地直接——<strong>如果有可能有效地放慢这项技术的开发，给我们更多时间应对它的巨大影响，我们认为那很可能是一件好事</strong>。但<strong>如果放慢只是让最不审慎的玩家追上来，可能让所有人更不安全</strong>。Anthropic 的承诺——<strong>如果其他在前沿或接近前沿的公司"以一种可验证的方式"也放慢或暂停，Anthropic 也会放慢或暂停</strong>。难点不在意愿，在<strong>可验证性</strong>——<strong>训练比导弹基地更容易隐藏，输入是通用的，悄悄违约的诱惑巨大</strong>。Anthropic Institute 接下来要做的，就是<strong>研究"如何让 AI 的暂停变得可验证"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Verifiable Pause</span>
+    <span class="tag">INF Treaty Analogue</span>
+    <span class="tag">Coordination</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>报告最后一节回答了那个最大的问题——<strong>"我们该做什么？"</strong></p>
+
+  <p>报告的政策立场出奇地直接——</p>
+</div>
+
+<div class="quote">
+  <p>如果能有效地放慢这项技术的开发，<br>给我们自己更多时间应对它巨大的影响——<br><strong>我们认为那很可能是一件好事</strong>。<br><br>但如果放慢只是让最不审慎的玩家追上来，<br><strong>它可能让每个人都更不安全</strong>。</p>
+  <div class="src">— ANTHROPIC INSTITUTE</div>
+</div>
+
+<div class="body">
+  <p>没有全球协调机制，公司和政府都不得不<strong>在竞争和地缘政治压力下做关于安全的艰难决策</strong>。</p>
+
+  <p>Anthropic 的承诺——</p>
+</div>
+
+<div class="quote">
+  <p>我们相信，<strong>对世界有好处</strong>——<br>是让前沿 AI 开发有"<strong>放慢或暂时暂停</strong>"的选项，<br>让社会结构和对齐研究<strong>跟上技术的节奏</strong>。<br><br>Anthropic Institute 会做研究，并采取行动，<br>来帮助构建那种"<strong>可信的放慢或暂停</strong>"所需要的系统——<br>系统能让前沿 AI 开发者<strong>验证</strong>其他人在全球范围内确实停了，<br>验证<strong>不存在某个坏行为者在协调放慢的掩护下偷偷领跑</strong>。<br><br>如果这种系统存在，<br>我们预期会——<strong>在其他前沿或接近前沿的开发者也以可验证方式同步时——放慢或暂停</strong>。</p>
+  <div class="src">— ANTHROPIC INSTITUTE</div>
+</div>
+
+<div class="body">
+  <p>报告也<strong>坦率地承认这件事的难度</strong>——</p>
+
+  <p>一个有意义的放慢或暂停，需要<strong>多家在前沿或接近前沿的、资源充足的实验室、在多个国家、在相同条件下都同意停</strong>。它也需要<strong>每家都能验证别家确实停了</strong>。</p>
+
+  <p>由于 AI 的独特性质——<strong>"可检测性"（一个低于"可验证性"的标准）就比其他技术难得多</strong>。报告说——<span class="hl">训练比导弹井更容易隐藏，它的输入是通用的，悄悄违约的诱惑巨大</span>——因为<strong>谁在别人暂停时继续，就能拿到领先优势</strong>。</p>
+
+  <p>报告援引<strong>《中程导弹条约》</strong>作为可比的历史先例——<strong>原则上不是不可能</strong>。世界确实为其他复杂技术建过验证机制。<strong>但那些机制花了几十年来建基础设施和信任。我们没有那么多时间</strong>。</p>
+
+  <p><strong>另一边——任何一家实验室单方面暂停在原则上可以立刻实现，但它能做的事远比想象的少——它只会换个领跑者，而不会创造出当前缺失的更广泛的协商过程</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>在接下来几个月里，<br>我们会组织讨论——<br>让政策制定者、研究人员、公民社会、其他 AI 公司，<br>一起回答这篇文章提出的问题，<br>特别是<strong>关于完整递归自我改进</strong>和<strong>如何创造更好的协调和审议的选项</strong>。<br><br>我们会公布讨论的结果。<br>调查这些问题的窗口就在眼前。<br><strong>AI 公司之外的人，应该参与这个审议</strong>。</p>
+  <div class="src">— ANTHROPIC INSTITUTE · CLOSING</div>
+</div>
+
+<div class="body">
+  <p>这篇报告是一份<strong>非常少见的内部数据 + 政策立场的混合文件</strong>。它的潜台词比明面上的话更值得读——</p>
+
+  <p>· Anthropic 在告诉世界——<strong>"递归自我改进"的临界点比你想象的近</strong><br>
+  · Anthropic 在告诉竞争对手——<strong>"我们愿意停，前提是你也愿意"</strong><br>
+  · Anthropic 在告诉政策制定者——<strong>"在 AI 的暂停被设计成可验证之前，没人能真正放心地停"</strong></p>
+
+  <p>这份 23 页的报告，<strong>本质上是一个开端</strong>——它在邀请世界，在递归自我改进真的发生之前，<strong>把"如何协调"的问题先解决一部分</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ANTHROPIC INSTITUTE · 2026</div>
+  <div>When AI Builds Itself · 中文版精校</div>
+  <div class="meta">本文译自 Anthropic Institute 2026 年 5 月报告 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/ai-builds-itself</div>
+</div>
+
+</div>
+</body>
+</html>
