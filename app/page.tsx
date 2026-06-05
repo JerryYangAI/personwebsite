@@ -5,6 +5,7 @@ import Timeline from '../components/Timeline'
 import Beliefs from '../components/Beliefs'
 import Projects from '../components/Projects'
 import FeaturedReading from '../components/FeaturedReading'
+import ServicesPreview from '../components/ServicesPreview'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 import ScrollToTop from '../components/ScrollToTop'
@@ -18,6 +19,7 @@ export default function Home() {
       <Timeline />
       <Beliefs />
       <Projects />
+      <ServicesPreview />
       <FeaturedReading />
       <Contact />
       <Footer />

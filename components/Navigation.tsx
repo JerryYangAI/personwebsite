@@ -27,6 +27,7 @@ const Navigation = () => {
     { name: t('nav.beliefs'), href: '#beliefs' },
     { name: t('nav.projects'), href: '#projects' },
     { name: t('nav.contact'), href: '#contact' },
+    { name: t('nav.services'), href: '/services' },
   ]
 
   return (
