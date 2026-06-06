@@ -44,6 +44,64 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'adolescence',
+    url: '/adolescence/',
+    category: 'thinking',
+    date: '2026-06-05',
+    tag: 'DARIO AMODEI · ANTHROPIC · 2026',
+    title: {
+      zh: '技术的青春期',
+      en: 'The Adolescence of Technology',
+      ja: '技術の思春期',
+    },
+    subtitle: {
+      zh: 'Dario Amodei · 中文精校版',
+      en: 'Dario Amodei · Curated Chinese Edition',
+      ja: 'Dario Amodei · 中国語精製版',
+    },
+    desc: {
+      zh: 'Anthropic CEO Dario Amodei 2026 年 1 月长文。系统性回答——如果我们能造出"数据中心里的天才之国"，人类要怎么活过这场技术的青春期？五大风险、五套防御、一份毫不掩饰的国家安全级警告。',
+      en: "Anthropic CEO Dario Amodei's January 2026 essay. Systematically confronts the risks of powerful AI — autonomy, destruction, power seizure, economic disruption, indirect effects — and what defenses we need.",
+      ja: 'Anthropic CEO Dario Amodei による 2026 年 1 月の長文。「データセンターの天才の国」がもたらす 5 つのリスクと防衛策。',
+    },
+    meta: {
+      zh: ['9 章', '约 45 分钟', '思想类'],
+      en: ['9 chapters', '~45 min read', 'Thinking piece'],
+      ja: ['9 章', '約 45 分', '思想'],
+    },
+    theme: 'green',
+    featured: true,
+  },
+  {
+    slug: 'loving-grace',
+    url: '/loving-grace/',
+    category: 'thinking',
+    date: '2026-06-05',
+    tag: 'DARIO AMODEI · ANTHROPIC · 2024',
+    title: {
+      zh: '充满爱意的机器',
+      en: 'Machines of Loving Grace',
+      ja: '愛情に満ちた機械',
+    },
+    subtitle: {
+      zh: 'Dario Amodei · 中文精校版',
+      en: 'Dario Amodei · Curated Chinese Edition',
+      ja: 'Dario Amodei · 中国語精製版',
+    },
+    desc: {
+      zh: 'Anthropic CEO Dario Amodei 2024 年 10 月长文。第一次系统、毫不掩饰地写下"那个好的可能"——压缩的 21 世纪、消除大多数癌症、人类寿命翻倍、心理疾病几乎被治愈、贫困终结。读完这篇，才理解为什么 Anthropic 还在做这件事。',
+      en: "Anthropic CEO Dario Amodei's October 2024 essay. The first systematic vision of an upside future — compressed 21st century, 95% cancer reduction, doubled lifespan, mental illness cured, poverty ended. Why Anthropic still does this.",
+      ja: 'Anthropic CEO Dario Amodei による 2024 年 10 月の長文。AI が正しく機能した場合の希望のビジョン——「圧縮された 21 世紀」、ガンの消滅、150 歳寿命、貧困の終結。',
+    },
+    meta: {
+      zh: ['9 章', '约 40 分钟', '思想类'],
+      en: ['9 chapters', '~40 min read', 'Thinking piece'],
+      ja: ['9 章', '約 40 分', '思想'],
+    },
+    theme: 'green',
+    featured: true,
+  },
+  {
     slug: 'ai-builds-itself',
     url: '/ai-builds-itself/',
     category: 'ai',
