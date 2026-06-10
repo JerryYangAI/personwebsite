@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Fable 5 与 Mythos 5 · 同一个模型的双胞胎 | 广哥在硅谷</title>
+<meta name="description" content="2026 年 6 月 9 日 Anthropic 发布。Mythos-class 模型的首次普遍发布——Claude Fable 5（有安全防护，所有人可用）和 Claude Mythos 5（同一底层模型，去除部分防护，只给 Glasswing 合作伙伴）。Stripe 一天完成 5000 万行 Ruby 代码迁移，Mythos 5 加速药物设计 10 倍，并提出被独立验证的新生物学假说。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Claude Fable 5, Claude Mythos 5, Anthropic, Frontier Model, Safeguards, Project Glasswing, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/fable-mythos/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Claude Fable 5 与 Mythos 5 · 同一个模型的双胞胎">
+<meta property="og:description" content="Mythos-class 模型首次普遍发布 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/fable-mythos/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Fable 5 与 Mythos 5">
+<meta name="twitter:description" content="Mythos-class 模型首次普遍发布 · 中文精校版">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .danger{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--orange);border-radius:10px;}
+  .danger .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:6px;}
+  .danger p{font-size:15px;color:#3a3937;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ANTHROPIC · 2026/06/09</div>
+  <h1>Claude Fable 5 与 Mythos 5<br>同一个模型的双胞胎</h1>
+  <div class="subtitle-en">Claude Fable 5 and Claude Mythos 5 · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Anthropic 公告 · 2026/06/09</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 9 章 · 约 35 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 6 月 9 日，Anthropic 发布 <strong>Claude Fable 5 和 Claude Mythos 5</strong>——<strong>同一个 Mythos-class 底层模型的两个版本</strong>。<strong>Fable 5</strong>——加了安全防护，<strong>面向所有用户</strong>。<strong>Mythos 5</strong>——同样底层，<strong>去掉部分防护</strong>，<strong>只给 Glasswing 合作伙伴和受信任的研究者</strong>。Fable 5 的能力<strong>超过 Anthropic 此前任何普遍发布的模型</strong>。Stripe 用 Fable 5 <strong>一天完成 5000 万行 Ruby 代码迁移</strong>——本来需要团队<strong>两个月</strong>。Mythos 5 加速<strong>药物设计 10 倍</strong>，<strong>第一次稳定产出"被科学家盲评偏好 80% 时间"的新生物学假说</strong>，并独立提出一个 E. coli 蛋白机制——<strong>被另一个独立实验室同期验证</strong>。价格——<strong>$10/M 输入 + $50/M 输出</strong>，是 Mythos Preview 的一半不到。本文是这次发布的中文精校版。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · Mythos-class 进入普遍发布<br><span class="en">Mythos-class goes general</span></a></li>
+    <li><a href="#ch2">Fable 与 Mythos · 名字与设计<br><span class="en">Naming the twins</span></a></li>
+    <li><a href="#ch3">能力综述 · 长任务的飞跃<br><span class="en">Capabilities summary</span></a></li>
+    <li><a href="#ch4">软件工程 · Stripe 一天 vs 两个月<br><span class="en">A day vs two months</span></a></li>
+    <li><a href="#ch5">视觉、内存、玩游戏 · 突破性<br><span class="en">Vision, memory, gameplay</span></a></li>
+    <li><a href="#ch6">药物设计 · 10 倍加速<br><span class="en">10x in drug design</span></a></li>
+    <li><a href="#ch7">分子生物学 · 提出新假说<br><span class="en">Novel hypotheses</span></a></li>
+    <li><a href="#ch8">三类安全防护 · 网络、生物、蒸馏<br><span class="en">Three safeguards</span></a></li>
+    <li><a href="#ch9">可用性与定价 · 阶段性发布<br><span class="en">Pricing and availability</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · Mythos-class 进入普遍发布</h2>
+  <div class="en-title">Mythos-class goes general</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2026 年 6 月 9 日，Anthropic 发布 <strong>Claude Fable 5 和 Claude Mythos 5</strong>。这是 <strong>Mythos-class</strong>（位于 Opus class 之上的能力等级）<strong>第一次以普遍发布的形式向公众开放</strong>——一个 4 月通过 <strong>Project Glasswing</strong> 才向 50 个合作伙伴开放的能力等级，<strong>2 个月后</strong>就有了"<strong>带保护的版本</strong>"可以给所有人用。<strong>Fable 5</strong>——加了完整防护，所有人可用。<strong>Mythos 5</strong>——同样底层，<strong>部分防护被解除</strong>，<strong>只给 Glasswing 合作伙伴和受信任研究者</strong>。<strong>价格</strong>是 Mythos Preview 的<strong>一半不到</strong>——$10/M 输入 + $50/M 输出。</p>
+  <div class="terms">
+    <span class="tag">Mythos-class</span>
+    <span class="tag">General Release</span>
+    <span class="tag">$10/$50 per Million</span>
+    <span class="tag">95% no Fallback</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 6 月 9 日，<strong>Anthropic</strong> 发布 <strong>Claude Fable 5</strong>——一款"<strong>能安全地用于普遍发布</strong>"的 <strong>Mythos-class 模型</strong>。</p>
+
+  <p>Anthropic 写道——<strong>Fable 5 的能力超过我们普遍发布过的任何模型</strong>。它在<strong>几乎所有 AI 能力基准</strong>上是<strong>最新最先进</strong>——展现在<strong>软件工程、知识工作、视觉、科学研究</strong>等多领域<strong>例外的性能</strong>。<strong>任务越长越复杂，Fable 5 比其他 Claude 模型的领先就越大</strong>。</p>
+
+  <p>Anthropic 同时<strong>毫不掩饰地</strong>承认——<strong>"发布这种能力的模型伴随着风险"</strong>。没有防护的话，Fable 5 在<strong>网络安全</strong>等领域的能力可能<strong>被滥用造成严重损害</strong>。所以他们用<strong>"防护"</strong>启动模型——<strong>对某些主题的查询，会被自动转给次强的 Claude Opus 4.8 来回答</strong>。</p>
+
+  <p>为了能<strong>同时又安全又快</strong>地发布——Anthropic <strong>把防护调得保守</strong>。这意味着<strong>有时候无害的请求也会被拦截</strong>——但平均下来，<strong>少于 5% 的会话会触发防护</strong>。</p>
+
+  <p>对一小群<strong>网络防御者和基础设施提供商</strong>，Anthropic 同时发布 <strong>Claude Mythos 5</strong>——<strong>跟 Fable 5 是同一个底层模型</strong>，<strong>但部分领域防护被解除</strong>。Mythos 5 通过 <strong>Project Glasswing 部署</strong>——<strong>和美国政府合作</strong>——作为 <strong>Mythos Preview 的升级版</strong>。它有<strong>世界上任何模型中最强的网络安全能力</strong>。</p>
+
+  <p>价格——<strong>$10/M 输入 + $50/M 输出</strong>——<strong>不到 Mythos Preview 的一半</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · NAMING</div>
+  <h2>Fable 与 Mythos · 名字与设计</h2>
+  <div class="en-title">Naming the twins</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>"<strong>Fable</strong>" 源自拉丁文 <strong>fabula</strong>——"<strong>被讲述的东西</strong>"——和希腊词 <strong>Mythos</strong> 同源。<strong>同一个故事，两种讲法——一种带保护、一种不带</strong>。Anthropic 用<strong>两个不同名字</strong>来明确区分——<strong>保护机制是两者唯一的区别</strong>。这是一个很重要的产品设计哲学——<strong>承认能力本身是中性的，"是否有保护"决定了它该被给谁用</strong>。这也是 Anthropic 对自己 RSP（Responsible Scaling Policy）的具体应用——<strong>在能力上不让步，在分发上做选择</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Anthropic 在脚注里解释了这两个名字的来源——</p>
+</div>
+
+<div class="quote">
+  <p><strong>"Fable" 源自拉丁文 fabula</strong>——<br>"<strong>被讲述的东西</strong>"——<br>与希腊词 <strong>Mythos</strong> 同源。<br><br>是<strong>保护机制</strong>区分了 Fable 和 Mythos——<br>这就是我们给它们<strong>不同名字</strong>的原因。</p>
+  <div class="src">— ANTHROPIC, ON THE NAMES</div>
+</div>
+
+<div class="body">
+  <p>这是 Anthropic 一次<strong>很有意思的产品设计选择</strong>。</p>
+
+  <p>过去 OpenAI、Google 等都<strong>用版本号或后缀</strong>区分不同能力等级（GPT-4o、Gemini 1.5 Pro 等）。Anthropic 用<strong>不同名字</strong>来表示——<strong>同一个底层模型，但<em>分发策略不同</em></strong>。</p>
+
+  <p>这个选择背后的哲学——<strong>"能力本身是中性的"</strong>——一段 Mythos 级别的网络安全能力，<strong>对防御者是工具，对攻击者是武器</strong>。所以<strong>关键的产品决定是"给谁用"，而不只是"做多强"</strong>。</p>
+
+  <p>这也是 Anthropic 自己的 <strong>RSP（Responsible Scaling Policy）</strong>的具体落地——<strong>在能力上不让步，在分发上做选择</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · CAPABILITIES</div>
+  <h2>能力综述 · 长任务的飞跃</h2>
+  <div class="en-title">Capabilities summary</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Fable 5 和 Mythos 5 在<strong>"自主长任务"</strong>上比之前所有 Claude 模型走得<strong>更远</strong>。任务<strong>越长越复杂</strong>，它们的领先就<strong>越大</strong>。Anthropic 的能力评测覆盖<strong>软件工程、知识工作、视觉、内存与长上下文、药物设计、新假说、基因组学</strong>。一项重要观察——<strong>对齐评测里，Mythos 5 的不对齐行为水平很低</strong>，<strong>跟 Opus 4.8 相当</strong>。Fable 5 是同一底层，<strong>对齐水平也相似</strong>。</p>
+</div>
+
+<div class="body">
+  <p>这一节给出一个让人记下的事实——<strong>Fable 5 和 Mythos 5 比此前所有 Claude 模型自主工作的时间都长</strong>。</p>
+
+  <p>Anthropic 写下的核心特征——<strong>"任务越长越复杂，Fable 5 比其他 Claude 模型的领先就越大"</strong>。这跟之前 METR 等基准上的趋势一致——<strong>AI 能可靠完成的任务时长每 4 个月翻一番</strong>。Fable 5 是这个曲线的一个新点。</p>
+
+  <p>Anthropic 给出能力评测覆盖的领域——</p>
+
+  <p>· <strong>软件工程</strong>——Stripe 一天完成两个月的工作（见第 4 章）<br>
+  · <strong>知识工作</strong>——Hebbia 财务基准最高分；IMC 交易分析评测<strong>几乎全胜</strong><br>
+  · <strong>视觉</strong>——能从详细科学图表里提取精确数字；用截图重建网页源代码<br>
+  · <strong>内存与长上下文</strong>——能在数百万 tokens 的长任务里保持专注，用自己的笔记改进输出<br>
+  · <strong>药物设计 / 蛋白质</strong>——见第 6 章<br>
+  · <strong>分子生物学 / 基因组学</strong>——见第 7 章<br>
+  · <strong>对齐</strong>——Mythos 5 的不对齐行为水平<strong>低</strong>，<strong>跟 Opus 4.8 相当</strong>。Fable 5 同底层，<strong>对齐水平相似</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · STRIPE</div>
+  <h2>软件工程 · Stripe 一天 vs 两个月</h2>
+  <div class="en-title">A day vs two months</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 引用了一个让人难忘的客户案例——<strong>Stripe</strong> 在早期测试时报告：Fable 5 把<strong>几个月的工程压缩成几天</strong>。具体例子——在一个<strong>5000 万行 Ruby 代码库</strong>里，Fable 5 <strong>一天内完成了一次跨整个代码库的迁移</strong>——而<strong>用人手做这件事，需要一整个团队两个月</strong>。Fable 5 还<strong>更省 token</strong>——在 Cognition 的 FrontierCode 评测（测试模型能否在保持高质量生产代码标准的同时完成困难任务）上，<strong>即使是中等努力档位，Fable 5 也是前沿模型里最高分</strong>。</p>
+  <div class="terms">
+    <span class="tag">Stripe 50M Lines</span>
+    <span class="tag">1 Day vs 2 Months</span>
+    <span class="tag">FrontierCode #1</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Anthropic 第一个客户引用是 <strong>Stripe</strong>——支付基础设施巨头之一。Stripe 报告——<strong>Fable 5 把几个月的工程压缩成几天</strong>。</p>
+
+  <p>给出的具体例子让人停下来——</p>
+</div>
+
+<div class="quote">
+  <p>在一个 <strong>5000 万行 Ruby 代码库</strong>里，<br>Fable 5 <strong>一天内完成了一次跨整个代码库的迁移</strong>——<br><br>而<strong>用人手做这件事，需要一整个团队两个月</strong>。</p>
+  <div class="src">— STRIPE'S EARLY TESTING, FEATURED BY ANTHROPIC</div>
+</div>
+
+<div class="body">
+  <p>这个对比的意义在于——<strong>5000 万行</strong>不是 toy example。这是<strong>真实的、生产环境的代码库</strong>，是<strong>Stripe 业务运行的实际代码</strong>。<strong>"跨代码库迁移"</strong>是个很难的任务——它要求<strong>理解整个代码库的结构</strong>，<strong>找出所有需要改的地方</strong>，<strong>一次性改完不破坏现有功能</strong>。</p>
+
+  <p>把它压成<strong>一天</strong>——意味着 Stripe 的<strong>整个工程节奏可以重新设计</strong>。两个月的工作变成一天，<strong>那些"等了几年因为成本太高不做"的迁移现在可以做了</strong>。</p>
+
+  <p>Fable 5 在<strong>token 效率</strong>上也有提升——在 <strong>Cognition 的 FrontierCode 评测</strong>上（测试模型能否在<strong>保持高质量生产代码标准</strong>的同时完成困难任务），<strong>Fable 5 在所有前沿模型里得分最高，即使是中等努力档位</strong>。这意味着——<strong>每一个 token 都更值钱</strong>。</p>
+
+  <p>报告还引用了 <strong>GitHub</strong>（Microsoft 旗下）的早期反馈——</p>
+</div>
+
+<div class="quote">
+  <p>Claude Fable 5 对<br>GitHub 服务的开发者来说，<br><strong>是真实的一步飞跃</strong>。<br><br>在我们早期测试里，<br>它<strong>承担了复杂的、长时间跨度的编码任务</strong>，<br>展现的<strong>自主性和可靠性</strong>超过了之前的基准。<br><br>但最让我兴奋的是它<strong>指向的方向</strong>——<br><strong>一个开发者可以<em>把越来越雄心的工作交给 Agent</em>，<br>并在整个软件生命周期里信任结果的未来</strong>。</p>
+  <div class="src">— MARIO RODRIGUEZ, CHIEF PRODUCT OFFICER, GITHUB</div>
+</div>
+
+<div class="body">
+  <p><strong>Cursor 的 CEO Michael Truell</strong> 也评论——<strong>Fable 5 是 CursorBench 上的最新最先进模型</strong>，<strong>"它开启了一类之前不可触及的长时间跨度问题"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · VISION & MEMORY</div>
+  <h2>视觉、内存、玩游戏 · 突破性</h2>
+  <div class="en-title">Vision, memory, gameplay</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>视觉上 Fable 5 是<strong>"新的视觉任务最强模型"</strong>——能从详细科学图表里<strong>提取精确数字</strong>，能<strong>从截图重建网页源代码</strong>。让人惊叹的是它<strong>"不再需要支架"</strong>——之前的 Claude <strong>就算给了支架也很难玩通 Pokémon FireRed</strong>，但 <strong>Fable 5 用最简单的"只用视觉"支架就通了关</strong>。<strong>内存与长上下文</strong>上——Fable 5 在数百万 tokens 的长任务里<strong>保持专注</strong>，用<strong>自己的笔记</strong>改进输出。给它访问<strong>基于文件的持久内存</strong>，让它的<strong>《杀戮尖塔》</strong>表现<strong>提升 3 倍</strong>，<strong>到达终局的频率也是 Opus 4.8 的 3 倍</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Fable 5 在视觉上是<strong>"新的视觉任务最强模型"</strong>——能完成一系列让人惊叹的任务——</p>
+
+  <p>· <strong>从详细科学图表里提取精确数字</strong>——这是科研工作流的关键<br>
+  · <strong>从截图重建网页源代码</strong>——给设计师 / 前端工程师巨大杠杆<br>
+  · <strong>"只用太阳和行星图像，从物理第一性原理推导轨道运动、并预测日食"</strong></p>
+
+  <p>但<strong>最让我惊叹</strong>的例子是——<strong>玩 Pokémon FireRed</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>之前的 Claude 模型<strong>需要一个复杂的辅助支架</strong>才能玩 Pokémon——<br>需要<strong>地图、导航辅助、额外游戏状态信息</strong>。<br><br>Claude Fable 5 用<strong>只用视觉</strong>、<br><strong>最小化支架</strong>——<br>就<strong>从头到尾玩通了 FireRed</strong>。</p>
+  <div class="src">— ANTHROPIC, ON FABLE 5 PLAYING POKEMON</div>
+</div>
+
+<div class="body">
+  <p>这件事比"它能玩通游戏"重要——重要的是<strong>"它需要的支架减少了"</strong>。<strong>支架越少 = 越通用 = 越接近"像人一样工作"</strong>。一个不需要专门支架就能玩通老游戏的模型，<strong>也意味着它在面对真实世界里"没人专门为它设计辅助"的任务时</strong>，<strong>更可能成功</strong>。</p>
+
+  <p><strong>内存与长上下文</strong>上——Fable 5 在<strong>数百万 tokens 的长任务里保持专注</strong>，<strong>用自己的笔记改进输出</strong>。Anthropic 测了 <strong>《杀戮尖塔》</strong>（Slay the Spire，一款策略卡牌游戏）——</p>
+
+  <p>· 给 Fable 5 访问<strong>基于文件的持久内存</strong><br>
+  · 让它的表现<strong>提升 3 倍</strong>（比 Opus 4.8 多 3 倍的提升）<br>
+  · 到达<strong>游戏终局的频率</strong>也是 Opus 4.8 的 <strong>3 倍</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · DRUG DESIGN</div>
+  <h2>药物设计 · 10 倍加速</h2>
+  <div class="en-title">10x in drug design</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 内部的蛋白质设计专家——<strong>用 Mythos 5 把药物设计过程的某些方面加速了约 10 倍</strong>。具体例子——给 Mythos 5 蛋白设计和生物信息学工具，<strong>没有人类辅助</strong>，<strong>它能匹敌或超越熟练的人类操作员</strong>。模型自己<strong>选择结合位点、选择和运行蛋白设计工具、从失败中恢复</strong>——<strong>科学家平常做的所有任务</strong>。研究里 14 个蛋白质靶点中<strong>9 个产生了强候选</strong>——目前 Anthropic 正在调查这些<strong>用于药物设计</strong>。</p>
+  <div class="terms">
+    <span class="tag">10x Drug Design</span>
+    <span class="tag">9/14 Strong Candidates</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Anthropic 内部的蛋白质设计专家——<strong>用 Mythos 5 把药物设计过程的某些方面加速了约 10 倍</strong>。</p>
+
+  <p>具体例子让我反复读——给 Mythos 5 <strong>蛋白设计和生物信息学工具</strong>，<strong>但没有人类辅助</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>Mythos 5 <strong>匹敌或超过了熟练的人类操作员</strong>。<br><br>这样做的过程中，模型<strong>执行了通常由科学家完成的所有任务</strong>——<br><br>· <strong>选择结合位点</strong><br>· <strong>选择和运行蛋白设计工具</strong><br>· <strong>从沿途的失败中恢复</strong>。</p>
+  <div class="src">— ANTHROPIC, ON MYTHOS 5 IN PROTEIN DESIGN</div>
+</div>
+
+<div class="body">
+  <p>这件事让我心跳加速——<strong>"从沿途的失败中恢复"</strong>——这是科学家最难做的事之一，<strong>需要"知道这条路不通"和"决定下一条路"的判断力</strong>。Mythos 5 现在能做这件事。</p>
+
+  <p>研究里——<strong>14 个蛋白质靶点</strong>中，<strong>9 个</strong>产生了<strong>强候选用于药物设计</strong>——Anthropic 正在调查它们。靶点覆盖——<strong>免疫检查点、生长因子和受体信号、神经退行性疾病、肌肉疾病、更难的结构性靶点</strong>。</p>
+
+  <p>这意味着——<strong>Mythos 5 可能在加速整个药物发现管线</strong>。Dario 在《<a href="https://jerryyang.ai/loving-grace/">充满爱意的机器</a>》里预测的<strong>"压缩的 21 世纪"</strong>——癌症消除、生命翻倍——<strong>这就是它在落地的第一个具体证据</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · NOVEL HYPOTHESES</div>
+  <h2>分子生物学 · 提出新假说</h2>
+  <div class="en-title">Novel hypotheses</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这是<strong>整个公告里最具历史意义的部分</strong>——<strong>Mythos 5 是我们第一个能稳定产出新颖、引人入胜的科学假说的模型</strong>。在<strong>盲法对照实验</strong>里——比较 Mythos 5 和 Opus-class 的分子生物学假说——<strong>Anthropic 的科学家在大约 80% 的时间里偏好 Mythos 5 的假说</strong>，<strong>几个已经被推进到实验评估阶段</strong>。<strong>更让人震惊的是</strong>——Mythos 5 提出的<strong>一个 E. coli 蛋白的新机制</strong>，<strong>被一个独立实验室同期工作里证实</strong>。基因组学上——Mythos 5 用一周自主工作，<strong>跨越 138 个动物物种汇编单细胞数据</strong>，训练的自定义机器学习模型<strong>超过了最近发表在《Science》上的模型</strong>——<strong>体积只有它的 1/100</strong>。</p>
+  <div class="terms">
+    <span class="tag">80% Preferred</span>
+    <span class="tag">E. coli Validated</span>
+    <span class="tag">138 Species</span>
+    <span class="tag">100x Smaller</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这是<strong>整个公告里最具历史意义的部分</strong>。</p>
+
+  <p>Anthropic 宣布——<strong>Mythos 5 是我们第一个能<em>稳定</em>产出新颖、引人入胜的科学假说的模型</strong>。</p>
+
+  <p>怎么测的？<strong>盲法对照实验</strong>——把 Mythos 5 和 Opus-class 的分子生物学假说对比，<strong>不告诉评分者哪个是哪个</strong>，让<strong>Anthropic 的科学家做偏好选择</strong>。结果——</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">80%</div><div class="lbl">盲法测试中科学家<br>偏好 Mythos 5 假说</div></div>
+  <div class="stat-card"><div class="num">独立验证</div><div class="lbl">E. coli 蛋白机制<br>被独立实验室证实</div></div>
+  <div class="stat-card"><div class="num">138 物种</div><div class="lbl">基因组学项目<br>跨物种细胞分析</div></div>
+  <div class="stat-card"><div class="num">100x 小</div><div class="lbl">模型比《Science》对照<br>体积小 100 倍</div></div>
+</div>
+
+<div class="body">
+  <p>几个已经被<strong>推进到实验评估阶段</strong>。</p>
+
+  <p>但<strong>最让我惊叹的事</strong>——Mythos 5 提出的<strong>一个 E. coli 蛋白的新机制</strong>，<strong>被一个独立实验室同期工作里证实</strong>。也就是说——<strong>Mythos 5 提出的假说是真的</strong>，<strong>另一支团队独立得出同一结论</strong>。这是<strong>"AI 做科学"的一个分水岭——不再是<em>测试集表现</em>，而是<em>真实科学问题上的独立验证</em></strong>。</p>
+
+  <p>基因组学上，<strong>Mythos 5 用一周多基本自主工作</strong>，做了——</p>
+
+  <p>· <strong>跨越 138 个动物物种汇编单细胞数据</strong>——百万级细胞<br>
+  · <strong>设计并训练一个自定义机器学习模型</strong>——识别"在远亲物种里执行相同角色的细胞"<br>
+  · 这个 Mythos 5 训练的模型<strong>超过了一个最近发表在《Science》上的模型</strong>——<strong>尽管 Mythos 训练的体积只有它的 1/100</strong></p>
+
+  <p>Anthropic 说他们<strong>计划在未来几个月发表这些结果</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · SAFEGUARDS</div>
+  <h2>三类安全防护 · 网络、生物、蒸馏</h2>
+  <div class="en-title">Three safeguards</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Fable 5 有<strong>三类新的安全防护</strong>——通过<strong>分类器</strong>检测潜在滥用并把请求自动转给 Opus 4.8 处理。<strong>(1) 网络安全</strong>——挡住攻击工具、漏洞利用、agent 黑客；<strong>外部红队 1000+ 小时测试没找到通用越狱</strong>。<strong>(2) 生物与化学</strong>——以前只阻挡生物武器相关的窄查询，<strong>现在范围扩大</strong>——因为模型已经能在真实生物任务上做事。AAV 病毒外壳预测里<strong>Mythos-class 超过了专门的蛋白语言模型</strong>。<strong>(3) 蒸馏</strong>——阻挡<strong>用于训练独裁国家竞争模型的大规模"提取"尝试</strong>。<strong>"用户在 5% 不到的会话里会遇到 fallback"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Classifiers</span>
+    <span class="tag">Cyber / Bio / Distillation</span>
+    <span class="tag">95% No Fallback</span>
+    <span class="tag">1000+ Hours Red Team</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Fable 5 的关键设计——<strong>当分类器检测到某些主题的查询时，响应会被自动转给 Claude Opus 4.8 处理</strong>。<strong>用户会被告知</strong>这次 fallback 发生了。Opus 4.8 仍然是<strong>非常强的模型</strong>，所以<strong>fallback 比直接拒绝体验好得多</strong>。<strong>Anthropic 的早期数据显示——超过 95% 的 Fable 会话不涉及任何 fallback</strong>。</p>
+
+  <p>三类分类器覆盖——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🛡️ 三类安全分类器</div>
+  <ul>
+    <li><strong>(1) 网络安全</strong>——Mythos-class 模型擅长<strong>发现和利用软件漏洞</strong>。它们让<strong>网络攻击大幅变便宜、变容易</strong>。Mythos-class 还展现强烈的<strong>"agentic hacking"</strong>能力——在<strong>侦察、发现、横向移动</strong>等多个阶段操作。分类器同时覆盖<strong>"利用"和更广泛的"攻击性 cyber 任务"</strong>。<strong>外部红队 1000+ 小时测试没找到通用越狱</strong>。UK AISI 在初始测试窗内取得一些进展，但还没有完全的通用越狱。</li>
+    <li><strong>(2) 生物与化学</strong>——以前只阻挡<strong>窄范围的生物武器相关查询</strong>。<strong>现在范围扩大</strong>，因为<strong>两个原因</strong>——(a) 对资源丰富的恶意行为者从模型得到"提升"的担心，(b) 模型现在<strong>能在真实生物任务上做事</strong>。例子——<strong>AAV 病毒外壳预测</strong>里，<strong>Mythos-class 超过了专门设计的蛋白语言模型</strong>——展示了基因治疗研发的潜力，也展示了双重用途的风险。<strong>当前 Fable 在<em>大多数</em>生物化学请求上 fallback 到 Opus 4.8</strong>——后续会收窄。</li>
+    <li><strong>(3) 蒸馏</strong>——Anthropic 已经识别到<strong>大规模"蒸馏"Claude 能力的尝试，用来在独裁国家训练竞争模型</strong>。Fable 5 的能力被蒸馏可能<strong>间接导致近前沿能力扩散——而这些可能在没有合适保护下发布</strong>。被识别为蒸馏尝试的请求<strong>fallback 到 Opus 4.8</strong>。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>Anthropic 还引入了<strong>新的数据保留政策</strong>——Fable 5、Mythos 5 及后续 Mythos-class 模型——<strong>所有商业客户的流量保留 30 天</strong>，<strong>第一方和第三方界面都适用</strong>。</p>
+
+  <p>· 这些数据<strong>不会用于训练新模型</strong>，<strong>不会用于任何非安全相关用途</strong><br>
+  · <strong>所有人类对数据的访问都被记录</strong><br>
+  · 在<strong>几乎所有情况下，数据 30 天后被删除</strong></p>
+
+  <p>目的——<strong>防御复杂和新颖攻击</strong>（包括新的越狱和跨多个请求操作的攻击），<strong>识别和减少误报</strong>。</p>
+
+  <p>一位外部合作伙伴报告——<strong>Fable 5 对有害 cyber 查询的防护是测试过的所有模型中最强的</strong>（包括 Opus 4.8 和 Opus 4.7）。Fable 5 对<strong>0</strong> 个有害单轮请求（关于规划网络攻击、利用开发、防御逃避）<strong>响应</strong>——<strong>无论这些请求是否使用了 30 种公开越狱技巧之一</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · AVAILABILITY</div>
+  <h2>可用性与定价 · 阶段性发布</h2>
+  <div class="en-title">Pricing and availability</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>价格——<strong>$10/M 输入</strong> + <strong>$50/M 输出</strong>——<strong>不到 Mythos Preview 的一半</strong>。<strong>Fable 5 当天起所有地方可用</strong>。<strong>Mythos 5 仅限 Glasswing 合作伙伴</strong>（cyber 防护解除）<strong>和后续选定的生物研究者</strong>（生物化学防护解除）。Anthropic 还为生物启动<strong>可信访问项目</strong>——少量研究者将获得 Fable 5 的<strong>生物化学防护解除版本</strong>。</p>
+  <div class="terms">
+    <span class="tag">$10 / $50 per Million</span>
+    <span class="tag">Pro / Max / Team Plans</span>
+    <span class="tag">Trusted Access Program</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>价格——<strong>$10/M 输入</strong> + <strong>$50/M 输出</strong>——<strong>不到 Mythos Preview 的一半</strong>。这意味着——<strong>能力升级 + 价格腰斩</strong>，AI 经济效应在加速。</p>
+
+  <p><strong>Claude Fable 5 当天起所有地方可用</strong>。开发者可以通过 Claude API 用 <code>claude-fable-5</code>。</p>
+
+  <p><strong>Claude Mythos 5</strong>——仅限——</p>
+
+  <p>· Glasswing 合作伙伴（<strong>cyber 防护解除</strong>）<br>
+  · 后续选定的<strong>生物研究者</strong>（<strong>生物化学防护解除</strong>，但 cyber 防护仍在）</p>
+
+  <p>Anthropic 还在和美国政府讨论<strong>稳步扩大 Mythos 5 的访问</strong>——加入更多新合作伙伴，并推出<strong>"可信访问项目"</strong>——让网络安全组织能<strong>系统性申请</strong>。</p>
+
+  <p>对生物研究——<strong>新的可信访问项目</strong>会启动——<strong>加速生物医学研究、用 Mythos-class 能力发现新疗法</strong>。这个项目会包含<strong>少量来自不同生命科学组织的研究者</strong>——基础研究和转化研究都覆盖。Anthropic 计划<strong>扩大这个项目同时改善防护</strong>。</p>
+
+  <p><strong>订阅计划阶段性发布</strong>——</p>
+
+  <p>· <strong>今天起 - 6 月 22 日</strong>——Fable 5 在 Pro、Max、Team、按席位 Enterprise 计划<strong>无额外费用包含</strong><br>
+  · <strong>6 月 23 日起</strong>——从这些计划里<strong>移除 Fable 5</strong>，使用需要 usage credits（如果容量允许，会延长包含期）<br>
+  · <strong>后续</strong>——容量足够后，<strong>Fable 5 会回到订阅计划标准内容</strong></p>
+
+  <p>Anthropic 解释——他们<strong>"更愿意早给访问而不是晚给"</strong>，所以保守发布。</p>
+</div>
+
+<div class="quote">
+  <p>今天的联合发布<br>是我们<strong>朝着"把先进 AI 能力带给尽可能多的用户"的目标</strong>的<br><strong>又一步</strong>——<br><br><strong>尽可能快、尽可能安全地</strong>。</p>
+  <div class="src">— ANTHROPIC, 2026/06/09</div>
+</div>
+
+<div class="body">
+  <p>读完整篇公告，我意识到这次发布<strong>是一个完整故事</strong>——</p>
+
+  <p>· <strong>4 月</strong>——Project Glasswing 启动，给 50 个合作伙伴 Mythos Preview<br>
+  · <strong>5 月 22 日</strong>——第一份月度更新——<strong>1 万+ 漏洞，瓶颈换位置</strong><br>
+  · <strong>6 月 2 日</strong>——Glasswing 扩展到 150 个新组织<br>
+  · <strong>6 月 9 日</strong>——Fable 5 + Mythos 5 发布——<strong>Mythos-class 首次普遍可用</strong></p>
+
+  <p><span class="hl"><strong>整个时间线只有 2 个月。Anthropic 把"危险能力的负责任普及"压缩成了一个精密的阶段性流程</strong></span>——先给最关键的防御者、然后扩大、最后普及。这个流程<strong>本身可能是 AI 工业的一种新范式</strong>——把"产品发布"和"风险管理"<strong>变成同一件事</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ANTHROPIC · 2026/06/09</div>
+  <div>Claude Fable 5 and Claude Mythos 5 · 中文版精校</div>
+  <div class="meta">原文：Anthropic 官方公告 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/fable-mythos</div>
+</div>
+
+</div>
+</body>
+</html>

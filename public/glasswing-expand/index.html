@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Glasswing 扩展 · 从 50 到 200 个组织 | 广哥在硅谷</title>
+<meta name="description" content="2026 年 6 月 2 日 Anthropic 公告。Project Glasswing 从最初的 50 个合作伙伴扩展到 150 个新组织，覆盖 15+ 国家，加入电力、水、医疗、通信、硬件等关键基础设施供应商。一份让我们看清"AI 网络安全新阶段"的政策与战略宣言。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Project Glasswing, Anthropic, Critical Infrastructure, AI Cybersecurity, Mythos Preview, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/glasswing-expand/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Project Glasswing 扩展 · 从 50 到 200 个组织">
+<meta property="og:description" content="Anthropic Glasswing 项目扩大公告 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/glasswing-expand/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project Glasswing 扩展 · 从 50 到 200 个组织">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ANTHROPIC · 2026/06/02</div>
+  <h1>Project Glasswing 扩展<br>从 50 到 200 个组织</h1>
+  <div class="subtitle-en">Expanding Project Glasswing · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Anthropic 公告 · 2026/06/02</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 6 章 · 约 15 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 6 月 2 日，距离第一份月度更新 10 天后，Anthropic 又发了一篇——<strong>Project Glasswing 扩展到约 <em>150 个新组织</em></strong>。从最初 50 个合作伙伴，<strong>10 天内增长 3 倍</strong>。新加入的组织来自<strong>15+ 个国家</strong>，覆盖<strong>电力、水务、医疗、通信、硬件</strong>——之前没有的关键基础设施类别。<strong>大多数合作伙伴一次成功的攻击可能影响超过 1 亿人</strong>。Anthropic 还在这篇里讲了 Glasswing 的<strong>真正长期目的</strong>——不只找漏洞，<strong>推动机构形成适应"廉价高能力 AI 网络武器即将出现"现实的运作规范</strong>。读完你会理解——这是一场<strong>抢在低成本攻击工具普及前的赛跑</strong>。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 10 天 3 倍扩张<br><span class="en">3x growth in 10 days</span></a></li>
+    <li><a href="#ch2">扩展范围 · 关键基础设施<br><span class="en">Critical infrastructure</span></a></li>
+    <li><a href="#ch3">Glasswing 真正的目的<br><span class="en">The real purpose</span></a></li>
+    <li><a href="#ch4">支持防御者 · 全行业工具<br><span class="en">Supporting defenders</span></a></li>
+    <li><a href="#ch5">加速修补 · AI 写补丁<br><span class="en">Accelerating patching</span></a></li>
+    <li><a href="#ch6">前路 · 持久的攻防失衡<br><span class="en">The path ahead</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 10 天 3 倍扩张</h2>
+  <div class="en-title">3x growth in 10 days</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2026 年 6 月 2 日——距离第一份月度更新仅 <strong>10 天</strong>——Anthropic 公布 <strong>Project Glasswing 扩展计划</strong>。从最初的约 <strong>50 个合作伙伴扩展到约 150 个新组织</strong>。每一个新加入的组织都需要先<strong>通过 Anthropic 的安全要求</strong>。覆盖范围扩到 <strong>15+ 个国家</strong>，加入了之前没有的<strong>电力、水务、医疗、通信、硬件</strong>等类别。<strong>大多数合作伙伴一次成功的攻击可能影响 1 亿人以上</strong>。Anthropic 在这一篇里第一次明白说——<strong>"廉价的、快速的、有强大网络能力的 AI 模型就要到来"</strong>。</p>
+  <div class="terms">
+    <span class="tag">150 New Orgs</span>
+    <span class="tag">15+ Countries</span>
+    <span class="tag">Critical Infrastructure</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 6 月 2 日——距离第一份月度更新只过去了 <strong>10 天</strong>——Anthropic 又发了一篇公告。<strong>Project Glasswing 扩展计划公布</strong>。</p>
+
+  <p>数字让人惊讶——从最初的约 <strong>50 个合作伙伴</strong>，扩展到约 <strong>150 个新组织</strong>。<strong>10 天内规模增长 3 倍</strong>。</p>
+
+  <p>每一个新组织都<strong>必须先通过 Anthropic 的安全要求</strong>才能拿到访问权。报告写道——这次扩展是和"<strong>Glasswing 现有合作伙伴、安全行业、开源软件维护者、美国政府</strong>"经过<strong>几周紧密合作</strong>后才推出的。</p>
+
+  <p>这<strong>不是临时决定</strong>——<strong>是经过审慎讨论的政策动作</strong>。</p>
+
+  <p>这篇公告还有一个让我特别留意的句子——<strong>"廉价的、快速的、有强大网络能力的 AI 模型就在不远的地方"</strong>。这是 Anthropic 第一次<strong>毫不掩饰地说</strong>——他们看见<strong>世界即将进入网络攻击廉价化时代</strong>。Glasswing 不只是项目，<strong>是抢在那个时代到来之前的赛跑</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · SCOPE</div>
+  <h2>扩展范围 · 关键基础设施</h2>
+  <div class="en-title">Critical infrastructure</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这次扩展的<strong>"组织画像"</strong>非常具体——基于 <strong>15+ 个国家</strong>，许多<strong>给更多国家提供关键基础设施</strong>。新加入的组织覆盖<strong>电力、水务、医疗、通信、硬件</strong>——之前的初始组里这些类别没有代表。<strong>很多新伙伴是"供应商"</strong>——它们维护被全球大量其他组织（包括政府）依赖的代码库。<strong>共同特征</strong>——一次成功的攻击可能<strong>对每一个合作伙伴影响 1 亿人以上</strong>，并对<strong>全球和国家安全</strong>有重大影响。</p>
+  <div class="terms">
+    <span class="tag">Power · Water · Healthcare</span>
+    <span class="tag">100M+ Users Affected</span>
+    <span class="tag">National Security</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节让我读完后<strong>对"关键基础设施"这个词有了新的体感</strong>。</p>
+
+  <p>这次新加入的 150 个组织来自<strong>超过 15 个国家</strong>。许多组织自己又<strong>为更多国家提供关键基础设施</strong>——它们的代码<strong>被全球各地的政府、医院、电网、水务、通信运营商用</strong>。</p>
+
+  <p>报告点名的<strong>新覆盖行业</strong>——</p>
+
+  <p>· <strong>电力（power）</strong><br>
+  · <strong>水务（water）</strong><br>
+  · <strong>医疗（healthcare）</strong><br>
+  · <strong>通信（communications）</strong><br>
+  · <strong>硬件（hardware）</strong></p>
+
+  <p>这些类别在<strong>初始 50 家里没有充分代表</strong>。<strong>很多新伙伴是"供应商"</strong>——它们维护的代码库<strong>被全球大量其他组织（包括政府）依赖</strong>。换句话说——<strong>给这些公司装上 Mythos Preview，等于给整个供应链的下游都加固</strong>。</p>
+
+  <p>报告里写下让我心里一沉的<strong>共同特征</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>每一个合作伙伴的共同点是——<br><strong>对它们代码库的一次成功攻击</strong><br>可能是<strong>灾难性的</strong>。<br><br>对大多数合作伙伴，我们估计——<br>一次大型攻击可能<strong>影响 1 亿人以上</strong>，<br>对<strong>全球和国家安全</strong>都有重大影响。</p>
+  <div class="src">— ANTHROPIC, ON THE NEW PARTNERS</div>
+</div>
+
+<div class="body">
+  <p>这就是 Glasswing 真正的赌注——<strong>挡在 1 亿人之间的薄薄一层代码</strong>。如果攻击者比 Anthropic 早抢到 Mythos-级别的能力，这一层<strong>会瞬间打穿</strong>。</p>
+
+  <p>Anthropic 还说——<strong>未来打算在地理范围上扩展得多得多</strong>。<strong>15+ 国家</strong>只是第一步——他们看到的<strong>是全球关键基础设施全部加固</strong>的图景。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · PURPOSE</div>
+  <h2>Glasswing 真正的目的</h2>
+  <div class="en-title">The real purpose</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这一节是这整篇公告里<strong>最重要的</strong>。Anthropic 重新定义了 Glasswing 的目的——<strong>"不只是给某些公司找漏洞"</strong>——<strong>"推动机构形成<em>反映'廉价高能力 AI 即将到来'这个现实</em>的运作规范"</strong>。换句话说——<strong>Glasswing 是一次大型政策示范——用真实数据让全行业看清"如果不升级会发生什么"</strong>。他们预测——<strong>6 到 12 个月内</strong>，其他 AI 公司会有 Mythos-级别的模型——<strong>而它们可能没有防止滥用的保护</strong>。如果不准备好——<strong>网络攻击会变得"更频繁、形式更不可预测"</strong>。</p>
+  <div class="terms">
+    <span class="tag">6-12 Months Until Spread</span>
+    <span class="tag">Norm-Setting</span>
+    <span class="tag">Without Safeguards</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节是这整篇公告里<strong>最值得仔细读</strong>的部分。</p>
+
+  <p>Project Glasswing 和 Mythos Preview 的能力<strong>引发了广泛对话</strong>——在软件行业，在政府里——关于<strong>"AI 怎样改变网络安全"</strong>。这些对话<strong>反过来影响</strong>了 Anthropic 怎么扩展项目，<strong>也塑造了他们对"Glasswing 真正目的"的思考</strong>。</p>
+
+  <p>Anthropic 直白地写出来——</p>
+</div>
+
+<div class="quote">
+  <p><strong>廉价的、快速的、有强大网络能力的 AI 模型</strong>，<br>就在不远的地方。<br><br>我们希望 Project Glasswing <strong>推动机构</strong>——<br>朝着<strong>反映这个现实</strong>的<br><strong>运作规范</strong>转变。</p>
+  <div class="src">— ANTHROPIC ON GLASSWING'S PURPOSE</div>
+</div>
+
+<div class="body">
+  <p>这句话很重要。它说明——<strong>Glasswing 不只是给某些公司找漏洞</strong>，而是<strong>一次大型政策示范</strong>。它的目的是<strong>把"廉价 AI 网络武器即将出现"这个现实，<em>用真实数据强行摆在全行业面前</em></strong>。让每一家公司、每一个政府都开始<strong>思考自己的应急准备</strong>。</p>
+
+  <p>Anthropic 还公布了他们的<strong>时间线预测</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>Mythos Preview <strong>延续了我们已经警告了一段时间的长期趋势</strong>——<br><br>我们预计在<strong>未来 6 到 12 个月内</strong>，<br>许多其他 AI 公司会有 <strong>Mythos-级别的模型</strong>，<br>而它们可能<strong>在没有防止滥用的保护下</strong>就发布。<br><br>在那样一个世界里——<br><strong>网络攻击可能频繁得多</strong>，<br>而且<strong>形式不可预测得多</strong>。<br><br><strong>网络防御者必须跟上步伐</strong>。</p>
+  <div class="src">— ANTHROPIC, 2026/06/02</div>
+</div>
+
+<div class="body">
+  <p>Anthropic 接着说他们看见自己的<strong>双重角色</strong>——</p>
+
+  <p><strong>第一</strong>——<strong>帮助软件行业适应</strong>，方法是<strong>安全地提供广泛访问</strong>更好的模型、工具、共同基础设施。</p>
+
+  <p><strong>第二</strong>——<strong>持续转移</strong>他们提供的支持，<strong>从"找漏洞"转向"披露、修复、部署补丁"</strong>。也就是说——<strong>Anthropic 自己的能力分配，会随着行业瓶颈的位置而调整</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · TOOLS</div>
+  <h2>支持防御者 · 全行业工具</h2>
+  <div class="en-title">Supporting defenders</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>初始合作伙伴<strong>动作极快</strong>——头几周里就开始大规模使用 Mythos Preview、相互分享信息和最佳实践、和第三方合作做漏洞三角分类。这些方法<strong>可以、也应该被复制到</strong>世界上数百万受网络攻击威胁的组织。为此 Anthropic 同步发布<strong>Claude Security</strong>（用 Claude Opus 4.8 等公开模型扫描代码并建议补丁）和<strong>把 Glasswing 用的工具按需提供给信任的安全团队</strong>。Anthropic 的长远目标——<strong>支持行业为"强大网络模型时代"创建新的倡议、标准、基础设施</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Glasswing 的初始合作伙伴<strong>动作极快</strong>——头几周里——</p>
+
+  <p>· 每一个成员都开始<strong>大规模使用 Mythos Preview</strong><br>
+  · <strong>互相分享信息和最佳实践</strong><br>
+  · 和<strong>第三方合作做三角分类</strong></p>
+
+  <p>Anthropic 看到这个模式后认为——<strong>这些适应方法可以、也应该被复制到全世界数百万个受网络攻击威胁的组织和开发者身上</strong>。</p>
+
+  <p>为支持这件事——<strong>Anthropic 发布了 Claude Security</strong>——一个使用 Claude Opus 4.8 等最新公开前沿模型的产品，<strong>扫描代码库并建议补丁</strong>。Claude Opus 4.8 虽然不是 Mythos-class，但<strong>仍然有非常强的网络安全能力</strong>。</p>
+
+  <p>Anthropic 还开始<strong>按请求把他们和合作伙伴用的工具提供给信任的安全团队</strong>——这降低了"复制 Glasswing 模式"的门槛。</p>
+
+  <p>更远的目标——<strong>"在强大网络模型时代，支持整个行业建立新的倡议、标准、基础设施"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · PATCHING</div>
+  <h2>加速修补 · AI 写补丁</h2>
+  <div class="en-title">Accelerating patching</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>网络安全的瓶颈已经从"找漏洞"转移到"<strong>验证、披露、修补</strong>"——这是 Anthropic 现在工作的主战场。<strong>Mythos Preview 自己也可以帮</strong>——Glasswing 合作伙伴已经在用它<strong>写补丁、做发布前检查（防止漏洞首先出现）、做渗透测试、自动威胁检测响应、用内存安全语言重建遗留代码</strong>。Anthropic 还在和第三方讨论<strong>如何大规模扩大开源漏洞的审查和修补</strong>，并<strong>分享向开源维护者披露漏洞的最佳实践</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Anthropic 在第一份月度更新里写道——网络安全的瓶颈现在是<strong>验证、披露、修补</strong>这些 Mythos-级模型可能浮出的<strong>大量漏洞</strong>。</p>
+
+  <p>这一篇里 Anthropic 给出了<strong>更具体的解决方案</strong>——</p>
+
+  <p><strong>Mythos Preview 自己也能帮</strong>——很多 Glasswing 合作伙伴已经在用它做<strong>这些</strong>——</p>
+
+  <p>· <strong>写补丁</strong>——直接生成修复代码<br>
+  · <strong>发布前检查</strong>——<strong>防止漏洞首先出现</strong>（这是更长期价值）<br>
+  · <strong>渗透测试</strong>——模拟攻击，找出漏洞如何被利用<br>
+  · <strong>自动威胁检测响应</strong><br>
+  · <strong>用内存安全语言重建遗留代码库</strong></p>
+
+  <p>这意味着——<strong>Mythos Preview 是"全栈"的网络安全工具</strong>，<strong>不只是"漏洞扫描器"</strong>。它能从"找"到"修"到"防"全程参与。</p>
+
+  <p>Anthropic 还在<strong>和第三方讨论</strong>——<strong>如何大规模扩展开源漏洞的审查和修补</strong>。这是开源生态的核心痛点——<strong>很多维护者是志愿工作者</strong>，能力有限。Anthropic 还在<strong>分享向开源维护者披露漏洞的最佳实践</strong>，让<strong>这些报告"更容易三角分类、更容易行动"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · PATH AHEAD</div>
+  <h2>前路 · 持久的攻防失衡</h2>
+  <div class="en-title">The path ahead</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 承认——要应对接下来的挑战规模——<strong>"数十万的组织、研究人员、维护者将<em>需要</em>访问最前沿的网络能力和工具"</strong>。Anthropic 在尽全力<strong>安全地把 Mythos-级能力普遍发布</strong>——但需要<strong>非常稳健</strong>的、目前<strong>"我们和我们所知的所有 AI 开发者都还没造出来"</strong>的防滥用保护。这种保护<strong>"既强又精准"是巨大挑战</strong>。在此之前，Glasswing 会<strong>继续扩张</strong>，覆盖<strong>更多关键基础设施、开源维护者、安全测试者</strong>。最终目标——<strong>"为防御者创造一种永久的优势"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Permanent Defender Advantage</span>
+    <span class="tag">Trusted Access</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Anthropic 承认——要应对接下来挑战的规模，<strong>"数十万的组织、研究人员、维护者将<em>需要</em>访问最前沿的网络能力和工具"</strong>。这是一个巨大的目标。</p>
+
+  <p>但要达到这个目标——必须<strong>先解决"防滥用"的难题</strong>。Anthropic 在<strong>尽全力</strong>安全发布 Mythos-级能力。但他们说——这<strong>需要非常稳健</strong>的防滥用保护，<strong>"我们和我们所知的所有 AI 开发者都还没造出来"</strong>。</p>
+
+  <p>这是 Anthropic 对自己<strong>也对竞争对手</strong>的诚实承认——<strong>没有一家公司有解</strong>。这种保护的难度在于——<strong>"既强又精准"</strong>——既要挡住坏人、<strong>又不能挡住好人</strong>。<strong>"网络安全有帮助和破坏两种用途"</strong>——同样的查询，<strong>给安全研究者是工具，给攻击者是武器</strong>。</p>
+
+  <p>在解决之前——Anthropic 会<strong>继续扩展 Glasswing</strong>——优先考虑<strong>关键基础设施提供商、关键开源软件维护者、安全测试者</strong>。同时也会扩大 <strong>Cyber Verification Program</strong>——给更多组织 Mythos 能力做<strong>特定的网络防御任务</strong>。</p>
+
+  <p>Anthropic 也承认——<strong>"未来前沿模型的发布会变得越来越高风险"</strong>。能力会在所有领域继续提升——包括<strong>"像网络安全这样，攻击者和防御者都被赋能"</strong>的领域。<strong>"这不会是我们最后一次面对这种挑战"</strong>。</p>
+
+  <p>报告结尾的目标令人动容——</p>
+</div>
+
+<div class="quote">
+  <p>但 Project Glasswing <strong>已经教了我们很多</strong>——<br>关于<strong>当模型跨过重要能力阈值时该如何应对</strong>。<br><br>如果我们成功——<br>我们希望<strong>为防御者创造一种<em>永久</em>的优势</strong>。</p>
+  <div class="src">— ANTHROPIC, 2026/06/02</div>
+</div>
+
+<div class="body">
+  <p>读完这篇公告，我意识到——<strong>Project Glasswing 不只是一个工程项目</strong>。<strong>它是一次政治和战略实验</strong>——一次<strong>关于"AI 公司应该怎么应对自己最危险能力"</strong>的公开示范。</p>
+
+  <p>Anthropic 把自己最强的模型，<strong>分给最关键的防御者</strong>——给他们<strong>不对称优势</strong>。同时<strong>把这个过程的数据全部公开</strong>——让全行业看清现实。这是一种<strong>负责任 AI 部署的新范式</strong>。</p>
+
+  <p>但<strong>赛跑还在继续</strong>。6 到 12 个月内，<strong>Mythos-级别的能力会出现在不止一家公司</strong>。如果那时候没有合适的保护，整个 Glasswing 努力可能<strong>只买到时间</strong>——而不是赢得战争。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ANTHROPIC · 2026/06/02</div>
+  <div>Expanding Project Glasswing · 中文版精校</div>
+  <div class="meta">原文：Anthropic 官方公告 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/glasswing-expand</div>
+</div>
+
+</div>
+</body>
+</html>

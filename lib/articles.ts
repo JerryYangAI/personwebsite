@@ -44,6 +44,93 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'fable-mythos',
+    url: '/fable-mythos/',
+    category: 'ai',
+    date: '2026-06-09',
+    tag: 'ANTHROPIC · 2026/06/09',
+    title: {
+      zh: 'Claude Fable 5 与 Mythos 5：同一个模型的双胞胎',
+      en: 'Claude Fable 5 and Claude Mythos 5',
+      ja: 'Claude Fable 5 と Mythos 5：同じモデルの双子',
+    },
+    subtitle: {
+      zh: 'Anthropic 官方公告 · 中文精校版',
+      en: 'Anthropic Announcement · Curated Chinese Edition',
+      ja: 'Anthropic 公式発表 · 中国語精製版',
+    },
+    desc: {
+      zh: 'Mythos-class 模型的首次普遍发布。Fable 5（有保护，所有人可用）+ Mythos 5（去除部分保护，只给 Glasswing 合作伙伴）。Stripe 一天完成两个月的 Ruby 代码迁移，Mythos 5 加速药物设计 10 倍，提出被独立验证的新生物学假说。价格腰斩到 $10/$50。',
+      en: "First general release of Mythos-class. Fable 5 (with safeguards, available to all) + Mythos 5 (some safeguards lifted, Glasswing partners only). Stripe: 2 months of Ruby migration in 1 day. Mythos 5: 10x drug design, independently validated novel biology hypotheses. Half the price.",
+      ja: 'Mythos クラスモデルの初の一般リリース。Fable 5（保護あり、全員利用可能）+ Mythos 5（一部保護解除、Glasswing パートナーのみ）。',
+    },
+    meta: {
+      zh: ['9 章', '约 35 分钟', 'Anthropic 公告'],
+      en: ['9 chapters', '~35 min read', 'Anthropic announcement'],
+      ja: ['9 章', '約 35 分', 'Anthropic 発表'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'glasswing-expand',
+    url: '/glasswing-expand/',
+    category: 'ai',
+    date: '2026-06-02',
+    tag: 'ANTHROPIC · 2026/06/02',
+    title: {
+      zh: 'Project Glasswing 扩展：从 50 到 200 个组织',
+      en: 'Expanding Project Glasswing',
+      ja: 'Project Glasswing の拡大：50 から 200 組織へ',
+    },
+    subtitle: {
+      zh: 'Anthropic 官方公告 · 中文精校版',
+      en: 'Anthropic Announcement · Curated Chinese Edition',
+      ja: 'Anthropic 公式発表 · 中国語精製版',
+    },
+    desc: {
+      zh: '10 天内 Glasswing 从 50 个合作伙伴扩展到 150 个新组织，覆盖 15+ 国家，加入电力、水务、医疗、通信、硬件等关键基础设施。Anthropic 直白说——"廉价高能力 AI 网络武器就在眼前"。一份让我们看清"AI 网络安全新阶段"的战略宣言。',
+      en: 'Glasswing grows 3x in 10 days: from 50 partners to 150 new organizations across 15+ countries. Now covers power, water, healthcare, communications, hardware. Anthropic explicitly warns "cheap, powerful AI cyber capabilities are around the corner."',
+      ja: '10 日で Glasswing が 50 パートナーから 150 組織に 3 倍拡大。15+ カ国の電力・水道・医療・通信・ハードウェアをカバー。',
+    },
+    meta: {
+      zh: ['6 章', '约 15 分钟', 'Anthropic 公告'],
+      en: ['6 chapters', '~15 min read', 'Anthropic announcement'],
+      ja: ['6 章', '約 15 分', 'Anthropic 発表'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'glasswing-initial',
+    url: '/glasswing-initial/',
+    category: 'ai',
+    date: '2026-05-22',
+    tag: 'ANTHROPIC · 2026/05/22',
+    title: {
+      zh: 'Project Glasswing：第一份月度更新',
+      en: 'Project Glasswing: An Initial Update',
+      ja: 'Project Glasswing：初の月次アップデート',
+    },
+    subtitle: {
+      zh: 'Anthropic 官方公告 · 中文精校版',
+      en: 'Anthropic Announcement · Curated Chinese Edition',
+      ja: 'Anthropic 公式発表 · 中国語精製版',
+    },
+    desc: {
+      zh: '约 50 个合作伙伴用 Claude Mythos Preview 一个月里发现超过 1 万个高危/严重漏洞。Cloudflare 一家 2000 个 bug，Mozilla Firefox 271 个（是 Opus 4.6 的 10 倍）。最重要的洞察——"找漏洞已经不再是瓶颈，修补才是"。AI 网络安全的新时代开始了。',
+      en: '~50 partners using Claude Mythos Preview found 10,000+ high/critical vulnerabilities in 1 month. Cloudflare: 2,000 bugs. Mozilla Firefox: 271 bugs (10x Opus 4.6). Key insight: "Finding bugs is no longer the bottleneck — patching is."',
+      ja: '約 50 パートナーが Claude Mythos Preview を使い 1 ヶ月で 1 万件以上の高/重大脆弱性を発見。Cloudflare 2000 件、Mozilla Firefox 271 件（Opus 4.6 の 10 倍）。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', 'Anthropic 公告'],
+      en: ['8 chapters', '~20 min read', 'Anthropic announcement'],
+      ja: ['8 章', '約 20 分', 'Anthropic 発表'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'adolescence',
     url: '/adolescence/',
     category: 'thinking',

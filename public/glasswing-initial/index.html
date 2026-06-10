@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Glasswing：第一份月度更新 | 广哥在硅谷</title>
+<meta name="description" content="Anthropic 在 2026 年 5 月发布的 Project Glasswing 第一份月度更新。50 个合作伙伴使用 Claude Mythos Preview 模型，1 个月内在世界上最关键的软件里找到了超过 1 万个高危/严重级别的安全漏洞。这是 AI 网络安全的新时代——找漏洞已经不再是瓶颈，修补才是。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Project Glasswing, Anthropic, Claude Mythos Preview, Cybersecurity, Vulnerability, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/glasswing-initial/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Project Glasswing：第一份月度更新">
+<meta property="og:description" content="Anthropic 在 2026 年 5 月发布的 Glasswing 项目第一份成果">
+<meta property="og:url" content="https://jerryyang.ai/glasswing-initial/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Project Glasswing：第一份月度更新">
+<meta name="twitter:description" content="Anthropic Glasswing 项目第一月成果">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:4px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ANTHROPIC · 2026/05</div>
+  <h1>Project Glasswing<br>第一份月度更新</h1>
+  <div class="subtitle-en">An Initial Update · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Anthropic 公告 · 2026/05/22</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 20 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 4 月，Anthropic 启动了 <strong>Project Glasswing</strong>——和约 <strong>50 个</strong>合作伙伴一起，用 <strong>Claude Mythos Preview</strong>（Mythos-class 第一款模型）<strong>抢在 AI 被用于攻击之前</strong>，加固世界上最关键的软件。一个月之后，他们公布了第一份月度更新。结果震撼——<strong>合作伙伴们已经发现了超过 1 万个高严重或关键严重的漏洞</strong>。Cloudflare 一家就找到 2000 个；Mozilla 在 Firefox 150 里找到 271 个，是 Firefox 148 用 Opus 4.6 找到的 10 倍以上。<strong>"过去网络安全的瓶颈是<em>找漏洞的速度</em>，现在变成了<em>修补和部署补丁的速度</em>"</strong>。这是一篇能让你看清"AI 网络安全新时代"的报告——AI 在攻防都在飞速逼近，谁先到的临界点谁就赢。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · Glasswing 第一个月<br><span class="en">First month of Project Glasswing</span></a></li>
+    <li><a href="#ch2">合作伙伴成果 · 1 万+ 漏洞<br><span class="en">10,000+ high/critical vulns</span></a></li>
+    <li><a href="#ch3">外部评测 · Mozilla 与 XBOW<br><span class="en">External validators</span></a></li>
+    <li><a href="#ch4">开源软件扫描 · 6202 个高危<br><span class="en">Open-source scanning results</span></a></li>
+    <li><a href="#ch5">wolfSSL 案例 · CVE-2026-5194<br><span class="en">A worked example</span></a></li>
+    <li><a href="#ch6">新瓶颈 · 修补的速度<br><span class="en">The patching bottleneck</span></a></li>
+    <li><a href="#ch7">网络防御者的工具 · Claude Security<br><span class="en">Tools for defenders</span></a></li>
+    <li><a href="#ch8">下一步 · 普及化的难题<br><span class="en">What's next</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · Glasswing 第一个月</h2>
+  <div class="en-title">First month of Project Glasswing</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2026 年 4 月，Anthropic 启动了 <strong>Project Glasswing</strong>——和约 <strong>50 个合作伙伴</strong>一起，<strong>用 Claude Mythos Preview 抢在 AI 被用于攻击之前，加固世界上最关键的软件</strong>。Glasswing 的英文意思是"<em>玻璃翼蝴蝶</em>"——一种翅膀完全透明的蝶——隐喻"<em>把代码变得透明、让漏洞无处可藏</em>"。这是 AI 公司第一次用自己的前沿模型，<strong>系统性给关键基础设施做安全审计</strong>。一个月后的成绩单：超过 <strong>10000</strong> 个高严重或关键严重的漏洞。<strong>瓶颈已经从"找漏洞"切换成"修补"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Project Glasswing</span>
+    <span class="tag">Mythos Preview</span>
+    <span class="tag">Cybersecurity</span>
+    <span class="tag">Coordinated Disclosure</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 4 月，<strong>Anthropic</strong> 启动了 <strong>Project Glasswing</strong>——一个用 <strong>Claude Mythos Preview</strong> 帮助世界上最关键的软件提前修补漏洞的合作项目。约 <strong>50 个初始合作伙伴</strong>——大多是互联网基础设施、操作系统、安全厂商等"<strong>被广泛依赖的代码</strong>"的所有者——获得了 Mythos Preview 的访问权。</p>
+
+  <p>1 个月后，Anthropic 发布了第一份月度更新——成绩单超出所有人的预期——</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">10,000+</div><div class="lbl">合作伙伴 1 个月内<br>找到的高/危险漏洞</div></div>
+  <div class="stat-card"><div class="num">~50</div><div class="lbl">初始合作伙伴<br>覆盖互联网基础设施</div></div>
+  <div class="stat-card"><div class="num">10x</div><div class="lbl">多家合作伙伴报告<br>找 bug 速度提升 10 倍以上</div></div>
+  <div class="stat-card"><div class="num">5x</div><div class="lbl">Palo Alto Networks<br>新发布补丁是平时 5 倍</div></div>
+</div>
+
+<div class="body">
+  <p>Anthropic 写下的那句话<strong>意义重大</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>过去，网络安全的进步<br>受限于<strong>我们能多快找到新漏洞</strong>。<br><br>现在，<strong>它受限于</strong>——<br>我们能多快<strong>验证、披露、修补</strong><br>AI 找到的<strong>大量漏洞</strong>。</p>
+  <div class="src">— ANTHROPIC, 2026/05</div>
+</div>
+
+<div class="body">
+  <p>这句话很重要——<strong>网络安全的"瓶颈"换了位置</strong>。这意味着——<strong>今天每一个软件团队的工作流都需要被重新设计</strong>。在以前，团队的 80% 时间花在"<strong>找漏洞</strong>"上，"<strong>修补</strong>"是相对简单的部分。现在反过来——<strong>AI 一夜之间能列出 100 个真实漏洞，但人类工程师只能在两周内修 5 个</strong>。这个新的失衡，是这篇报告反复在敲响的警钟。</p>
+
+  <p>这份报告还有一个非常诚实的承认——<strong>"我们还没到能完全详述合作伙伴用 Mythos Preview 发现的所有内容、又不让终端用户面临风险的时候"</strong>。<strong>"协调披露原则（CVD）"</strong> 要求漏洞发现后 <strong>90 天</strong>才公开，或修补完成 <strong>45 天</strong>后公开。所以这篇报告里只能给出<strong>案例和聚合数据</strong>，而不是具体漏洞细节。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · PARTNERS</div>
+  <h2>合作伙伴成果 · 1 万+ 漏洞</h2>
+  <div class="en-title">10,000+ high/critical vulnerabilities</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Glasswing 的合作伙伴<strong>都不是普通公司</strong>——它们的代码"<strong>构成互联网和基础设施的根基</strong>"。修这些代码的漏洞，等于给依赖它们的<strong>数十亿终端用户降低风险</strong>。1 个月里——大多数合作伙伴各自找到几百个高/严重漏洞。Cloudflare 一家就找到 <strong>2000 个 bug</strong>（400 个高/严重），<strong>误报率比人类测试员还低</strong>。这个数字让人想起 Anthropic 自己写的——<strong>"网络安全的发展速度，比我们准备好的时候快得多"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Cloudflare 2000 bugs</span>
+    <span class="tag">Glasswing 50 partners</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Glasswing 的合作伙伴<strong>都不是普通公司</strong>——它们建造和维护<strong>互联网和其他关键基础设施所依赖的软件</strong>。修这些代码里的漏洞，会<strong>降低许多其他组织的风险</strong>，从而<strong>减少数十亿终端用户面对的风险</strong>。</p>
+
+  <p>1 个月之后的成果——</p>
+
+  <p>· <strong>大多数合作伙伴</strong>各自找到了<strong>几百个</strong>高严重或关键严重的漏洞。<br>
+  · 集体来看——<strong>已经发现超过 1 万个</strong>。<br>
+  · 多家合作伙伴报告，他们的<strong>找 bug 速度提高了 10 倍以上</strong>。</p>
+
+  <p><strong>Cloudflare</strong> 是被点名的一家——他们在自己的关键路径系统里<strong>找到了 2000 个 bug</strong>（其中 <strong>400 个是高/严重</strong>）。更值得注意的是——<strong>Cloudflare 的团队认为 Mythos Preview 的"误报率比人类测试员还低"</strong>。</p>
+
+  <p>这个数字<strong>令人震撼</strong>——Cloudflare 是世界上最强的网络安全团队之一，他们自家的代码经过<strong>无数轮人工审查</strong>。但 Mythos Preview 在<strong>一个月里又找到 2000 个漏洞</strong>，<strong>而且更准</strong>。这意味着——<strong>过去人类找不到的不是因为他们不够细心，而是因为没有 AI 能在这个规模上工作</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · VALIDATORS</div>
+  <h2>外部评测 · Mozilla 与 XBOW</h2>
+  <div class="en-title">External validators</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>除了 Glasswing 合作伙伴，<strong>多个独立组织</strong>也验证了 Mythos Preview 在网络安全上的飞跃——<strong>英国 AISI</strong>（AI Security Institute）说它是"第一个端到端解决我们两个 cyber range 的模型"；<strong>Mozilla</strong> 在 Firefox 150 里找到 <strong>271 个漏洞</strong>，是 Firefox 148 用 Opus 4.6 找到的 <strong>10 倍以上</strong>；<strong>XBOW</strong> 说 Mythos Preview"在 web exploit 基准上是所有现有模型的<strong>显著一步</strong>"，<strong>精度是"前所未有的"</strong>；<strong>ExploitBench 和 ExploitGym</strong> 这两个学术基准把 Mythos Preview 列为<strong>最强表现者</strong>。</p>
+  <div class="terms">
+    <span class="tag">Mozilla Firefox 150 · 271 bugs</span>
+    <span class="tag">UK AISI Cyber Range</span>
+    <span class="tag">XBOW</span>
+    <span class="tag">ExploitBench</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Glasswing 报告里给出的外部验证特别有说服力——</p>
+
+  <p><strong>英国 AISI</strong>（AI Security Institute）报告说——<strong>Mythos Preview 是第一个能端到端解决他们两个"cyber range"（多步骤网络攻击模拟）的模型</strong>。</p>
+
+  <p><strong>Mozilla</strong> 在 Firefox 150 测试时<strong>用 Mythos Preview 找到并修复了 271 个漏洞</strong>——这<strong>比 Firefox 148 用 Claude Opus 4.6 找到的多 10 倍以上</strong>。Mozilla 是开源浏览器的代表，<strong>能在自家产品上看到 10 倍提升</strong>，是一个非常硬核的对比。</p>
+
+  <p><strong>XBOW</strong>——一家独立的安全平台——评价 Mythos Preview"在它的 web exploit 基准上是<strong>所有现有模型的显著一步</strong>"，提供"<strong>绝对前所未有的精度</strong>"。XBOW 的话很值得注意——它是一家专门做 AI 网络安全评测的公司，<strong>它见过所有主流模型</strong>。</p>
+
+  <p><strong>ExploitBench 和 ExploitGym</strong>——两个最近发布的<strong>学术基准</strong>，专门测模型的<strong>"漏洞利用开发能力"</strong>——把 Mythos Preview 列为<strong>最强表现者</strong>。</p>
+
+  <p>更广泛的趋势是——<strong>"打过补丁的软件被推出去的速度也大幅提高"</strong>——</p>
+
+  <p>· <strong>Palo Alto Networks</strong> 最新发布包含<strong>是平常 5 倍的补丁数量</strong><br>
+  · <strong>Microsoft</strong> 说他们<strong>新补丁的数量会"持续上升一段时间"</strong><br>
+  · <strong>Oracle</strong> 在自家产品和云上<strong>找和修漏洞快几倍</strong></p>
+
+  <p>Mythos Preview 还在<strong>其他安全工作</strong>上派上用场——Glasswing 合作伙伴中的一家银行<strong>用 Mythos Preview 检测并阻止了一起 150 万美元的电信欺诈</strong>——攻击者攻破了客户的邮箱并打了诈骗电话。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · OPEN SOURCE</div>
+  <h2>开源软件扫描 · 6202 个高危</h2>
+  <div class="en-title">Open-source scanning results</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>过去几个月，Anthropic 用 Mythos Preview <strong>扫描了 1000+ 个开源项目</strong>——这些项目<strong>支撑着互联网的大部分基础设施</strong>。结果——Mythos Preview 估计找到 <strong>6202 个高/严重</strong>漏洞（总共 23019 个，包括中/低）。其中 <strong>1752 个高/严重</strong>已经由独立安全研究机构评估——<strong>90.6% 是真阳性</strong>，<strong>62.4% 被确认为高/严重</strong>。按当前真阳性率推算——<strong>开源代码里仅 Mythos Preview 一个模型，就将揭露近 3900 个高/严重漏洞</strong>。Anthropic 还在继续扫，<strong>这个数字会继续升</strong>。</p>
+  <div class="terms">
+    <span class="tag">1000+ Open Source</span>
+    <span class="tag">6202 High/Critical</span>
+    <span class="tag">90.6% True Positive</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这一节让我读完后<strong>不安和兴奋兼有</strong>。过去几个月，<strong>Anthropic 用 Mythos Preview 扫描了 1000+ 个开源项目</strong>——<strong>它们共同支撑着互联网的大部分基础设施，也是 Anthropic 自家基础设施依赖的部分</strong>。</p>
+
+  <p>结果让人震惊——<strong>Mythos Preview 估计找到 6202 个高严重或关键严重的漏洞</strong>（总数 23019 个，包括中/低）。</p>
+
+  <p>这些发现并不是 AI 自己说算就算——<strong>1752 个高/严重的漏洞</strong>已经被<strong>6 家独立安全研究机构</strong>中的某一家（或在少数情况下由 Anthropic 自己）<strong>仔细评估过</strong>。结果——</p>
+
+  <p>· <strong>90.6%</strong>（1587 个）<strong>是真阳性</strong>——这意味着 AI 的发现不是错觉<br>
+  · <strong>62.4%</strong>（1094 个）<strong>被确认为高或严重</strong>——AI 对严重程度的判断<strong>也基本准确</strong></p>
+
+  <p>按当前的"<strong>三角分类后的真阳性率</strong>"推算——<span class="hl">即使 Mythos Preview 不再找任何新漏洞，仅这一轮扫描，就将<strong>在开源代码里揭露近 3900 个高/严重漏洞</strong></span>——还不算它为 Glasswing 合作伙伴找到的。</p>
+
+  <p>Anthropic 还在<strong>继续扫</strong>——<strong>这个数字会继续涨</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · WOLFSSL</div>
+  <h2>wolfSSL 案例 · CVE-2026-5194</h2>
+  <div class="en-title">A worked example</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 给了一个具体例子——<strong>wolfSSL</strong>，一个被<strong>世界数十亿设备</strong>使用的、<strong>以安全著称的开源密码学库</strong>。Mythos Preview 构造了一个利用方式——<strong>让攻击者伪造证书</strong>，从而做出<strong>银行或邮件提供商的假网站</strong>——<strong>从终端用户视角看起来完全合法</strong>。这个漏洞获得了 CVE-2026-5194 编号，<strong>已经被修补</strong>。Anthropic 说在未来几周会发布完整的技术分析。</p>
+</div>
+
+<div class="body">
+  <p>Anthropic 给了一个让我记到现在的具体例子——</p>
+
+  <p><strong>wolfSSL</strong>——一个开源密码学库——<strong>因其安全性而出名</strong>，<strong>被世界数十亿设备使用</strong>。它是嵌入式系统、IoT 设备、移动设备的<strong>"加密底层"</strong>之一。能被 wolfSSL 选作底层，本身就说明你需要"信任"它。</p>
+
+  <p>但<strong>Mythos Preview 在它里面找到了一个漏洞</strong>——<strong>更可怕的是，模型不仅找到了漏洞，还<em>构造了完整的利用</em></strong>——一种攻击者可以<strong>伪造证书</strong>的方式，让攻击者能<strong>托管一个看起来完全合法的银行或邮件假网站</strong>。终端用户<strong>看不出任何异常</strong>，但<strong>整个网站都在攻击者控制下</strong>。</p>
+
+  <p>这个漏洞被分配了 CVE 编号——<strong>CVE-2026-5194</strong>——<strong>现在已经被修补</strong>。Anthropic 说会在未来几周发布完整技术分析。</p>
+
+  <p><strong>这个案例的可怕之处不是"AI 找到了 wolfSSL 的 bug"</strong>——而是<strong>"AI 在世界上'最被信任的密码库'之一里找到了 bug，而且自动写出了完整的攻击代码"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · BOTTLENECK</div>
+  <h2>新瓶颈 · 修补的速度</h2>
+  <div class="en-title">The patching bottleneck</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>报告最重要的洞察——<strong>瓶颈换位置了</strong>。从"找漏洞"换到"验证、披露、修补、部署补丁"。Anthropic 数据让人警醒——<strong>开源维护者承受巨大压力</strong>，<strong>有些甚至请求 Anthropic 慢一点</strong>。平均下来——一个 Mythos Preview 找到的高/严重 bug 需要 <strong>2 周</strong>修补。报告还有一句让我印象深刻——<strong>"即使我们以相对缓慢的节奏披露，Mythos Preview 也已经在给一个已经超负荷的安全生态加压"</strong>。</p>
+</div>
+
+<div class="body">
+  <p>这是整篇报告<strong>最重要的洞察</strong>——<strong>瓶颈换位置了</strong>。从"找漏洞"换到"<strong>验证、披露、修补、部署补丁</strong>"。</p>
+
+  <p>Anthropic 详细描述了他们的<strong>三角分类（triaging）流程</strong>——</p>
+
+  <p>· <strong>第一步</strong>——Anthropic 或合作的安全公司<strong>复现 Mythos 找到的问题</strong>，重新评估严重性。<br>
+  · <strong>第二步</strong>——如果确认是真的漏洞，检查<strong>是否已经有修复</strong>，并给软件维护者<strong>写详细报告</strong>。<br>
+  · <strong>第三步</strong>——披露 + 等待修补。</p>
+
+  <p>有一个细节让我特别注意——<strong>"开源维护者本来就在承受 AI 生成的低质量 bug 报告的洪水"</strong>。所以 Anthropic 处理时<strong>格外小心</strong>——以免被淹没在自动报告里。</p>
+
+  <p>更让人警醒的是——<strong>多位维护者告诉 Anthropic 他们"严重缺乏处理能力"</strong>。<strong>有些维护者甚至请求 Anthropic 慢一点</strong>——因为他们<strong>需要更多时间设计补丁</strong>。</p>
+
+  <p>平均下来——<strong>一个 Mythos Preview 找到的高/严重 bug 需要 2 周才能修补</strong>。</p>
+
+  <p>报告写下的<strong>具体数字</strong>——</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">1,129</div><div class="lbl">直接披露的未核实 bug<br>（应维护者要求）</div></div>
+  <div class="stat-card"><div class="num">530</div><div class="lbl">已披露给维护者的<br>高/严重 bug</div></div>
+  <div class="stat-card"><div class="num">75</div><div class="lbl">已经被打补丁<br>（其中 65 有公开警告）</div></div>
+  <div class="stat-card"><div class="num">2 周</div><div class="lbl">平均一个高/严重 bug<br>从发现到修补的时间</div></div>
+</div>
+
+<div class="body">
+  <p>Anthropic 直白地写下——</p>
+</div>
+
+<div class="quote">
+  <p>找到漏洞的<strong>相对轻松</strong>，<br>对比上修补它们的<strong>困难</strong>——<br>构成了网络安全的<strong>重大挑战</strong>。<br><br>成功应对这个挑战——<br>将让我们的软件<strong>比以前安全得多</strong>。<br><br>但<strong>即使我们以相对缓慢的节奏披露</strong>——<br>Mythos Preview 也已经在给<br>一个<strong>已经超负荷的安全生态</strong>加压。</p>
+  <div class="src">— ANTHROPIC GLASSWING REPORT</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · TOOLS</div>
+  <h2>网络防御者的工具 · Claude Security</h2>
+  <div class="en-title">Tools for defenders</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 不只让 Glasswing 合作伙伴受益——还<strong>把工具开放给全行业</strong>。<strong>Claude Security</strong>（在 Claude Enterprise 内的公测版）让团队扫描自己的代码库找漏洞、生成补丁建议——3 周内 <strong>Claude Opus 4.7 已经修补了 2100+ 漏洞</strong>。Anthropic 还启动 <strong>Cyber Verification Program</strong>——允许通过验证的安全专业人士在"合法的网络安全研究、渗透测试、红队"等用途下<strong>跳过部分防滥用保护</strong>。还把 Glasswing 工具集（skills、harness、threat model builder）<strong>按需提供给合格客户</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Anthropic 不只让 Glasswing 合作伙伴受益——他们<strong>把工具开放给全行业</strong>。</p>
+
+  <p><strong>Claude Security</strong> 已经在 Claude Enterprise 上公测——它让团队扫描自己的代码库找漏洞，并<strong>生成补丁建议</strong>。3 周内——<strong>Claude Opus 4.7 已经修补了 2100+ 漏洞</strong>。报告解释——这速度比开源修补快很多，主要因为<strong>企业在修自己的代码</strong>，开源则需要<strong>志愿维护者+协调披露流程</strong>。</p>
+
+  <p>Anthropic 还启动了 <strong>Cyber Verification Program</strong>——允许通过验证的安全专业人士，在"<strong>合法的网络安全研究、渗透测试、红队</strong>"等用途下，<strong>使用模型时跳过部分防止网络滥用的保护</strong>。这是一个关键政策——<strong>承认"防御者和攻击者用同样的工具"</strong>，并给前者一个绿色通道。</p>
+
+  <p>Anthropic 还把<strong>他们和合作伙伴在 Mythos Preview 上构建的工具集</strong>——按需提供给合格客户的安全团队——</p>
+
+  <p>· <strong>Skills</strong>——重复工作的自定义指令<br>
+  · <strong>Harness</strong>——一个"骨架"，让 Claude 自动<strong>映射代码库、启动扫描子代理、三角分类、写报告</strong><br>
+  · <strong>Threat model builder</strong>——映射代码库识别潜在攻击目标，根据优先级安排模型的工作</p>
+
+  <p>Glasswing 合作伙伴之一 <strong>Cisco</strong>——<strong>开源了它自己的 Foundry Security Spec</strong>——帮助其他防御者建立类似的评估系统。</p>
+
+  <p>Anthropic 还和<strong>开源安全基金会的 Alpha-Omega 项目</strong>建立合作——支持基金会帮助维护者处理 bug 报告的工作。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · NEXT</div>
+  <h2>下一步 · 普及化的难题</h2>
+  <div class="en-title">What's next</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Anthropic 自己<strong>坦白</strong>——<strong>"AI 进步意味着像 Mythos Preview 这样能力的模型很快会被其他 AI 公司开发出来"</strong>。但目前——<strong>没有任何公司（包括 Anthropic）开发出了足以防止这些模型被滥用的保护机制</strong>。<strong>这就是为什么 Mythos-class 模型还没有公开发布</strong>。但 Anthropic 也强调——<strong>如果其他公司没有保护就发布同等能力的模型，世界上几乎任何人都会变得能轻易攻击有漏洞的软件</strong>。这是一个赤裸裸的"赛跑"——Glasswing 给最重要的防御者<strong>不对称优势</strong>，但全行业需要尽快赶上。</p>
+</div>
+
+<div class="body">
+  <p>Glasswing 的下一步——Anthropic 写得很<strong>诚实</strong>，<strong>也很警觉</strong>。</p>
+
+  <p>第一句话就让人停下来——<strong>"AI 进步的速度意味着，能力像 Mythos Preview 一样的模型很快会被许多其他 AI 公司开发出来"</strong>。这是一份<strong>不依赖竞争对手沉默的承认</strong>。</p>
+
+  <p>但接下来的话更让人警醒——<strong>"目前，没有任何公司（包括 Anthropic）开发出了足够强、能防止这种模型被滥用、可能造成严重伤害的保护机制"</strong>。<strong>这就是 Mythos-class 模型还没有公开发布的原因</strong>。</p>
+
+  <p>但同时——<strong>"这也是我们启动 Project Glasswing 的原因"</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>如果<strong>类似能力的模型在没有这种保护下被发布</strong>——<br>它将很快变得<strong>对全球几乎所有人来说</strong>，<br><strong>都非常便宜、非常容易</strong>地<br><strong>利用有漏洞的软件</strong>。</p>
+  <div class="src">— ANTHROPIC, ON WHY GLASSWING EXISTS</div>
+</div>
+
+<div class="body">
+  <p>这就是 Glasswing 的设计理念——<strong>在"无保护版本"出现之前，给最关键的防御者一个<em>不对称优势</em></strong>。</p>
+
+  <p>Anthropic 的下一步计划——</p>
+
+  <p>· 和关键合作伙伴（包括美国及盟国政府）合作，<strong>扩大 Glasswing 到更多合作伙伴</strong>。<br>
+  · 在<strong>"开发出更强保护后"</strong>，希望能<strong>通过普遍发布让 Mythos-class 模型对所有用户开放</strong>。</p>
+
+  <p>报告最后那段话<strong>很美</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>在这些风险的另一边，<br>有一个<strong>令人鼓舞的世界</strong>等着我们——<br><br>一个<strong>重要代码被加固得远超今天</strong>的世界，<br>一个<strong>黑客攻击远不像今天那么普遍</strong>的世界。<br><br>有很多障碍，<br>但<strong>我们依然相信 Project Glasswing 能帮我们走到那里</strong>。</p>
+  <div class="src">— THE WORLD ON THE OTHER SIDE</div>
+</div>
+
+<div class="footer">
+  <div class="brand">ANTHROPIC · 2026/05/22</div>
+  <div>Project Glasswing: An Initial Update · 中文版精校</div>
+  <div class="meta">原文：Anthropic 官方公告 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/glasswing-initial</div>
+</div>
+
+</div>
+</body>
+</html>
