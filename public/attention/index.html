@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>注意力？注意力！· Lilian Weng 综述详解 | 广哥在硅谷</title>
+<meta name="description" content="Lilian Weng 2018 年那篇被引用了上万次的经典综述《Attention? Attention!》中文精校版。从一只柴犬的视觉注意力开始，把 Seq2Seq 瓶颈、Bahdanau 加性注意力、6 种打分函数、自注意力、软硬/全局局部、神经图灵机、指针网络、Transformer 多头注意力、SAGAN 一次性讲透。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Attention, Self-Attention, Transformer, Bahdanau, Lilian Weng, Lil'Log, NTM, SAGAN, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/attention/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="注意力？注意力！· Lilian Weng 综述详解">
+<meta property="og:description" content="Lil'Log 2018 年经典综述 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/attention/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="注意力？注意力！· Lilian Weng 综述详解">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);vertical-align:top;}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  code{font-family:'JetBrains Mono','Menlo',monospace;font-size:.92em;background:#f4f2eb;padding:1px 6px;border-radius:4px;color:var(--dark);}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">LIL'LOG · 2018</div>
+  <h1>注意力？注意力！<br>Attention 机制综述详解</h1>
+  <div class="subtitle-en">Attention? Attention! · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Lilian Weng · OpenAI</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 10 章 · 约 30 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2018 年 6 月，<strong>Lilian Weng</strong>（当时 OpenAI 应用研究员，后任研究副总裁）在她的个人博客 <strong>Lil'Log</strong> 上写下这篇<strong>《Attention? Attention!》</strong>。它是<strong>整整一代深度学习工程师</strong>理解注意力机制的<strong>入门标准教材</strong>之一——被引用了上万次，被翻译成十几种语言。文章从一只<strong>穿西装的柴犬</strong>开始——用人类的视觉注意力做类比；接着把<strong>注意力机制的所有关键分支</strong>梳理一遍——<strong>Bahdanau 加性注意力的诞生、6 种打分函数家族、自注意力、软硬注意力、全局/局部、神经图灵机、指针网络、Transformer 的 QKV 与多头机制、SAGAN 与 SNAIL</strong>。本文是这篇综述的中文精校版，约 1.3 万字。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 一只柴犬告诉我们什么是注意力<br><span class="en">A Shiba Inu introduces attention</span></a></li>
+    <li><a href="#ch2">Seq2Seq 的瓶颈 · 为什么需要 Attention<br><span class="en">What's wrong with Seq2Seq</span></a></li>
+    <li><a href="#ch3">Bahdanau 2015 · 为翻译而生<br><span class="en">Born for translation</span></a></li>
+    <li><a href="#ch4">注意力家族 · 6 种打分函数<br><span class="en">A family of attention mechanisms</span></a></li>
+    <li><a href="#ch5">自注意力 · 关系自己内部<br><span class="en">Self-attention</span></a></li>
+    <li><a href="#ch6">软硬注意力 / 全局局部<br><span class="en">Soft vs hard / Global vs local</span></a></li>
+    <li><a href="#ch7">神经图灵机 · NTM<br><span class="en">Neural Turing Machines</span></a></li>
+    <li><a href="#ch8">指针网络 · Pointer Network<br><span class="en">Pointer networks</span></a></li>
+    <li><a href="#ch9">Transformer · QKV 与多头<br><span class="en">Transformer & multi-head attention</span></a></li>
+    <li><a href="#ch10">SAGAN 与 SNAIL · 扩展应用<br><span class="en">SAGAN and SNAIL</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 一只柴犬告诉我们什么是注意力</h2>
+  <div class="en-title">A Shiba Inu introduces attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Lilian Weng 用<strong>一只穿男装的柴犬</strong>开篇。当人类看这张图时——会<strong>把视觉"高分辨率"焦点放在<em>尖耳朵</em></strong>，<strong>把"低分辨率"</strong>留给雪地背景和外套。注意力的本质——<strong>"重要性权重向量"</strong>。在深度学习里，它就是<strong>用一个向量来描述"输出某个元素时，应该多关注输入的哪些部分"</strong>。同样的逻辑适用于自然语言——看到"<em>吃</em>"就预期出现食物词；颜色词描述食物，但跟"吃"本身关系不大。</p>
+  <div class="terms">
+    <span class="tag">Lilian Weng</span>
+    <span class="tag">Lil'Log 2018</span>
+    <span class="tag">Importance Weights</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2018 年 6 月，<strong>Lilian Weng</strong>——当时 OpenAI 的应用研究员（后来成为 OpenAI 研究副总裁，2024 年离开创办自己的 AI Safety 公司）——在她的个人博客 <strong>Lil'Log</strong> 上写下这篇《<strong>Attention? Attention!</strong>》。</p>
+
+  <p>这篇文章<strong>不是论文</strong>——但它<strong>影响力大过很多论文</strong>。它是整整一代深度学习工程师、研究生、学者<strong>第一次系统理解注意力机制</strong>的<strong>入门标准教材</strong>之一。8 年过去，它依然是 Google 搜索"<strong>attention mechanism</strong>"<strong>排名最靠前</strong>的中文/英文学习资源之一。</p>
+
+  <p>Lilian 用一个让人会心一笑的开头——<strong>一只穿男装的柴犬照片</strong>（来自 Instagram 上的 <code>@mensweardog</code>）。</p>
+
+  <p>她说——人类的视觉注意力让我们<strong>把"高分辨率"聚焦在某一片区域</strong>（比如照片里那对<strong>尖耳朵</strong>），同时<strong>用"低分辨率"感知周围环境</strong>（雪地背景、外套）。然后我们可以<strong>调整焦点或进行推理</strong>。</p>
+
+  <p>给定图像的一小块——其他位置的像素<strong>给了线索</strong>来告诉我们应该看到什么。"<span class="hl">我们在那个黄色框里预期看到尖耳朵——是因为我们已经看到了狗鼻、右边另一个尖耳朵、柴犬神秘的眼睛——这些 doggy features 才是线索。<strong>底部的毛衣和毯子帮不上忙。</strong></span>"</p>
+
+  <p>同样的逻辑适用于自然语言——<strong>看到"吃"，我们预期下一个词是食物</strong>。颜色词描述食物，但跟"吃"本身关系不大。</p>
+
+  <p>Lilian 用一句话总结了注意力的本质——</p>
+</div>
+
+<div class="quote">
+  <p>简而言之——<br>深度学习里的<strong>注意力</strong>可以广义地解释为——<br><strong>一个"重要性权重"的向量</strong>。<br><br>为了预测或推理某一个元素——<br>比如图像里的一个像素，或句子里的一个词——<br><br>我们用<strong>注意力向量</strong>估计<br>它与其他元素的<strong>关联强度</strong>，<br>然后<strong>用注意力向量加权求和</strong>它们的值，<br>作为目标的<strong>近似</strong>。</p>
+  <div class="src">— LILIAN WENG, LIL'LOG 2018</div>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · SEQ2SEQ</div>
+  <h2>Seq2Seq 的瓶颈 · 为什么需要 Attention</h2>
+  <div class="en-title">What's wrong with Seq2Seq</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Attention 不是凭空出现的——它<strong>诞生在</strong> Sutskever 2014 年的 Seq2Seq 框架的一个具体痛点上——<strong>固定长度上下文向量记不住长句子</strong>。Encoder-Decoder 把整个源序列压成<strong>一个固定长度的"上下文向量"</strong>——结果<strong>常常等读完整个句子时，已经忘了前面一部分</strong>。Attention 的诞生（Bahdanau 2015）——<strong>不是构造单一上下文向量，而是在上下文向量和整个源输入之间架"快捷连接"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Sutskever 2014</span>
+    <span class="tag">Encoder-Decoder</span>
+    <span class="tag">Fixed-length Bottleneck</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Attention 不是凭空出现的。<strong>它诞生在一个具体的痛点上</strong>。</p>
+
+  <p>这个痛点叫<strong>Seq2Seq 模型</strong>（Sutskever, et al. 2014）。Seq2Seq 模型试图把一个输入序列（<strong>source</strong>）变成另一个序列（<strong>target</strong>）——两个序列可以是任意长度。典型任务——机器翻译、对话生成、句法分析。</p>
+
+  <p>Seq2Seq 模型通常是<strong>编码器-解码器</strong>架构——</p>
+
+  <p>· <strong>编码器</strong>处理输入序列，把信息<strong>压成固定长度的"上下文向量"</strong>（也叫 sentence embedding 或 "thought" 向量）。这个表示<strong>应该是整个源序列含义的良好总结</strong>。<br>
+  · <strong>解码器</strong>用这个上下文向量初始化，<strong>产出转换后的输出</strong>。早期工作只用编码器网络的<strong>最后一个状态</strong>作为解码器初始状态。<br>
+  · 编码器和解码器都是<strong>循环神经网络</strong>——LSTM 或 GRU 单元。</p>
+
+  <p>这个设计的<strong>关键、明显的缺陷</strong>——<strong>固定长度上下文向量记不住长句子</strong>。<span class="hl">"常常等读完整个输入时，<strong>已经忘了前面一部分</strong>"</span>。</p>
+
+  <p>这就是 attention 诞生的契机——<strong>Bahdanau et al. 2015</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · BAHDANAU</div>
+  <h2>Bahdanau 2015 · 为翻译而生</h2>
+  <div class="en-title">Born for translation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Bahdanau 等人的<strong>关键创新</strong>——不构造单一上下文向量，<strong>而是在上下文向量和整个源输入之间架"快捷连接"</strong>。这些<strong>快捷连接的权重对每一个输出元素都是可定制的</strong>。上下文向量<strong>消费三部分信息</strong>——编码器隐藏状态、解码器隐藏状态、源与目标之间的对齐。<strong>对齐分数</strong>由一个<strong>带单隐层的前馈网络（tanh 激活）</strong>参数化——和模型其他部分<strong>共同训练</strong>。这就是<strong>"加性注意力"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Bahdanau 2015</span>
+    <span class="tag">Additive Attention</span>
+    <span class="tag">Alignment Matrix</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Bahdanau 等人的 <strong>2015 ICLR 论文</strong>《<em>Neural Machine Translation by Jointly Learning to Align and Translate</em>》——给神经机器翻译<strong>第一次引入了 attention</strong>。</p>
+
+  <p>关键创新——<strong>不是从编码器的最后一个隐藏状态构造一个单一的上下文向量</strong>，<strong>而是在上下文向量和整个源输入之间架"快捷连接"</strong>。这些<strong>快捷连接的权重对每一个输出元素都可以定制</strong>。</p>
+
+  <p>"<strong>上下文向量可以访问整个输入序列</strong>，所以我们不用担心遗忘"。源与目标之间的<strong>对齐</strong>由<strong>上下文向量学习并控制</strong>。</p>
+
+  <p>形式化定义——假设源序列 $x = [x_1, x_2, \ldots, x_n]$ 长度 $n$，输出目标序列 $y = [y_1, y_2, \ldots, y_m]$ 长度 $m$（粗体表示向量）。</p>
+
+  <p><strong>编码器是双向 RNN</strong>——前向隐藏状态 $\vec{h}_i$ 和后向 $\overleftarrow{h}_i$。简单<strong>拼接</strong>两个就是编码器状态——动机是让一个词的注释同时包含前文和后文。</p>
+</div>
+
+<div class="math-block">
+$$\boldsymbol{h}_i = [\vec{h}_i^\top; \overleftarrow{h}_i^\top]^\top, \quad i = 1, \ldots, n$$
+</div>
+
+<div class="body">
+  <p>解码器在位置 $t$ 有隐藏状态 $\boldsymbol{s}_t = f(\boldsymbol{s}_{t-1}, y_{t-1}, \boldsymbol{c}_t)$。其中<strong>上下文向量 $\boldsymbol{c}_t$ 是输入隐藏状态的加权和</strong>——权重是<strong>对齐分数</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\boldsymbol{c}_t = \sum_{i=1}^n \alpha_{t,i} \boldsymbol{h}_i$$
+<p style="font-family:'Poppins';font-size:12px;color:var(--mid-gray);margin-top:8px;">输出 $y_t$ 的上下文向量</p>
+</div>
+
+<div class="math-block">
+$$\alpha_{t,i} = \text{align}(y_t, x_i) = \frac{\exp(\text{score}(\boldsymbol{s}_{t-1}, \boldsymbol{h}_i))}{\sum_{i'=1}^n \exp(\text{score}(\boldsymbol{s}_{t-1}, \boldsymbol{h}_{i'}))}$$
+</div>
+
+<div class="body">
+  <p>$\alpha_{t,i}$ 表示<strong>"对齐"两个词 $y_t$ 和 $x_i$ 的程度</strong>——它是<strong>预定义对齐分数的 softmax</strong>。</p>
+
+  <p>在 Bahdanau 的论文里，对齐分数 $\alpha_{t,i}$ 由一个<strong>带单隐层的前馈网络</strong>参数化（tanh 激活）——<strong>和模型其他部分共同训练</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{v}_a^\top \tanh(\boldsymbol{W}_a [\boldsymbol{s}_t; \boldsymbol{h}_i])$$
+</div>
+
+<div class="body">
+  <p>其中 $\boldsymbol{v}_a$ 和 $\boldsymbol{W}_a$ 是对齐模型里要学的<strong>权重矩阵</strong>。这就是<strong>"加性注意力"</strong>（additive attention）。</p>
+
+  <p><strong>对齐分数矩阵</strong>是这个机制的<strong>"好副产品"</strong>——它<strong>显式地展示源词和目标词之间的相关性</strong>。Lilian 引用了 Bahdanau 论文里那张著名的图——法语 "L'accord sur l'Espace économique européen a été signé en août 1992" 与其英文翻译 "The agreement on the European Economic Area was signed in August 1992" 之间的<strong>对齐矩阵</strong>——清楚地展示了哪些词对应哪些词，是<strong>可解释性</strong>的一个早期典范。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · FAMILY</div>
+  <h2>注意力家族 · 6 种打分函数</h2>
+  <div class="en-title">A family of attention mechanisms</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>有了 Bahdanau 的加性注意力，<strong>"源和目标之间的依赖不再被中间距离限制"</strong>——这个想法很快从机器翻译<strong>扩散到计算机视觉</strong>（Xu et al. 2015），<strong>各种打分函数</strong>相继被提出。Lilian 总结了 <strong>6 个家族</strong>——<strong>内容基础（Graves 2014）、加性（Bahdanau 2015）、位置基础（Luong 2015）、一般（Luong 2015）、点积（Luong 2015）、缩放点积（Vaswani 2017）</strong>。<strong>缩放点积</strong>就是后来 Transformer 用的——除以 $\sqrt{n}$ 是为了避免输入大时 softmax 梯度过小。</p>
+  <div class="terms">
+    <span class="tag">Additive</span>
+    <span class="tag">Dot-Product</span>
+    <span class="tag">Scaled Dot-Product</span>
+    <span class="tag">√n Scaling</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>有了 Bahdanau 的加性注意力，<strong>"源和目标之间的依赖不再被中间距离限制"</strong>——这个想法很快从机器翻译扩散到计算机视觉（Xu et al. 2015），<strong>各种打分函数</strong>相继被提出（Luong 2015、Britz 2017、Vaswani 2017）。</p>
+
+  <p>Lilian 用一张表总结了 <strong>6 种流行的注意力机制</strong>和对应的<strong>对齐分数函数</strong>——</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>名字</th><th>对齐分数函数</th><th>引用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>内容基础</strong><br>Content-based</td><td>$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \cos[\boldsymbol{s}_t, \boldsymbol{h}_i]$</td><td>Graves 2014</td></tr>
+    <tr><td><strong>加性</strong><br>Additive</td><td>$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{v}_a^\top \tanh(\boldsymbol{W}_a [\boldsymbol{s}_{t-1}; \boldsymbol{h}_i])$</td><td>Bahdanau 2015</td></tr>
+    <tr><td><strong>位置基础</strong><br>Location-base</td><td>$\alpha_{t,i} = \text{softmax}(\boldsymbol{W}_a \boldsymbol{s}_t)$<br><span style="font-size:11px;color:var(--mid-gray);">仅依赖目标位置</span></td><td>Luong 2015</td></tr>
+    <tr><td><strong>一般</strong><br>General</td><td>$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top \boldsymbol{W}_a \boldsymbol{h}_i$<br><span style="font-size:11px;color:var(--mid-gray);">$\boldsymbol{W}_a$ 是可训练权重</span></td><td>Luong 2015</td></tr>
+    <tr><td><strong>点积</strong><br>Dot-Product</td><td>$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top \boldsymbol{h}_i$</td><td>Luong 2015</td></tr>
+    <tr><td><strong>缩放点积</strong><br>Scaled Dot-Product</td><td>$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \dfrac{\boldsymbol{s}_t^\top \boldsymbol{h}_i}{\sqrt{n}}$<br><span style="font-size:11px;color:var(--mid-gray);">$n$ 是源隐藏状态维度</span></td><td>Vaswani 2017</td></tr>
+  </tbody>
+</table>
+
+<div class="intuit">
+  <div class="label">📐 为什么要 $\sqrt{n}$ 缩放？</div>
+  <p><strong>缩放点积</strong>注意力跟点积注意力<strong>几乎相同</strong>，只<strong>多了一个缩放因子 $1/\sqrt{n}$</strong>。<strong>动机</strong>——当输入向量较大时，<strong>softmax 函数的梯度会变得极小</strong>，导致<strong>训练困难</strong>。除以 $\sqrt{n}$ 把点积的方差控制住，让 softmax 落在<strong>梯度有意义</strong>的范围内。这是 Vaswani 2017 在 Transformer 里的关键工程细节——<strong>少了它，Transformer 就训练不好</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Lilian 还把<strong>更广义的"分类"</strong>列出来——按"<strong>关注什么</strong>"分——</p>
+
+  <p>· <strong>自注意力（Self-Attention）</strong>——关联同一序列里不同位置（Cheng 2016）<br>
+  · <strong>全局/软（Global/Soft）</strong>——关注整个输入状态空间（Xu 2015）<br>
+  · <strong>局部/硬（Local/Hard）</strong>——只关注输入状态空间的一部分（Xu 2015、Luong 2015）</p>
+
+  <p>接下来三章我们逐一讲。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · SELF-ATTENTION</div>
+  <h2>自注意力 · 关系自己内部</h2>
+  <div class="en-title">Self-attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>自注意力（self-attention，也叫 <em>intra-attention</em>）是一种<strong>把同一个序列的不同位置关联起来</strong>的注意力机制——目的是<strong>计算同一序列的表示</strong>。它在<strong>机器阅读、抽象摘要、图像描述生成</strong>等任务上都被证明很有用。LSTM 网络的那篇论文用了 self-attention 做<strong>机器阅读</strong>——self-attention 让模型能学到"当前词"和"句子前面部分"之间的相关性。理论上，<strong>self-attention 可以采用上面任何一个打分函数</strong>——只是把目标序列<strong>换成同一个输入序列</strong>。</p>
+</div>
+
+<div class="body">
+  <p><strong>自注意力</strong>——也叫 <em>intra-attention</em>——是一种把<strong>同一个序列的不同位置关联起来</strong>的注意力机制——目的是<strong>计算同一序列的表示</strong>。</p>
+
+  <p>它已经被证明在<strong>机器阅读、抽象摘要、图像描述生成</strong>等任务上非常有用。</p>
+
+  <p><strong>LSTM 网络的论文</strong>（Cheng 2016）用自注意力做<strong>机器阅读</strong>——self-attention 让模型能学到<strong>"当前词"和"句子前面部分"</strong>之间的相关性。Lilian 给的图——<strong>当前词标红，蓝色阴影的大小表示激活程度</strong>。看完图你能很直观地感觉到 self-attention 在"<em>读句子</em>"时关注的位置。</p>
+
+  <p>理论上——<strong>self-attention 可以采用上面表格里任何一个打分函数</strong>。只是<strong>把目标序列换成同一个输入序列</strong>而已。</p>
+
+  <p>这个简单的<strong>"换成自己"</strong>就<strong>解锁了一切</strong>。后来的 Transformer、BERT、GPT、Claude——<strong>它们的核心机制都是 self-attention</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · SOFT VS HARD</div>
+  <h2>软硬注意力 / 全局局部</h2>
+  <div class="en-title">Soft vs hard / Global vs local</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>软注意力 vs 硬注意力</strong>是 Xu 2015 提出的——基于注意力<strong>是否能访问整个图像</strong>。<strong>软（Soft）</strong>——权重<strong>"软地"</strong>落在所有 patch 上，<strong>平滑可微</strong>，但<strong>大输入时贵</strong>。<strong>硬（Hard）</strong>——一次<strong>只选一个 patch</strong>关注，<strong>推理时计算少</strong>，但<strong>不可微</strong>——需要方差缩减或强化学习训练。Luong 2015 提出 <strong>全局 vs 局部</strong>——<strong>全局</strong>类似 soft；<strong>局部</strong>是<strong>软硬之间的有趣混合</strong>——先预测目标的对齐位置，然后在源端用一个<strong>窗口</strong>计算上下文向量——<strong>让 hard attention 变得可微</strong>。</p>
+  <div class="terms">
+    <span class="tag">Soft / Hard</span>
+    <span class="tag">Global / Local</span>
+    <span class="tag">Differentiable</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>在<strong>《Show, Attend and Tell》</strong>（Xu et al. 2015）里，attention 机制被应用到<strong>图像上做 caption 生成</strong>。图像先<strong>用 CNN 编码提取特征</strong>，然后<strong>LSTM 解码器</strong>消费卷积特征<strong>一个词一个词</strong>地生成描述——<strong>权重通过 attention 学习</strong>。</p>
+
+  <p>注意力权重的<strong>可视化</strong>清楚地展示了模型<strong>为输出某个词而关注图像的哪些区域</strong>。Xu 给的例子——"<em>A woman is throwing a frisbee in a park</em>"——你能清楚看到模型生成 "<em>frisbee</em>" 时关注圆盘，生成 "<em>park</em>" 时关注草地。</p>
+
+  <p>这篇论文<strong>第一次区分</strong>了<strong>"软" vs "硬" 注意力</strong>——基于"<strong>注意力是否能访问整个图像</strong>"——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚙️ 软 vs 硬</div>
+  <ul>
+    <li><strong>软注意力（Soft Attention）</strong>——对齐权重被<strong>学习</strong>，<strong>"软地"</strong>落在所有源图像 patch 上。本质和 Bahdanau 2015 里的同一类型。<br><strong>优点</strong>——模型<strong>平滑可微</strong>。<br><strong>缺点</strong>——<strong>当源输入大时很贵</strong>。</li>
+    <li><strong>硬注意力（Hard Attention）</strong>——一次<strong>只选一个 patch</strong>关注。<br><strong>优点</strong>——<strong>推理时计算少</strong>。<br><strong>缺点</strong>——模型<strong>不可微</strong>，需要更复杂的技巧——比如<strong>方差缩减</strong>或<strong>强化学习</strong>——才能训练（Luong 2015）。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>Luong 2015 提出了<strong>"全局" vs "局部" 注意力</strong>——</p>
+
+  <p><strong>全局注意力</strong>类似软注意力——关注整个源端。</p>
+
+  <p><strong>局部注意力</strong>是<strong>软和硬之间的有趣混合</strong>——一种<strong>对硬注意力的改进，让它可微</strong>。</p>
+
+  <p>模型<strong>先预测</strong>当前目标词的<strong>单个对齐位置</strong>，然后<strong>以这个源位置为中心的窗口</strong>用来计算上下文向量。这样既保留了<strong>"只关注局部"的高效</strong>，又通过<strong>"软窗口"</strong>恢复了<strong>可微性</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · NTM</div>
+  <h2>神经图灵机 · NTM</h2>
+  <div class="en-title">Neural Turing Machines</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>1936 年 <strong>Alan Turing</strong> 提出图灵机——<strong>无限长的纸带 + 一个可读写、可左右移动的头</strong>。理论上图灵机能模拟任何计算机算法。<strong>神经图灵机（NTM）</strong>——Graves、Wayne、Danihelka 2014——是<strong>把神经网络和外部存储耦合</strong>的模型架构。<strong>内存模拟图灵机的纸带</strong>，<strong>神经网络控制读写头</strong>。NTM 的内存是<strong>有限的 $N \times M$ 矩阵</strong>——所以它"<em>更像神经版冯诺依曼机</em>"。读写都通过<strong>"软关注所有内存地址"</strong>实现——<strong>NTM 用混合的"内容基础 + 位置基础"寻址</strong>。</p>
+  <div class="terms">
+    <span class="tag">Turing Machine</span>
+    <span class="tag">Graves 2014</span>
+    <span class="tag">External Memory</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>1936 年 <strong>Alan Turing</strong> 提出了一个极简的计算模型——<strong>无限长的纸带 + 一个可与纸带交互的"头"</strong>。纸带有无数格子，每格填一个符号——0、1 或空白。操作头可以<strong>读符号、改符号、向左右移动</strong>。理论上图灵机可以<strong>模拟任何计算机算法</strong>——不管多复杂。</p>
+
+  <p>无限内存让图灵机<strong>数学上无极限</strong>——但<strong>现实中不可行</strong>，所以我们只把图灵机当数学模型。</p>
+
+  <p><strong>神经图灵机（Neural Turing Machine, NTM）</strong>——Graves、Wayne、Danihelka 2014——是<strong>把神经网络和外部存储耦合</strong>的模型架构。<strong>内存模拟图灵机的纸带</strong>，<strong>神经网络控制读写头</strong>。但 NTM 的内存是<strong>有限的</strong>，所以它"<em>可能更像神经版冯诺依曼机</em>"。</p>
+
+  <p>NTM 有<strong>两大组件</strong>——</p>
+
+  <p>· <strong>控制器（Controller）</strong>——负责执行内存操作。可以是任何神经网络——前馈或循环。<br>
+  · <strong>内存库（Memory）</strong>——存储处理过的信息。是一个<strong>$N \times M$ 矩阵</strong>——$N$ 个向量行，每行 $M$ 维。</p>
+
+  <p>在<strong>一个更新迭代</strong>里——控制器处理输入，<strong>与内存库交互</strong>产生输出。交互通过<strong>并行的读写头</strong>实现——<strong>读写都是"模糊"的——软地关注所有内存地址</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📐 读和写</div>
+  <p><strong>读</strong>——时刻 $t$ 读内存时，<strong>大小为 $N$ 的注意力向量 $\boldsymbol{w}_t$</strong> 控制对不同内存位置的关注。读出向量 $\boldsymbol{r}_t$ 是<strong>按注意力加权求和</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\boldsymbol{r}_t = \sum_{i=1}^N w_t(i) \boldsymbol{M}_t(i), \quad \text{where} \quad \sum_{i=1}^N w_t(i) = 1$$
+</div>
+
+<div class="body">
+  <p><strong>写</strong>——受 LSTM 的<strong>输入门和遗忘门</strong>启发——先用<strong>擦除向量 $\boldsymbol{e}_t$</strong> 擦掉一些旧内容，再用<strong>添加向量 $\boldsymbol{a}_t$</strong> 加上新信息——</p>
+</div>
+
+<div class="math-block">
+$$\tilde{\boldsymbol{M}}_t(i) = \boldsymbol{M}_{t-1}(i) [1 - w_t(i) \boldsymbol{e}_t] \quad \text{; 擦除}$$
+$$\boldsymbol{M}_t(i) = \tilde{\boldsymbol{M}}_t(i) + w_t(i) \boldsymbol{a}_t \quad \text{; 添加}$$
+</div>
+
+<div class="body">
+  <p>NTM 用<strong>混合的"内容基础 + 位置基础"寻址</strong>——</p>
+
+  <p>· <strong>内容寻址</strong>——基于控制器从输入提取的<strong>键向量 $\boldsymbol{k}_t$</strong> 和内存行之间的<strong>相似度</strong>计算注意力。用<strong>余弦相似度</strong>+ <strong>softmax</strong>，加一个<strong>强度乘子 $\beta_t$</strong> 来放大/弱化分布的聚焦。<br>
+  · <strong>插值门 $g_t$</strong>——混合"新生成的内容寻址注意力"和"上一时刻的注意力权重"。<br>
+  · <strong>位置寻址</strong>——按<strong>整数位移分布加权</strong>对注意力向量做<strong>1D 卷积</strong>。然后用<strong>锐化标量 $\gamma_t \geq 1$</strong> 增强分布。</p>
+
+  <p>NTM 是<strong>"attention 作为可微计算工具"</strong>的早期范例——它告诉我们 attention <strong>不只是对齐</strong>，还可以是<strong>读写、寻址、计算</strong>本身。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · POINTER NET</div>
+  <h2>指针网络 · Pointer Network</h2>
+  <div class="en-title">Pointer Networks</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>排序、旅行商问题（TSP）</strong>这类问题——<strong>输入输出都是序列</strong>，但<strong>输出元素的离散类别取决于变长输入</strong>——传统 seq2seq 解决不了。<strong>指针网络（Ptr-Net）</strong>（Vinyals 2015）——<strong>当输出元素对应输入序列里的位置时使用</strong>。它<strong>不把编码器隐藏状态混合成上下文向量</strong>，而是<strong>对输入元素施加注意力，每一步直接选一个作为输出</strong>。输出只对应<strong>位置</strong>，不对应<strong>内容</strong>——非常巧妙地把<strong>attention 改造成"指针"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Vinyals 2015</span>
+    <span class="tag">Variable Output</span>
+    <span class="tag">TSP / Sorting</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>排序、旅行商问题（TSP）这类问题——<strong>输入输出都是序列</strong>，但<strong>不能</strong>被经典 seq2seq 或 NMT 模型轻易解决——因为<strong>输出元素的离散类别取决于变长输入</strong>。</p>
+
+  <p><strong>指针网络（Ptr-Net）</strong>——Vinyals 2015——<strong>解决了这一类问题</strong>——<strong>当输出元素对应输入序列里的位置时使用</strong>。</p>
+
+  <p>它的关键创新——<strong>不</strong>用注意力把编码器隐藏单元<strong>混合成上下文向量</strong>，而是<strong>对输入元素施加注意力，每一步直接选一个作为输出</strong>。</p>
+
+  <p>形式化——Ptr-Net 给定输入向量序列 $\boldsymbol{x} = (x_1, \ldots, x_n)$，输出<strong>整数索引序列</strong> $\boldsymbol{c} = (c_1, \ldots, c_m)$，其中 $1 \leq c_i \leq n$。</p>
+
+  <p>编码器和解码器隐藏状态分别记作 $(\boldsymbol{h}_1, \ldots, \boldsymbol{h}_n)$ 和 $(\boldsymbol{s}_1, \ldots, \boldsymbol{s}_m)$。$\boldsymbol{s}_i$ 是解码器里<strong>细胞激活后的输出门</strong>。</p>
+
+  <p>Ptr-Net 在状态之间用<strong>加性注意力</strong>，然后用<strong>softmax</strong> 归一化建模输出条件概率——</p>
+</div>
+
+<div class="math-block">
+$$y_i = p(c_i \mid c_1, \ldots, c_{i-1}, \boldsymbol{x}) = \text{softmax}(\text{score}(\boldsymbol{s}_t; \boldsymbol{h}_i)) = \text{softmax}(\boldsymbol{v}_a^\top \tanh(\boldsymbol{W}_a [\boldsymbol{s}_t; \boldsymbol{h}_i]))$$
+</div>
+
+<div class="body">
+  <p><strong>注意力机制被简化</strong>——因为 Ptr-Net <strong>不</strong>把编码器状态<strong>混合到输出</strong>。这样输出<strong>只对应位置，不对应输入内容</strong>。</p>
+
+  <p>Ptr-Net 是 attention 的<strong>巧妙变体</strong>——它让 attention 从"<em>给输出加权重</em>"变成"<em>给输出点位置</em>"——本质上把 attention <strong>改造成了"指针"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · TRANSFORMER</div>
+  <h2>Transformer · QKV 与多头</h2>
+  <div class="en-title">Transformer & multi-head attention</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>"Attention is All You Need"</strong>（Vaswani 2017）——Lilian 直言"<strong>2017 年最具影响力和最有趣的论文之一</strong>"——展示了大量对软注意力的改进，让<strong>无需 RNN 也能做 seq2seq 建模</strong>。Transformer <strong>完全建立在自注意力机制上</strong>。秘诀<strong>都在架构里</strong>——把编码后的输入看成<strong>键-值对 $(\boldsymbol{K}, \boldsymbol{V})$</strong>，解码器把上一输出压成<strong>查询 $\boldsymbol{Q}$</strong>。<strong>缩放点积注意力</strong>——$\boldsymbol{Q}$ 和 $\boldsymbol{K}$ 算点积，除以 $\sqrt{n}$，过 softmax，加权 $\boldsymbol{V}$。<strong>多头</strong>——并行跑多次，拼接，线性变换——<strong>"让模型从不同位置不同表示子空间联合关注信息"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Vaswani 2017</span>
+    <span class="tag">QKV</span>
+    <span class="tag">Multi-Head</span>
+    <span class="tag">N=6 Layers</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>《<strong>Attention is All You Need</strong>》——Vaswani 2017——Lilian 直言<strong>"毫无疑问，2017 年最具影响力和最有趣的论文之一"</strong>。它带来了<strong>对软注意力的大量改进</strong>，让<strong>不用循环网络也能做 seq2seq 建模</strong>。Transformer <strong>完全建立在自注意力机制上</strong>——<strong>没有任何序列对齐的循环架构</strong>。</p>
+
+  <p>秘诀<strong>都在架构里</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🔑 Key, Value, Query</div>
+  <p>Transformer 的核心组件是<strong>多头自注意力机制单元</strong>。Transformer 把编码后的输入表示看作<strong>键-值对 $(\boldsymbol{K}, \boldsymbol{V})$</strong>——都是<strong>维度 $n$</strong>（输入序列长度）。在 NMT 上下文里，<strong>键和值都是编码器隐藏状态</strong>。</p>
+  <p>解码器把上一个输出<strong>压成查询 $\boldsymbol{Q}$</strong>（维度 $m$）。下一个输出由<strong>把这个查询和键-值集合映射</strong>产生。</p>
+</div>
+
+<div class="body">
+  <p>Transformer 用<strong>缩放点积注意力</strong>——输出是<strong>值的加权和</strong>，权重由<strong>查询和所有键的点积</strong>决定——</p>
+</div>
+
+<div class="math-block">
+$$\text{Attention}(\boldsymbol{Q}, \boldsymbol{K}, \boldsymbol{V}) = \text{softmax}\left(\dfrac{\boldsymbol{Q} \boldsymbol{K}^\top}{\sqrt{n}}\right) \boldsymbol{V}$$
+</div>
+
+<div class="body">
+  <p><strong>多头自注意力</strong>——不只算一次注意力，而是<strong>并行跑多次缩放点积注意力</strong>。各自独立的注意力输出<strong>简单拼接，然后线性变换</strong>到期望的维度——</p>
+
+  <p>Lilian 用一句典型的 Lil'Log 幽默吐槽——<strong>"我猜动机是因为集成学习总是有用？ ;)"</strong> 然后引用论文里更严肃的版本——<strong>"多头注意力让模型能从不同位置不同表示子空间联合关注信息。用单头注意力，平均会抑制这一点"</strong>。</p>
+</div>
+
+<div class="math-block">
+$$\text{MultiHead}(\boldsymbol{Q}, \boldsymbol{K}, \boldsymbol{V}) = [\text{head}_1; \ldots; \text{head}_h] \boldsymbol{W}^O$$
+$$\text{where } \text{head}_i = \text{Attention}(\boldsymbol{Q} \boldsymbol{W}^Q_i, \boldsymbol{K} \boldsymbol{W}^K_i, \boldsymbol{V} \boldsymbol{W}^V_i)$$
+</div>
+
+<div class="body">
+  <p>其中 $\boldsymbol{W}^Q_i, \boldsymbol{W}^K_i, \boldsymbol{W}^V_i, \boldsymbol{W}^O$ 是要学的<strong>参数矩阵</strong>。</p>
+
+  <p>Lilian 还简要讲了<strong>编码器和解码器架构</strong>——</p>
+
+  <p><strong>编码器</strong>——</p>
+  <p>· <strong>$N = 6$ 个相同层</strong>的堆叠<br>
+  · 每层有<strong>一个多头自注意力子层</strong>+ <strong>一个位置 feed-forward 网络</strong><br>
+  · 每个子层用<strong>残差连接 + 层归一化</strong><br>
+  · 所有子层输出维度 $d_{\text{model}} = 512$</p>
+
+  <p><strong>解码器</strong>——</p>
+  <p>· $N = 6$ 个相同层<br>
+  · 每层有<strong>两个多头注意力子层 + 一个 feed-forward</strong><br>
+  · 同样残差连接 + 层归一化<br>
+  · <strong>第一个多头注意力子层被修改</strong>——<strong>防止位置关注后续位置</strong>（不能看未来）</p>
+
+  <p>最后——源和目标序列<strong>先过嵌入层</strong>变成相同维度 $d_{\text{model}} = 512$；为<strong>保留位置信息</strong>，用<strong>正弦波位置编码</strong>加到嵌入上；最终<strong>softmax + 线性层</strong>。</p>
+
+  <p>Transformer 的<strong>完整架构图</strong>——是过去 8 年里被引用最多的那张神经网络图。Lilian 自己也开源了一份 TensorFlow 实现——<code>lilianweng/transformer-tensorflow</code>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 10 -->
+<div class="chapter" id="ch10">
+  <div class="chapter-num">CHAPTER 10 · SAGAN & SNAIL</div>
+  <h2>SAGAN 与 SNAIL · 扩展应用</h2>
+  <div class="en-title">SAGAN and SNAIL</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>最后 Lilian 讲两个把 attention 扩展到不同领域的例子——<strong>SNAIL</strong>（Mishra 2017）把<strong>自注意力 + 时序卷积</strong>合起来解决 Transformer 的<strong>位置敏感问题</strong>——用于<strong>元学习（meta-learning）</strong>。<strong>Self-Attention GAN（SAGAN，Zhang 2018）</strong>把自注意力<strong>加进 GAN</strong>——让生成器和判别器<strong>更好地建模空间区域之间的关系</strong>。DCGAN 用卷积，被<strong>filter size 限制</strong>——一像素的特征只能依赖小局部。SAGAN 用自注意力<strong>显式学习一像素和所有其他位置的关系</strong>——<strong>"轻松捕捉全局依赖"</strong>。Lilian 在结尾<strong>预告</strong>了一篇关于<strong>"改进的 Transformer 模型"</strong>的后续文章。</p>
+  <div class="terms">
+    <span class="tag">SNAIL · Meta-Learning</span>
+    <span class="tag">SAGAN · GAN + Attention</span>
+    <span class="tag">DCGAN Limits</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Transformer <strong>没有循环或卷积结构</strong>——即使加了位置编码，<strong>序列顺序仅被弱地纳入</strong>。对于<strong>对位置依赖敏感的问题</strong>——比如<strong>强化学习</strong>——这可能是大问题。</p>
+
+  <p><strong>Simple Neural Attention Meta-Learner（SNAIL）</strong>——Mishra 2017——部分为解决 Transformer 的位置问题而生——<strong>把 Transformer 的自注意力机制和时序卷积结合</strong>。它在<strong>监督学习和强化学习任务</strong>上都展现良好——诞生在<strong>元学习</strong>领域（"<em>meta-learning 是另一个值得自成一篇的话题</em>"——Lilian 后来真的写了一篇）。</p>
+
+  <p>简单说——<strong>元学习模型期望泛化到相似分布里没见过的新任务</strong>。</p>
+
+  <p><strong>Self-Attention GAN（SAGAN）</strong>——Zhang 2018——把<strong>自注意力层加进 GAN</strong>——让生成器和判别器<strong>都能更好地建模空间区域之间的关系</strong>。</p>
+
+  <p>为什么需要？经典 <strong>DCGAN</strong>（深度卷积 GAN）把判别器和生成器都用<strong>多层卷积网络</strong>表示。问题——<strong>网络的表示能力被 filter size 限制</strong>——一像素的特征<strong>仅限于小局部区域</strong>。为了<strong>连接远距离区域</strong>，特征<strong>必须穿过多层卷积稀释</strong>——<strong>依赖关系不一定能维持</strong>。</p>
+
+  <p>"<strong>视觉上的（软）自注意力</strong>显式设计为学习<strong>一像素和所有其他位置（即使距离很远）的关系</strong>——能<strong>轻松捕捉全局依赖</strong>"。所以装了自注意力的 GAN 应该<strong>处理细节更好</strong>。</p>
+
+  <p>SAGAN 用<strong>非局部神经网络</strong>来计算注意力。卷积图像特征图 $\boldsymbol{x}$ <strong>分成三个副本</strong>——对应 Transformer 里的<strong>键、值、查询</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\boldsymbol{f}(\boldsymbol{x}) = \boldsymbol{W}_f \boldsymbol{x}, \quad \boldsymbol{g}(\boldsymbol{x}) = \boldsymbol{W}_g \boldsymbol{x}, \quad \boldsymbol{h}(\boldsymbol{x}) = \boldsymbol{W}_h \boldsymbol{x}$$
+</div>
+
+<div class="body">
+  <p>然后应用<strong>点积注意力</strong>输出自注意力特征图——</p>
+</div>
+
+<div class="math-block">
+$$\alpha_{i,j} = \text{softmax}(\boldsymbol{f}(\boldsymbol{x}_i)^\top \boldsymbol{g}(\boldsymbol{x}_j))$$
+$$\boldsymbol{o}_j = \boldsymbol{W}_v \left( \sum_{i=1}^N \alpha_{i,j} \boldsymbol{h}(\boldsymbol{x}_i) \right)$$
+</div>
+
+<div class="body">
+  <p>$\alpha_{i,j}$ 是注意力图里的一个条目——表示<strong>合成第 $j$ 位置时模型应该多关注第 $i$ 位置</strong>。$\boldsymbol{W}_f, \boldsymbol{W}_g, \boldsymbol{W}_h$ 都是 $1 \times 1$ 卷积滤波器。</p>
+
+  <p>注意力层的输出再<strong>乘以一个缩放参数 $\gamma$</strong>，<strong>加回原始输入特征图</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\boldsymbol{y} = \boldsymbol{x}_i + \gamma \boldsymbol{o}_i$$
+</div>
+
+<div class="body">
+  <p>训练时<strong>$\gamma$ 从 0 渐进增大</strong>——网络<strong>先依赖局部区域线索</strong>，<strong>再渐进学会给远距离区域分配更多权重</strong>。SAGAN 生成的 128×128 例子图像<strong>显著好于传统 DCGAN</strong>。</p>
+
+  <p>Lilian 在结尾<strong>预告</strong>了她 2020 年 4 月写的<strong>后续文章——《改进的 Transformer 模型》</strong>——继续这条线讲下去。</p>
+</div>
+
+<div class="quote">
+  <p>2018 年这篇综述结束时，<br>Lilian 没有想到——<br>5 年后她会成为 <strong>OpenAI 的研究副总裁</strong>，<br>"<strong>attention 机制</strong>"<br>会成为<strong>整个 AI 时代的底层抽象</strong>。<br><br>但她已经把<strong>所有的种子</strong>种在这一篇文章里——<br>Bahdanau 的对齐、自注意力、QKV、多头⋯⋯<br><br>这是<strong>互联网时代</strong><br><strong>最具教学价值的一篇综述</strong>。</p>
+  <div class="src">— 我读完这篇文章的感受</div>
+</div>
+
+<div class="footer">
+  <div class="brand">LIL'LOG · 2018</div>
+  <div>Attention? Attention! · 中文版精校</div>
+  <div class="meta">原文：Lilian Weng (lilianweng.github.io) · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/attention</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -44,6 +44,35 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'attention',
+    url: '/attention/',
+    category: 'ai',
+    date: '2026-06-10',
+    tag: "LIL'LOG · 2018",
+    title: {
+      zh: '注意力？注意力！· Lilian Weng 综述详解',
+      en: 'Attention? Attention! · Lilian Weng Survey',
+      ja: 'Attention? Attention!：Lilian Weng の総説',
+    },
+    subtitle: {
+      zh: 'Lilian Weng · 中文精校版',
+      en: 'Lilian Weng · Curated Chinese Edition',
+      ja: 'Lilian Weng · 中国語精製版',
+    },
+    desc: {
+      zh: 'Lilian Weng（前 OpenAI 研究副总裁）2018 年那篇被引用了上万次的经典综述中文精校版。从一只柴犬的视觉注意力开始，把 Seq2Seq 瓶颈、Bahdanau 加性注意力、6 种打分函数、自注意力、软硬/全局局部、神经图灵机、指针网络、Transformer 多头注意力、SAGAN 一次讲透。',
+      en: "Lilian Weng's 2018 classic overview on attention. From a Shiba Inu's visual attention to seq2seq bottleneck, Bahdanau additive, 6 score functions, self-attention, soft/hard, NTM, Pointer Net, Transformer's QKV & multi-head, and SAGAN — all in one read.",
+      ja: 'Lilian Weng の 2018 年の名作総説。柴犬の視覚的注意から始まり、Seq2Seq、Bahdanau の加法的注意、6 つのスコア関数、自己注意、Transformer の QKV まで一気通貫。',
+    },
+    meta: {
+      zh: ['10 章', '约 30 分钟', '含公式'],
+      en: ['10 chapters', '~30 min read', 'With formulas'],
+      ja: ['10 章', '約 30 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'fable-mythos',
     url: '/fable-mythos/',
     category: 'ai',
