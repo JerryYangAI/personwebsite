@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Mixtures of Local Experts · 1991 原始 MoE | 广哥在硅谷</title>
+<meta name="description" content="Jacobs / Jordan / Nowlan / Hinton 1991 年那篇被引用了一万多次的原始 MoE 论文中文精校版。一个修改了误差函数的小动作，把多任务网络从合作改成了竞争——33 年后，这同一个数学骨架支撑起 GPT-4、Mixtral、Switch Transformer 的万亿参数。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Mixture of Experts, MoE, Jacobs, Jordan, Hinton, 1991, Adaptive Mixtures, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/moe-original/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Adaptive Mixtures of Local Experts · 1991 原始 MoE">
+<meta property="og:description" content="MoE 的开山之作 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/moe-original/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Adaptive Mixtures of Local Experts · 1991">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">NEURAL COMPUTATION · 1991</div>
+  <h1>Adaptive Mixtures of Local Experts<br>MoE 的开山之作</h1>
+  <div class="subtitle-en">Jacobs · Jordan · Nowlan · Hinton · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Jacobs / Jordan / Nowlan / Hinton</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 20 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>1991 年——34 年前——<strong>Robert Jacobs（MIT）、Michael Jordan（MIT）、Steven Nowlan（多伦多）、Geoffrey Hinton（多伦多）</strong>在<em>Neural Computation</em> 第 3 卷发表了一篇 9 页的论文，标题叫《<strong>Adaptive Mixtures of Local Experts</strong>》。文章<strong>不到一万字</strong>，但它在<strong>误差函数里改的那一个小动作</strong>，<strong>把多任务网络从"合作"改成了"竞争"</strong>。这一改让一组"<strong>专家网络</strong>"学会<strong>自动分工</strong>，每个专家只负责输入空间的一小块——这就是 <strong>Mixture-of-Experts（MoE）</strong>的原始诞生。33 年后——<strong>GPT-4、Claude、Gemini、Mixtral、Switch Transformer</strong>——所有<strong>万亿参数稀疏激活模型</strong>的数学骨架，<strong>就是这篇 1991 论文里的那个公式</strong>。这是 MoE 谱系的<strong>开山之作</strong>。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 一篇被低估了 25 年的论文<br><span class="en">A paper underestimated for 25 years</span></a></li>
+    <li><a href="#ch2">问题 · 反向传播在多任务上的"干扰"<br><span class="en">The interference problem</span></a></li>
+    <li><a href="#ch3">前人尝试 · Hampshire & Jacobs 1990<br><span class="en">Earlier attempts</span></a></li>
+    <li><a href="#ch4">关键 fix · 把误差函数改成竞争<br><span class="en">From cooperation to competition</span></a></li>
+    <li><a href="#ch5">架构 · 专家 + 门控 + 随机选择<br><span class="en">Expert + Gating + Selector</span></a></li>
+    <li><a href="#ch6">为什么这一改有效<br><span class="en">Why this works</span></a></li>
+    <li><a href="#ch7">元音区分任务 · 实证<br><span class="en">Vowel discrimination experiment</span></a></li>
+    <li><a href="#ch8">33 年后的回响 · 万亿参数时代<br><span class="en">Echoes in the trillion-parameter era</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 一篇被低估了 25 年的论文</h2>
+  <div class="en-title">A paper underestimated for 25 years</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>1991 年发表在 <em>Neural Computation</em> 第 3 卷 79-87 页的这篇论文，<strong>四位作者都成了深度学习史上的传奇</strong>——<strong>Hinton</strong>（图灵奖、神经网络教父）、<strong>Jordan</strong>（机器学习领域开创者，统计 ML 学派代表）、<strong>Jacobs</strong>（Hinton 的合作者，later UMass 教授）、<strong>Nowlan</strong>（Hinton 早期博士生，后来去了 Hinton 实验室）。文章的核心思想<strong>1988 年</strong>就由 Jacobs 和 Hinton 在<strong>匹兹堡 Connectionist Summer School</strong>上首次提出。<strong>33 年后</strong>这个想法支撑着<strong>GPT-4、Mixtral、Switch Transformer</strong>——但 2017 年之前，它<strong>被几乎所有深度学习社区忽略</strong>。</p>
+  <div class="terms">
+    <span class="tag">Jacobs / Jordan / Nowlan / Hinton</span>
+    <span class="tag">Neural Computation 1991</span>
+    <span class="tag">Pittsburgh 1988</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>1991 年，<strong>Robert A. Jacobs</strong>（MIT 脑与认知科学系）、<strong>Michael I. Jordan</strong>（同 MIT，<strong>后来转去 UC Berkeley 创立机器学习领域里最重要的"贝叶斯学派"</strong>）、<strong>Steven J. Nowlan</strong>（多伦多大学计算机科学系，<strong>Hinton 的早期博士生</strong>）、<strong>Geoffrey E. Hinton</strong>（同多伦多，<strong>后来获 2018 年图灵奖、被称为"深度学习教父"</strong>）——四个人一起，在 <em>Neural Computation</em> 第 3 卷 79-87 页，发表了一篇 9 页的论文。</p>
+
+  <p>标题——<strong>《Adaptive Mixtures of Local Experts》</strong>——"自适应局部专家混合"。</p>
+
+  <p>论文一开头他们就说——<strong>"这个想法最早是 Jacobs 和 Hinton 在 1988 年匹兹堡 Connectionist Summer School 上提出的"</strong>——所以这套思想<strong>实际上 1988 年就有了雏形</strong>。3 年后他们把它<strong>完善成一篇真正的论文</strong>。</p>
+
+  <p>论文摘要这样写——</p>
+</div>
+
+<div class="quote">
+  <p>我们提出一种<strong>新的有监督学习过程</strong>——<br>它针对的系统由<strong>多个独立网络组成</strong>，<br>每一个学会<strong>处理训练样本里的一个子集</strong>。<br><br>这个过程可以被看作——<br>要么是<strong>多层有监督网络的模块化版本</strong>，<br>要么是<strong>联想式竞争学习的版本</strong>。<br><br>因此它在<strong>这两种看似不同的方法之间架了一座新桥</strong>。<br><br>我们演示——<br>这个学习过程把<strong>元音区分任务</strong>分解成<strong>合适的子任务</strong>，<br>每一个子任务都可以<strong>由一个非常简单的专家网络解决</strong>。</p>
+  <div class="src">— ADAPTIVE MIXTURES OF LOCAL EXPERTS, 1991</div>
+</div>
+
+<div class="body">
+  <p>这就是 <strong>Mixture-of-Experts</strong>——后来人们叫它 <strong>MoE</strong>——<strong>第一次成形</strong>。</p>
+
+  <p>但这篇论文<strong>被深度学习社区忽略了 25 年</strong>。直到 2017 年 Google Brain 的 Shazeer、Hinton、Dean<strong>把它从故纸堆里翻出来</strong>，加上<strong>稀疏门控</strong>，做出 137 亿参数的语言模型——MoE 才<strong>重新成为深度学习的主角</strong>。又过了 4 年（2021），Switch Transformer 把它<strong>推到万亿参数</strong>。再过 3 年（2024），Mixtral 8x7B 把它<strong>变成所有人都能下载的开源 LLM</strong>。</p>
+
+  <p>1991 年的这篇论文今天值得读，<strong>不是因为它的实验结果</strong>（元音区分是个很小的任务），<strong>而是因为它把一个改变了整个深度学习未来的思想骨架立住了</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · PROBLEM</div>
+  <h2>问题 · 反向传播在多任务上的"干扰"</h2>
+  <div class="en-title">The interference problem</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>1991 年的核心痛点——<strong>"用反向传播去训练单个多层网络在不同时刻做不同子任务时，会有强烈的<em>干扰</em>，导致学习慢、泛化差"</strong>。一个网络一开始学子任务 A，然后切到子任务 B——B 的梯度<strong>会破坏 A 已经学到的东西</strong>。论文的观察——<strong>如果我们事先知道训练样本可以被自然分成对应不同子任务的子集</strong>——就可以<strong>用一个"专家网络"组 + 一个"门控网络"</strong>来减少干扰。门控决定<strong>每个训练样本应该用哪个专家</strong>。</p>
+  <div class="terms">
+    <span class="tag">Backpropagation Interference</span>
+    <span class="tag">Subtask Decomposition</span>
+    <span class="tag">Modular Networks</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文第 1 节标题——<strong>"让联想学习具有竞争性"</strong>（Making Associative Learning Competitive）——开头就直接指出了痛点——</p>
+</div>
+
+<div class="quote">
+  <p>如果用<strong>反向传播</strong>训练<strong>单个多层网络</strong>，<br>在不同时刻执行<strong>不同的子任务</strong>——<br><br>一般会出现<strong>强烈的"干扰"</strong>——<br>导致<strong>学习慢、泛化差</strong>。</p>
+  <div class="src">— THE INTERFERENCE PROBLEM</div>
+</div>
+
+<div class="body">
+  <p>这个"干扰"是什么意思？想象一个普通的神经网络要学<strong>两件不同的事</strong>——比如同时学"识别男声"和"识别女声"。当它处理男声样本时，梯度更新会<strong>朝某个方向</strong>调整权重；当它处理女声样本时，梯度更新会<strong>朝另一个方向</strong>。<strong>两边相互拉扯</strong>，<strong>谁都学不好</strong>——也<strong>很难泛化到新数据</strong>。</p>
+
+  <p>论文观察到一个关键事实——</p>
+</div>
+
+<div class="quote">
+  <p>如果我们事先知道——<br>训练样本可以被<strong>自然地分成子集</strong>，<br>对应不同的子任务——<br><br>干扰<strong>可以被减少</strong>——<br>方法是用一个<strong>系统</strong>——<br>由<strong>几个不同的"专家"网络</strong> +<br>一个<strong>"门控网络"</strong>组成——<br>门控决定<strong>每个训练样本应该用哪个专家</strong>。</p>
+  <div class="src">— THE MOE INSIGHT</div>
+</div>
+
+<div class="body">
+  <p>核心思想——<strong>门控网络给一个新样本分配给一个或几个专家</strong>。如果输出错了，<strong>权重更新只在这几个专家（+ 门控网络）里发生</strong>。<strong>其他专家不受影响</strong>——所以它们专门负责的子任务<strong>不会被破坏</strong>。</p>
+
+  <p>专家在两个意义上是"<strong>局部的</strong>"——</p>
+
+  <p>· <strong>权重上局部</strong>——一个专家的权重<strong>跟其他专家的权重解耦</strong><br>
+  · <strong>空间上局部</strong>——每个专家通常只负责<strong>输入空间的一小块</strong></p>
+
+  <p>这个"局部专家"的想法听起来简单——<strong>但前面已经有人尝试过（Hampshire-Waibel 1989、Jacobs 1990），都失败了</strong>。下一章我们看为什么。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · PRIOR ART</div>
+  <h2>前人尝试 · Hampshire & Jacobs 1990</h2>
+  <div class="en-title">Earlier attempts and why they failed</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Hampshire-Waibel（1989）和 Jacobs 等（1990）用过<strong>类似的"专家 + 门控"架构</strong>——但都用了<strong>错误的误差函数</strong>。他们假设最终输出是<strong>专家输出的<em>线性组合</em></strong>——门控网络决定每个专家在线性组合里的比例。误差是<strong>"期望输出和这个线性组合的差距"</strong>——$E^c = \|\boldsymbol{d}^c - \sum_i p_i^c \boldsymbol{o}_i^c\|^2$。这个误差函数<strong>不鼓励"局部化"</strong>——一个专家的最优输出依赖<strong>所有其他专家在做什么</strong>。结果——<strong>专家们倾向于"合作"</strong>——每个样本由<strong>多个专家共同负责</strong>，没有谁能<strong>专门化</strong>。</p>
+</div>
+
+<div class="body">
+  <p>论文里说——<strong>"不幸的是，Hampshire 与 Waibel 和 Jacobs 等都使用了不鼓励'局部化'的误差函数"</strong>。</p>
+
+  <p>这些早期方法假设——<strong>整个系统的最终输出是局部专家输出的<em>线性组合</em></strong>，<strong>门控网络决定每个局部输出在这个线性组合里的比例</strong>。所以样本 $c$ 上的最终误差是——</p>
+</div>
+
+<div class="math-block">
+$$E^c = \left\| \boldsymbol{d}^c - \sum_i p_i^c \boldsymbol{o}_i^c \right\|^2 \quad (1.1)$$
+</div>
+
+<div class="body">
+  <p>其中——</p>
+
+  <p>· $\boldsymbol{o}_i^c$ 是专家 $i$ 在样本 $c$ 上的<strong>输出向量</strong><br>
+  · $p_i^c$ 是专家 $i$ 对<strong>联合输出向量</strong>的<strong>比例贡献</strong><br>
+  · $\boldsymbol{d}^c$ 是样本 $c$ 的<strong>期望输出向量</strong></p>
+
+  <p>论文一针见血指出问题——<strong>"这个误差衡量把期望输出和'各局部专家输出的混合'对比"</strong>。所以要最小化误差——<strong>每个局部专家必须让自己的输出去抵消其他所有专家剩下的残差</strong>。</p>
+
+  <p>结果——<strong>"当一个专家的权重变化时，残差也变化——所以所有其他专家的误差导数都变了"</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>专家之间这种<strong>强耦合</strong>——<br>让它们<strong>"合作得很好"</strong>，<br>但<strong>倾向于产出"每个样本都用了多个专家"</strong>的解。</p>
+  <div class="src">— THE COOPERATION PROBLEM</div>
+</div>
+
+<div class="body">
+  <p>这就是为什么早期方法<strong>失败</strong>——网络<strong>没有学会"分工"</strong>，反而学会了<strong>"合作"</strong>——每个专家都是个<strong>"小通才"</strong>，每个样本都需要所有专家的协作。<strong>整个系统又退回到"单个大网络"的状态</strong>，<strong>没有解决干扰问题</strong>。</p>
+
+  <p>"<strong>可以通过加惩罚项鼓励竞争</strong>"——Jacobs 1990 就是这样做的——"<strong>但更简单的解药</strong>，是<strong>重新定义误差函数</strong>，让局部专家被<strong>鼓励竞争</strong>而非合作"。</p>
+
+  <p>这就是 1991 这篇论文<strong>真正的创新</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · THE FIX</div>
+  <h2>关键 fix · 把误差函数改成竞争</h2>
+  <div class="en-title">From cooperation to competition</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文的关键创新——<strong>不是线性组合所有专家的输出</strong>，<strong>而是让门控网络做<em>随机决定</em>——每次<em>只选一个专家</em></strong>。新的误差函数是<strong>"期望输出和实际输出的方差的<em>期望</em>"</strong>——$E^c = \langle \|\boldsymbol{d}^c - \boldsymbol{o}_i^c\|^2 \rangle = \sum_i p_i^c \|\boldsymbol{d}^c - \boldsymbol{o}_i^c\|^2$。这是<strong>本文最重要的一个公式</strong>——它<strong>每个专家被要求独立产出整个输出向量，不是残差</strong>。<strong>专家间的"强耦合"被打破</strong>，<strong>分工自然涌现</strong>。</p>
+</div>
+
+<div class="body">
+  <p>论文写道——</p>
+</div>
+
+<div class="quote">
+  <p>我们想象——<br>门控网络<strong>做一个随机决定</strong>，<br>每次<strong>用哪一个专家</strong>。<br><br>误差是<strong>期望输出和实际输出向量的<em>平方差的期望</em></strong>——</p>
+  <div class="src">— THE NEW ERROR FUNCTION</div>
+</div>
+
+<div class="math-block">
+$$E^c = \left\langle \|\boldsymbol{d}^c - \boldsymbol{o}_i^c\|^2 \right\rangle = \sum_i p_i^c \|\boldsymbol{d}^c - \boldsymbol{o}_i^c\|^2 \quad (1.2)$$
+</div>
+
+<div class="body">
+  <p>"<strong>注意——在这个新误差函数里，每个专家被要求<em>独立产出整个输出向量</em>——不是残差</strong>"。</p>
+
+  <p>这看起来是个<strong>小调整</strong>——但它<strong>改变了一切</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">📐 旧公式 vs 新公式</div>
+  <ul>
+    <li><strong>旧（合作）</strong>：$E^c = \|\boldsymbol{d}^c - \sum_i p_i^c \boldsymbol{o}_i^c\|^2$<br>所有专家共同贡献到一个组合输出。每个专家的误差<strong>依赖所有其他专家</strong>——它必须"让自己的输出去填补其他专家剩下的残差"。</li>
+    <li><strong>新（竞争）</strong>：$E^c = \sum_i p_i^c \|\boldsymbol{d}^c - \boldsymbol{o}_i^c\|^2$<br>误差是<strong>每个专家的"独立误差"按门控权重加权求和</strong>。每个专家的目标——<strong>独立地</strong>把整个输出做对——不需要协调其他人。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>结果——<strong>"一个局部专家在某个训练样本上的目标，不再直接被其他专家的权重影响"</strong>。还有一点<strong>间接耦合</strong>——如果其他专家的权重变了，门控网络可能改分配的"责任"——但<strong>这些责任变化<em>不能改变</em>一个局部专家在一个训练样本上感受的误差的<em>符号</em></strong>。</p>
+
+  <p>论文继续——如果门控网络和局部专家都用<strong>梯度下降</strong>在这个新误差函数下训练，<strong>系统倾向于把每个训练样本分给单个专家</strong>。</p>
+
+  <p>具体说——<strong>每当一个专家给某个样本的误差小于所有专家误差的加权平均（按门控分配的权重）</strong>——它对这个样本的<strong>"责任"就增加</strong>。这是一个<strong>自我强化循环</strong>——好的专家<strong>越被分配越好</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · ARCHITECTURE</div>
+  <h2>架构 · 专家 + 门控 + 随机选择</h2>
+  <div class="en-title">Expert + Gating + Stochastic Selector</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文 Figure 1 展示了<strong>1991 年版本的 MoE 架构</strong>——非常清晰简单。<strong>3 个专家网络</strong>都接收<strong>同样的输入</strong>，<strong>有同样数量的输出</strong>。一个<strong>门控网络</strong>也接收同样的输入——产出 $p_j = \exp(x_j) / \sum_i \exp(x_i)$，即<strong>softmax 归一化的输出</strong>。<strong>随机选择器</strong>像一个<strong>"单输出多输入随机开关"</strong>——选中专家 $j$ 的<strong>概率是 $p_j$</strong>。这就是<strong>"stochastic one-out-of-n selector"</strong>。这个架构的核心元素——<strong>专家、门控、softmax 归一化、随机选择</strong>——<strong>33 年后仍然几乎一模一样地用在 GPT-4 和 Mixtral 里</strong>。</p>
+  <div class="terms">
+    <span class="tag">3 Experts</span>
+    <span class="tag">Softmax Gating</span>
+    <span class="tag">Stochastic Selector</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Figure 1 展示了完整架构——<strong>3 个专家网络</strong>+ 一个<strong>门控网络</strong>+ 一个<strong>随机选择器</strong>。</p>
+
+  <p>每一个专家是<strong>前馈网络</strong>。所有专家<strong>接收同样的输入</strong>，<strong>有同样数量的输出</strong>。<strong>门控网络</strong>也是前馈，<strong>通常接收和专家相同的输入</strong>。</p>
+
+  <p>门控网络的输出经过 <strong>softmax 归一化</strong>——</p>
+</div>
+
+<div class="math-block">
+$$p_j = \frac{\exp(x_j)}{\sum_i \exp(x_i)}$$
+</div>
+
+<div class="body">
+  <p>其中 $x_j$ 是门控网络的<strong>第 $j$ 个输出单元收到的总加权输入</strong>。</p>
+
+  <p>选择器像一个<strong>单输出多输入的随机开关</strong>——<strong>开关选择专家 $j$ 的输出的概率就是 $p_j$</strong>。</p>
+
+  <p>这个架构虽然图上画了 3 个专家——但<strong>本质可扩展到任意数量</strong>。在 1991 年的元音识别任务里，他们只用了几个；到 2017 年 Shazeer 团队<strong>扩展到 65,536 个专家</strong>；2021 年 Switch Transformer 用<strong>2,048 个专家</strong>组合成<strong>万亿参数</strong>；2024 年 Mixtral 用<strong>8 个专家 / 每层</strong>但<strong>每个专家本身就是 7B 参数</strong>——总参数 47B。</p>
+
+  <p>但<strong>核心机制完全没变</strong>——<strong>专家、门控、softmax、选择</strong>——这就是 1991 年这篇论文留下的<strong>不朽骨架</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · WHY IT WORKS</div>
+  <h2>为什么这一改有效</h2>
+  <div class="en-title">Why this works</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>用<strong>梯度下降</strong>对这个新误差函数训练，系统<strong>倾向于把每个训练样本指派给单个专家</strong>。机制——每当一个专家给某个样本的误差<strong>小于"所有专家误差的加权平均"</strong>（按门控权重），它对这个样本的<strong>责任就增加</strong>。这是<strong>自我强化的过程</strong>——好的专家<strong>越被分配越好</strong>。最关键的<strong>数学性质</strong>——专家间的"间接耦合"不能改变误差的<strong>符号</strong>——所以<strong>每个专家可以稳定地朝自己最擅长的方向走</strong>，不会被其他专家的变化拽偏。</p>
+</div>
+
+<div class="body">
+  <p>论文继续——</p>
+</div>
+
+<div class="quote">
+  <p>仍有<strong>一些间接耦合</strong>——<br>因为如果<strong>其他专家改变它的权重</strong>，<br>可能<strong>导致门控网络改分配给专家们的"责任"</strong>。<br><br>但<strong>至少这些责任变化<em>不能改变</em><br>一个局部专家在某个训练样本上感受的<br>误差的<em>符号</em></strong>。<br><br>如果门控网络和局部专家<strong>都用梯度下降在这个新误差函数下训练</strong>——<br><br>系统就<strong>倾向于把每个训练样本指派给单个专家</strong>。</p>
+  <div class="src">— THE STABILITY OF COMPETITION</div>
+</div>
+
+<div class="body">
+  <p>这是 1991 年论文的<strong>数学奇迹</strong>。让我换种说法——</p>
+
+  <p>· 旧公式下——专家 $A$ 的最优输出<strong>取决于</strong>专家 $B$、$C$ 当下在产出什么。如果 $B$ 改了，$A$ 也得跟着改。<strong>所有人都在追逐一个移动的目标</strong>。<br>
+  · 新公式下——专家 $A$ 的目标永远是"<strong>把整个输出做对</strong>"。这个目标<strong>不会因为 $B$、$C$ 在做什么而移动</strong>。$A$ 可以稳定地优化自己。<br>
+  · 但是——<strong>当 $A$ 真的擅长某类输入时，门控网络会把更多这类输入分给它</strong>——所以 $A$ <strong>越擅长就越被锻炼</strong>。</p>
+
+  <p>这是一个<strong>正反馈循环</strong>——<strong>分工自然涌现</strong>。论文说——<strong>"每当一个专家给某个训练样本的误差比所有专家误差的加权平均更低（用门控网络的输出决定如何加权每个专家的误差）——它对这个样本的责任就增加"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · VOWEL EXPERIMENT</div>
+  <h2>元音区分任务 · 实证</h2>
+  <div class="en-title">Vowel discrimination experiment</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文用<strong>元音区分</strong>任务来证明这个想法<strong>真的</strong>有效。元音的声学特征<strong>因说话人不同而显著不同</strong>——男声、女声、儿童——所以<strong>"识别元音"实际上是好几个相关但<em>不同的</em>子任务</strong>。论文展示——<strong>MoE 自动学会把不同说话人的声音分给不同专家</strong>，<strong>每个专家用一个非常简单的网络</strong>就能解决自己负责的那一片。这件事<strong>没有人事先告诉系统"说话人分组"</strong>——分组是<strong>自动涌现</strong>的——这正是<strong>"自适应"</strong>的精髓。</p>
+</div>
+
+<div class="body">
+  <p>1991 年的实验设置在<strong>元音区分（vowel discrimination）</strong>任务上。这是个经典语音识别基线——给定声波特征，<strong>判断说的是哪个元音</strong>（a / e / i / o / u 等）。</p>
+
+  <p>这个任务有一个<strong>关键特性</strong>——同样的元音被<strong>不同人</strong>说出来时，声学特征<strong>非常不同</strong>。男声、女声、儿童——他们的<strong>基频、共振峰、谐波分布</strong>都不同。所以<strong>"识别元音"实际上是好几个相关但<em>不同的</em>子任务</strong>——"识别男人的元音""识别女人的元音""识别儿童的元音"。</p>
+
+  <p>论文摘要的最后一句很关键——</p>
+</div>
+
+<div class="quote">
+  <p>我们演示——<br>这个学习过程<br><strong>把元音区分任务分解成合适的子任务</strong>——<br>每一个子任务<br>都可以由<strong>一个非常简单的专家网络</strong>解决。</p>
+  <div class="src">— THE VOWEL EXPERIMENT</div>
+</div>
+
+<div class="body">
+  <p>这件事很关键——<strong>"自动分解"</strong>这件事<strong>是涌现的</strong>。没有人事先告诉系统"<strong>这里有男女儿童三个子任务</strong>"。系统通过<strong>梯度下降 + 竞争性误差函数</strong>，<strong>自己学会了这个分组</strong>。</p>
+
+  <p>这跟<strong>2017 年 Shazeer 团队对 137 亿参数 LSTM 语言模型的观察</strong>完全一致——他们发现专家<strong>"基于句法和语义自然变得高度专门化"</strong>。1991 年和 2017 年——<strong>同样的现象</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LEGACY</div>
+  <h2>33 年后的回响 · 万亿参数时代</h2>
+  <div class="en-title">Echoes in the trillion-parameter era</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>1991 → 2024——<strong>33 年里 MoE 的进化路径非常清晰</strong>。<strong>2017 Shazeer</strong> 加上 <strong>noisy top-k 门控</strong> + <strong>负载平衡损失</strong>，规模到 <strong>137B 参数</strong>。<strong>2021 Switch Transformer</strong> 简化到 <strong>top-1</strong>（k=1），引入 <strong>bfloat16 混合精度</strong>，规模到<strong>万亿参数</strong>。<strong>2024 Mixtral 8x7B</strong> 把它<strong>开源</strong>——<strong>47B 总参数、13B 激活</strong>——成为<strong>所有人都能下载的 MoE LLM</strong>。但<strong>每一代的数学骨架</strong>——<strong>专家、门控、softmax、稀疏选择</strong>——<strong>都是 Jacobs/Jordan/Nowlan/Hinton 1991 年定下的</strong>。</p>
+  <div class="terms">
+    <span class="tag">2017 · 137B Sparse</span>
+    <span class="tag">2021 · Trillion</span>
+    <span class="tag">2024 · Mixtral Open Source</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>1991 到 2024——<strong>33 年</strong>。这个想法的进化路径让我读完后觉得非常震撼——</p>
+
+  <p><strong>1991</strong>——Jacobs, Jordan, Nowlan, Hinton——<strong>原始 MoE</strong>——元音区分任务，<strong>几个专家</strong>。</p>
+
+  <p><strong>2017</strong>——Shazeer, Mirhoseini, Maziarz, Davis, Le, Hinton, Dean——<strong>《Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer》</strong>——加上 <strong>Noisy Top-K Gating</strong> 和<strong>负载平衡损失</strong>，规模到 <strong>65,536 个专家、137 billion 参数</strong>。MoE <strong>从故纸堆里被拉回来</strong>，成为<strong>大模型时代第一个"稀疏激活"的方法</strong>。</p>
+
+  <p><strong>2021</strong>——Fedus, Zoph, Shazeer——<strong>《Switch Transformers》</strong>——把门控<strong>简化到 top-1</strong>（k=1，每个 token 只激活 1 个专家），引入 <strong>bfloat16 训练</strong>，把 MoE <strong>推到万亿参数</strong>——<strong>比同等 dense 模型快 4-7 倍</strong>。</p>
+
+  <p><strong>2024</strong>——Mistral AI——<strong>《Mixtral of Experts》</strong>——<strong>开源</strong> 8x7B Sparse MoE，<strong>47B 总参数、13B 激活</strong>——成为<strong>世界上第一个所有人都能下载、可商业化使用的 MoE 大模型</strong>。<strong>击败 Llama 2 70B 和 GPT-3.5</strong>。</p>
+
+  <p>但每一代的<strong>数学骨架</strong>——</p>
+
+  <p>· <strong>专家 $E_i$</strong> 接受输入产出输出<br>
+  · <strong>门控网络 $G$</strong> softmax 输出选哪个专家<br>
+  · <strong>稀疏选择</strong>——只激活部分专家，节省计算<br>
+  · <strong>独立误差函数</strong>——每个专家被要求做整个任务，不是残差</p>
+
+  <p><strong>都是 1991 年那张 Figure 1 的延续</strong>。</p>
+
+  <p>论文末尾有一个我读完后久久不能忘的脚注——</p>
+</div>
+
+<div class="quote">
+  <p>这个想法最早由 Jacobs 和 Hinton<br><strong>在 1988 年匹兹堡 Connectionist Summer School 上</strong>提出。</p>
+  <div class="src">— FOOTNOTE TO PAGE 1</div>
+</div>
+
+<div class="body">
+  <p>1988 年——36 年前。当时的 Hinton 还<strong>没有图灵奖</strong>。Jordan 还<strong>没有创立"贝叶斯学派"</strong>。"<strong>深度学习</strong>"这个词<strong>都不存在</strong>。</p>
+
+  <p>但是这四个人——其中两个最终拿到了图灵奖、一个统治了 30 年的统计 ML——<strong>已经看到了未来</strong>。<strong>他们把那个未来写在了一篇 9 页的论文里</strong>，<strong>然后等了 25 年才被世界听到</strong>。</p>
+
+  <p>这就是<strong>学术研究最美的样子</strong>——<strong>把对的想法写下来，相信终有一天它会回来</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">NEURAL COMPUTATION · 1991</div>
+  <div>Adaptive Mixtures of Local Experts · 中文版精校</div>
+  <div class="meta">原文：Jacobs / Jordan / Nowlan / Hinton · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/moe-original</div>
+</div>
+
+</div>
+</body>
+</html>

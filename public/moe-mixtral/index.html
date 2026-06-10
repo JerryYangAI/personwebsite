@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mixtral of Experts · 8x7B 开源 MoE LLM | 广哥在硅谷</title>
+<meta name="description" content="Mistral AI 2024 年 Mixtral 8x7B 论文中文精校版。一群从 Meta 和 DeepMind 出走的法国研究者，发布了第一个流行的开源 Sparse MoE 大语言模型——47B 总参数 / 13B 激活，击败 Llama 2 70B 和 GPT-3.5，Apache 2.0 开源。MoE 从研究论文变成所有人都能下载的工业产品。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Mixtral, Mistral AI, MoE, Sparse Mixture of Experts, Open Source LLM, 8x7B, Apache 2.0, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/moe-mixtral/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Mixtral of Experts · 8x7B 开源 MoE LLM">
+<meta property="og:description" content="Mistral AI 2024 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/moe-mixtral/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mixtral of Experts · 8x7B 开源 MoE">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">MISTRAL AI · 2024/01</div>
+  <h1>Mixtral 8x7B<br>第一个流行的开源 MoE LLM</h1>
+  <div class="subtitle-en">Mixtral of Experts · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Mistral AI · 26 位作者</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2024 年 1 月 8 日，<strong>Mistral AI</strong>——一群从 <strong>Meta、DeepMind</strong> 出走的法国研究者——发布 <strong>Mixtral 8x7B</strong>。它是<strong>第一个流行的开源 Sparse MoE 大语言模型</strong>——架构和他们之前的 Mistral 7B 相同，区别是<strong>每层 8 个前馈块（专家）</strong>，路由网络<strong>每个 token 选 2 个</strong>。<strong>47B 总参数、13B 激活</strong>。<strong>32k 上下文</strong>、多语言预训练。<strong>击败 Llama 2 70B 和 GPT-3.5</strong>——尤其在<strong>数学、代码、多语言</strong>上"<strong>大幅超过</strong>"。Instruct 版本<strong>击败 GPT-3.5 Turbo、Claude-2.1、Gemini Pro</strong>。最关键的——<strong>Apache 2.0 开源</strong>——<strong>所有人都能下载、商业使用</strong>。MoE 从研究论文<strong>变成所有人都能用的工业产品</strong>。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · Mistral 的法国革命<br><span class="en">The French revolution in LLMs</span></a></li>
+    <li><a href="#ch2">架构 · 8 个专家、Top-2 路由<br><span class="en">8 experts, top-2 routing</span></a></li>
+    <li><a href="#ch3">SMoE 数学 · Top-K softmax<br><span class="en">SMoE math</span></a></li>
+    <li><a href="#ch4">47B / 13B 的算术魔法<br><span class="en">47B total, 13B active</span></a></li>
+    <li><a href="#ch5">击败 Llama 2 70B 和 GPT-3.5<br><span class="en">Beating Llama 2 70B & GPT-3.5</span></a></li>
+    <li><a href="#ch6">Instruct · 击败 GPT-3.5 / Claude-2.1<br><span class="en">Instruct version</span></a></li>
+    <li><a href="#ch7">Apache 2.0 · 开源的政治意义<br><span class="en">The politics of Apache 2.0</span></a></li>
+    <li><a href="#ch8">谱系闭环 · 1991 → 2024<br><span class="en">Closing the lineage loop</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · Mistral 的法国革命</h2>
+  <div class="en-title">The French revolution in LLMs</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2024 年 1 月 8 日，<strong>Mistral AI</strong>——一家成立于 2023 年 4 月的法国 AI 公司——发布 <strong>Mixtral 8x7B</strong>。Mistral 的创始人来自 <strong>Meta（AI 团队）和 DeepMind</strong>，包括 <strong>Arthur Mensch</strong>（CEO，前 DeepMind）、<strong>Guillaume Lample</strong>（前 Meta AI）、<strong>Timothée Lacroix</strong>（前 Meta AI）。Mistral 立志做<strong>"欧洲的 OpenAI"</strong>——以<strong>开源</strong>为核心战略。Mixtral 8x7B 是他们第一个 MoE 模型——<strong>所有人都能下载、商业使用</strong>。这是 MoE <strong>从"前沿公司专属"</strong>变成<strong>"开源工业品"</strong>的转折。</p>
+  <div class="terms">
+    <span class="tag">Mistral AI</span>
+    <span class="tag">Apache 2.0</span>
+    <span class="tag">26 Authors</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2024 年 1 月 8 日，<strong>Mistral AI</strong>——一家 2023 年 4 月才<strong>在巴黎成立的</strong>法国 AI 公司——发布<strong>Mixtral 8x7B</strong>。<strong>arXiv 编号 2401.04088</strong>，<strong>26 位共同作者</strong>。</p>
+
+  <p>论文摘要的措辞<strong>非常自信</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>我们引入 <strong>Mixtral 8x7B</strong>——<br>一个 <strong>Sparse Mixture of Experts (SMoE)</strong> 语言模型。<br><br>Mixtral 和 <strong>Mistral 7B 架构相同</strong>，<br>区别是<strong>每层由 8 个前馈块（即专家）组成</strong>。<br><br>对每个 token、在每一层——<br><strong>一个路由网络选 2 个专家</strong>处理当前状态<br>并组合它们的输出。<br><br>尽管每个 token 只看 2 个专家——<br>所选专家在<strong>每个时间步可以不同</strong>。<br><br>结果——每个 token <strong>可访问 47B 参数</strong>，<br>但<strong>推理时只用 13B 激活参数</strong>。</p>
+  <div class="src">— MIXTRAL 8X7B, 2024/01</div>
+</div>
+
+<div class="body">
+  <p>Mistral 公司的核心人物——</p>
+
+  <p>· <strong>Arthur Mensch</strong>（CEO） — 前 DeepMind 研究员<br>
+  · <strong>Guillaume Lample</strong>（CSO） — 前 Meta AI，<strong>Llama</strong> 系列<strong>核心作者</strong><br>
+  · <strong>Timothée Lacroix</strong>（CTO） — 前 Meta AI，<strong>Llama</strong> 核心作者</p>
+
+  <p>"<strong>从 Meta 走出来去做 Llama 的开源替代品</strong>"——这是 Mistral 的<strong>叙事</strong>。Llama 系列虽然权重公开但<strong>不是真正的开源协议</strong>（Llama 2 有商业使用限制）。Mistral 选择<strong>Apache 2.0</strong>——<strong>真正的、对所有人开放的开源</strong>。</p>
+
+  <p>Mixtral 8x7B 训练时用<strong>32k tokens 上下文</strong>、<strong>多语言数据</strong>——<strong>在多个基准上达到或超过 Llama 2 70B 和 GPT-3.5</strong>。特别在<strong>数学、代码生成、多语言</strong>上"<strong>大幅超过 Llama 2 70B</strong>"。</p>
+
+  <p>Mistral 还发布了<strong>Mixtral 8x7B Instruct</strong>——SFT + DPO 微调——<strong>超过 GPT-3.5 Turbo、Claude-2.1、Gemini Pro、Llama 2 70B-chat</strong>在<strong>人类评估基准</strong>上。</p>
+
+  <p>"<strong>基础模型和指令模型都在 Apache 2.0 协议下发布</strong>"——这一句让 Mixtral <strong>不仅是技术突破，更是政治声明</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · ARCHITECTURE</div>
+  <h2>架构 · 8 个专家、Top-2 路由</h2>
+  <div class="en-title">8 experts, top-2 routing</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Mixtral 基于<strong>Transformer 架构</strong>，用<strong>Mistral 7B 同样的修改</strong>——但<strong>支持密集 32k tokens 上下文</strong>，<strong>前馈块被 MoE 层替换</strong>。架构参数——<strong>dim=4096、n_layers=32、n_heads=32、n_kv_heads=8（GQA）、context_len=32768、vocab=32000、num_experts=8、top_k_experts=2</strong>。<strong>"每层 8 个专家、每个 token 选 2 个"</strong>——这就是"<strong>8x7B</strong>"的字面意思。注意——<strong>不是 8 × 7B = 56B</strong>——参数共享让实际总参数 = <strong>47B</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Mixtral 基于 Transformer 架构——用和 Mistral 7B 同样的修改——<strong>两个值得注意的例外</strong>——</p>
+
+  <p>· <strong>Mixtral 支持密集 32k tokens 上下文长度</strong><br>
+  · <strong>前馈块被 Mixture-of-Experts 层替换</strong></p>
+
+  <p>架构参数 (Table 1)——</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>参数</th><th>值</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>dim</code></td><td>4096</td></tr>
+    <tr><td><code>n_layers</code></td><td>32</td></tr>
+    <tr><td><code>head_dim</code></td><td>128</td></tr>
+    <tr><td><code>hidden_dim</code> (FFN)</td><td>14336</td></tr>
+    <tr><td><code>n_heads</code></td><td>32</td></tr>
+    <tr><td><code>n_kv_heads</code> (GQA)</td><td>8</td></tr>
+    <tr><td><code>context_len</code></td><td>32,768</td></tr>
+    <tr><td><code>vocab_size</code></td><td>32,000</td></tr>
+    <tr><td><strong><code>num_experts</code></strong></td><td><strong>8</strong></td></tr>
+    <tr><td><strong><code>top_k_experts</code></strong></td><td><strong>2</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>核心 MoE 设置——<strong>每层 8 个专家、每个 token 选 2 个</strong>。这就是"<strong>8x7B</strong>"的字面意思——<strong>8 个 7B 量级的专家</strong>组合成一个。</p>
+
+  <p>但<strong>"8 × 7B = 56B"是错的</strong>——参数共享让实际总参数 <strong>= 47B</strong>。原因——<strong>注意力层、嵌入、layer norm 等大部分非 FFN 参数所有专家共享</strong>。<strong>只有 FFN 部分被 8 倍化</strong>。所以 56B 是<strong>"如果每个专家独立有完整模型"的虚拟数字</strong>，<strong>真实总参数 47B</strong>。</p>
+
+  <p>每个 token 推理时——<strong>只激活 2 个专家</strong>，所以<strong>实际激活参数 ≈ 13B</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · SMOE MATH</div>
+  <h2>SMoE 数学 · Top-K Softmax</h2>
+  <div class="en-title">SMoE math</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Mixtral 用<strong>Shazeer 2017 同样的 Top-K + Softmax 门控</strong>——给定输入 $x$ 和 $n$ 个专家网络 $\{E_0, \ldots, E_{n-1}\}$，MoE 层输出 = <strong>"门控网络输出"加权"专家输出"</strong>。具体——<strong>$G(x) := \text{Softmax}(\text{TopK}(x \cdot W_g))$</strong>——其中 <strong>$\text{TopK}(\ell)_i = \ell_i$</strong> 如果 $\ell_i$ 是 top-$K$，否则 $-\infty$。$K$ 是<strong>每 token 激活的专家数</strong>——<strong>调节每 token 用的计算量</strong>。Mixtral 用 $K=2$。<strong>如果 $K$ 固定、$n$ 增大——总参数增加但每 token 算力不变</strong>——这就是稀疏激活的本质。</p>
+</div>
+
+<div class="body">
+  <p>Mixtral 论文给出 SMoE 的标准数学——给定 $n$ 个专家网络 $\{E_0, E_1, \ldots, E_{n-1}\}$，MoE 层对输入 $x$ 的输出——</p>
+</div>
+
+<div class="math-block">
+$$\sum_{i=0}^{n-1} G(x)_i \cdot E_i(x)$$
+</div>
+
+<div class="body">
+  <p>其中 $G(x)_i$ 是门控网络对专家 $i$ 的 $n$ 维输出。如果门控向量<strong>稀疏</strong>，<strong>门是 0 的专家不需要算</strong>——节省计算。</p>
+
+  <p>$G(x)$ 的实现——Mixtral 用<strong>Shazeer 2017 同样的"Top-K softmax"</strong>——</p>
+</div>
+
+<div class="math-block">
+$$G(x) := \text{Softmax}(\text{TopK}(x \cdot W_g))$$
+$$\text{where } (\text{TopK}(\ell))_i := \begin{cases} \ell_i & \text{if } \ell_i \text{ is in top-}K \\ -\infty & \text{otherwise} \end{cases}$$
+</div>
+
+<div class="body">
+  <p>$K$ 是<strong>每 token 用的专家数</strong>——<strong>调节每 token 计算量的超参</strong>。Mixtral 用 $K=2$。Switch 用 $K=1$。Shazeer 2017 通常用 $K=4$。</p>
+
+  <p>关键性质——<strong>如果 $K$ 固定、$n$ 增大——总参数增加，但每 token 算力不变</strong>。这就是稀疏激活的核心——<strong>把"总参数容量"和"每 token 算力"解耦</strong>。</p>
+
+  <p>Mixtral 论文还做了一个<strong>关键架构选择</strong>——<strong>每个专家是标准前馈块</strong>——和 vanilla Transformer 的 FFN 一模一样。这意味着 Mixtral 可以<strong>从一个 dense 模型（Mistral 7B）的 FFN<em>复制</em>成 8 份</strong>作为初始化——<strong>大幅加速训练</strong>。</p>
+
+  <p>Mixtral 的实现还专门<strong>提交了 vLLM 项目的改动</strong>，集成<strong>Megablocks CUDA kernels</strong>做高效推理。<strong>SkyPilot</strong> 允许在<strong>任何云实例上部署 vLLM endpoints</strong>。"<strong>完整开源栈</strong>"——这是 Mistral 的<strong>政治宣言</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · ARITHMETIC</div>
+  <h2>47B / 13B 的算术魔法</h2>
+  <div class="en-title">47B total, 13B active</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>"<strong>47B 总参数 / 13B 激活</strong>"这件事产品上有<strong>深远含义</strong>——<strong>(1) 推理吞吐量</strong>——每 token 只用 13B，所以推理速度<strong>接近 13B dense 模型</strong>；<strong>(2) 内存占用</strong>——47B 都要装进显存（模型必须完整加载）；<strong>(3) 质量</strong>——<strong>击败 Llama 2 70B</strong>——所以 13B 激活就有了 ≥70B dense 的能力。<strong>这是稀疏激活的"经济学胜利"</strong>——<strong>用"13B 的推理成本 + 47B 的内存"换 "70B 的质量"</strong>。</p>
+  <div class="terms">
+    <span class="tag">47B Total</span>
+    <span class="tag">13B Active</span>
+    <span class="tag">Beats 70B Quality</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>"<strong>47B 总参数 / 13B 激活</strong>"这件事在产品上有<strong>深远含义</strong>。让我们看每一个含义——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">💰 三层影响</div>
+  <ul>
+    <li><strong>(1) 推理吞吐量</strong>——每 token 只用 13B 参数算 FFN，加上<strong>共享的注意力层</strong>——所以推理速度<strong>接近一个 13B 量级的 dense 模型</strong>，<strong>远快于 70B dense</strong>。低 batch 时<strong>更快推理</strong>，高 batch 时<strong>更高吞吐量</strong>。</li>
+    <li><strong>(2) 内存占用</strong>——但 <strong>47B 总参数都要装进显存</strong>——模型必须完整加载。所以<strong>它不能跑在小 GPU 上</strong>。这是 MoE 部署的<strong>关键限制</strong>。但相对于"dense 47B"，<strong>每 token 计算量小 3.6 倍</strong>。</li>
+    <li><strong>(3) 质量</strong>——Mixtral <strong>击败 Llama 2 70B</strong>——所以 <strong>13B 激活有了 ≥70B dense 的能力</strong>。这是稀疏激活的<strong>经济学胜利</strong>——<strong>用"13B 推理成本 + 47B 内存"换"70B 质量"</strong>。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>这个 trade-off 让 Mixtral <strong>在某些应用场景上经济得不可思议</strong>——尤其是<strong>"内存可控、追求推理速度"</strong>的场景。后来 DeepSeek MoE、DBRX、Grok 等都走了类似路线。</p>
+
+  <p>Mixtral 论文还展示——模型<strong>能在 32k tokens 上下文内成功检索信息</strong>，<strong>无论序列长度和信息位置</strong>。这意味着 MoE <strong>不损失长上下文能力</strong>——这是<strong>关键</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · BENCHMARKS</div>
+  <h2>击败 Llama 2 70B 和 GPT-3.5</h2>
+  <div class="en-title">Beating Llama 2 70B & GPT-3.5</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Mixtral 8x7B 在<strong>多个基准</strong>上"<strong>击败或匹配 Llama 2 70B 和 GPT-3.5</strong>"。论文说——尤其在<strong>数学、代码生成、需要多语言理解的任务</strong>上，<strong>"显著超过 Llama 2 70B"</strong>。需要意识到——<strong>Mixtral 总参数 47B</strong>（Llama 2 的 67%）、<strong>激活参数 13B</strong>（Llama 2 的 19%）。这意味着——<strong>Mixtral 在更少参数 + 更少推理算力下击败 Llama 2 70B</strong>。这是<strong>稀疏激活的胜利证明</strong>——也证明了 <strong>1991 → 2024 路上每一步都对了</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Mixtral 在<strong>多个基准</strong>上击败 Llama 2 70B 和 GPT-3.5。论文写道——</p>
+</div>
+
+<div class="quote">
+  <p>Mixtral 展示了<strong>在数学、代码生成、需要多语言理解的任务</strong>上<strong>优越的能力</strong>——<br>在这些领域<strong>显著超过 Llama 2 70B</strong>。<br><br>实验显示——<br>Mixtral 能<strong>从 32k tokens 上下文窗口里成功检索信息</strong>，<br><strong>无论序列长度和信息位置</strong>。</p>
+  <div class="src">— MIXTRAL CAPABILITIES</div>
+</div>
+
+<div class="body">
+  <p>这件事的意义——</p>
+
+  <p>· <strong>Llama 2 70B 是 67B 个参数全部激活</strong>——每 token 算 67B<br>
+  · <strong>Mixtral 47B 总参数，但每 token 只激活 13B</strong>——<strong>是 Llama 2 70B 的 19%</strong></p>
+
+  <p><strong>Mixtral 在更少参数 + 更少推理算力下击败 Llama 2 70B</strong>——这是稀疏激活的<strong>胜利证明</strong>。也是<strong>1991 Jacobs/Jordan/Hinton 的预言被 33 年后的实证完全证实</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · INSTRUCT</div>
+  <h2>Instruct · 击败 GPT-3.5 / Claude-2.1</h2>
+  <div class="en-title">Instruct version</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Mistral 还发布<strong>Mixtral 8x7B Instruct</strong>——chat 模型——用<strong>SFT（监督微调）+ DPO（直接偏好优化）</strong>训练。<strong>"在人类评估基准上明显超过 GPT-3.5 Turbo、Claude-2.1、Gemini Pro、Llama 2 70B-chat 模型"</strong>。Instruct 模型还展现<strong>"减少的偏见"</strong>和<strong>BBQ、BOLD 基准上更平衡的情感画像</strong>。<strong>BBQ</strong> 测量 LLM 的<strong>社会群体偏见</strong>，<strong>BOLD</strong> 测量<strong>开放生成的情感公平性</strong>。Mixtral Instruct 在这两个上<strong>都比同代模型更平衡</strong>。</p>
+</div>
+
+<div class="body">
+  <p>除了基础模型——Mistral 还发布<strong>Mixtral 8x7B Instruct</strong>——一个<strong>chat 模型</strong>——通过<strong>SFT（监督微调）+ DPO（直接偏好优化）</strong>训练。</p>
+
+  <p>结果——</p>
+</div>
+
+<div class="quote">
+  <p>它的表现<strong>明显超过</strong>——<br><strong>GPT-3.5 Turbo、Claude-2.1、Gemini Pro、Llama 2 70B 聊天模型</strong>——<br>在<strong>人类评估基准</strong>上。</p>
+  <div class="src">— MIXTRAL INSTRUCT</div>
+</div>
+
+<div class="body">
+  <p>Mixtral Instruct 还展示<strong>"减少的偏见"</strong>和<strong>"在 BBQ、BOLD 基准上更平衡的情感画像"</strong>——</p>
+
+  <p>· <strong>BBQ</strong>——衡量 LLM 在<strong>不同社会群体相关问题</strong>上的<strong>偏见</strong><br>
+  · <strong>BOLD</strong>——衡量<strong>开放生成的情感公平性</strong></p>
+
+  <p>这是 Mixtral 的<strong>关键政治成就</strong>——<strong>开源模型不仅能力强，社会属性也好</strong>。这反驳了"开源模型必然质量差"的论调。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · APACHE 2.0</div>
+  <h2>Apache 2.0 · 开源的政治意义</h2>
+  <div class="en-title">The politics of Apache 2.0</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>"<strong>我们以 Apache 2.0 许可证发布 Mixtral 8x7B 和 Mixtral 8x7B Instruct</strong>——<strong>学术和商业使用都免费</strong>"。这是<strong>关键政治选择</strong>。<strong>OpenAI</strong> 没开源 GPT-3.5/4；<strong>Anthropic</strong> 没开源 Claude；<strong>Google</strong> 没开源 Gemini；<strong>Meta 的 Llama 2</strong> 名义开源但<strong>有商业使用限制</strong>。Mistral 选 <strong>Apache 2.0</strong>——<strong>真正完全开放</strong>。这让 Mixtral 第一时间被<strong>HuggingFace、Replicate、Together AI、vLLM</strong>等所有平台支持。"<strong>所有人都可以下载、使用、商业化、修改、重新分发</strong>"——这是<strong>对 AI 商业模型的根本挑战</strong>。</p>
+</div>
+
+<div class="body">
+  <p>论文里有一句让我读完后停了很久的话——</p>
+</div>
+
+<div class="quote">
+  <p>我们以 <strong>Apache 2.0 许可证</strong>发布<br>Mixtral 8x7B 和 Mixtral 8x7B Instruct——<br><br><strong>对学术和商业使用都<em>免费</em></strong>——<br>保证<strong>广泛可访问性</strong>和<strong>多样应用潜力</strong>。</p>
+  <div class="src">— MIXTRAL LICENSE</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>关键政治选择</strong>。让我对比——</p>
+
+  <p>· <strong>OpenAI</strong>——GPT-3.5、GPT-4 <strong>不开源</strong>，<strong>只能通过 API 用</strong><br>
+  · <strong>Anthropic</strong>——Claude 不开源<br>
+  · <strong>Google</strong>——Gemini 不开源<br>
+  · <strong>Meta</strong>——Llama 2 <strong>名义开源但有商业使用限制</strong>（月活超过 7 亿用户的公司必须申请专用许可）<br>
+  · <strong>Mistral</strong>——Mixtral <strong>Apache 2.0</strong>——<strong>真正完全开放</strong></p>
+
+  <p>Apache 2.0 意味着——</p>
+
+  <p>· <strong>所有人都可下载</strong>——HuggingFace 上立刻 <strong>百万次下载</strong><br>
+  · <strong>所有人都可商业化</strong>——你可以用它建商业产品<br>
+  · <strong>所有人都可修改</strong>——你可以微调、改架构、做继任<br>
+  · <strong>所有人都可重新分发</strong>——你可以打包卖给客户</p>
+
+  <p>这是<strong>对 AI 商业模型的根本挑战</strong>。Mixtral 上线后——<strong>HuggingFace、Replicate、Together AI、Anyscale、vLLM、Fireworks</strong> 等所有平台<strong>第一时间集成</strong>。<strong>开源 MoE 生态系统</strong>立刻爆发。</p>
+
+  <p>后来——<strong>DeepSeek MoE</strong>、<strong>DBRX</strong>、<strong>Grok-1</strong>、<strong>Snowflake Arctic</strong>、<strong>Qwen MoE</strong> 等其他开源 MoE 相继出现——<strong>它们都是踩在 Mixtral 的肩膀上</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LINEAGE</div>
+  <h2>谱系闭环 · 1991 → 2024</h2>
+  <div class="en-title">Closing the lineage loop</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>从 <strong>1991 年 Jacobs/Jordan/Nowlan/Hinton</strong> 到 <strong>2024 年 Mixtral</strong>——<strong>33 年的演化路径完整闭环</strong>。<strong>1991</strong> 定下数学骨架（专家、门控、softmax、竞争误差）。<strong>2017 Shazeer</strong> 第一次大规模化（Noisy Top-K + 负载平衡）。<strong>2021 Switch</strong> 简化到 top-1 + bfloat16 + 万亿参数。<strong>2024 Mixtral</strong> 用 top-2 + Apache 2.0 把 MoE 变成<strong>所有人都能用的工业产品</strong>。<strong>同一个核心想法——专家、门控、稀疏激活——33 年里规模化了 10 个数量级</strong>。这是深度学习史上<strong>最美的进化之一</strong>。</p>
+</div>
+
+<div class="body">
+  <p>读完 Mixtral 8x7B 论文，再回看 1991 年 Jacobs/Jordan/Nowlan/Hinton 那篇 9 页的论文——<strong>33 年的演化路径</strong>清晰地展开在眼前。</p>
+
+  <p>· <strong>1991</strong>——Jacobs/Jordan/Nowlan/Hinton——<strong>定下数学骨架</strong>——专家、门控、softmax、独立竞争误差。元音区分任务。几个专家。<br>
+  · <strong>1994</strong>——Jordan & Jacobs——<strong>Hierarchical MoE</strong>——分层专家结构。<br>
+  · <strong>2017</strong>——Shazeer/Hinton/Dean 等——<strong>第一次大规模化</strong>——Noisy Top-K + 负载平衡损失。65,536 个专家、137B 参数。LSTM 时代的 MoE 高峰。<br>
+  · <strong>2020</strong>——Lepikhin 等——<strong>GShard</strong>——MoE 首次进入 Transformer。<br>
+  · <strong>2021</strong>——Fedus/Zoph/Shazeer——<strong>Switch Transformer</strong>——简化到 top-1 + bfloat16 + 万亿参数。<br>
+  · <strong>2021</strong>——Du 等——<strong>GLaM</strong>——1.2T MoE LLM，比 GPT-3 强还更便宜。<br>
+  · <strong>2022</strong>——Zoph/Bello 等——<strong>ST-MoE</strong>——更多稳定训练技巧。<br>
+  · <strong>2023</strong>——<strong>GPT-4</strong>（被广泛认为是 MoE）。<br>
+  · <strong>2024</strong>——Mistral AI——<strong>Mixtral 8x7B</strong>——<strong>第一个流行的开源 MoE LLM</strong>。Apache 2.0。</p>
+
+  <p>同一个核心想法——<strong>专家、门控、稀疏激活</strong>——<strong>33 年里规模化了 10 个数量级</strong>（从几个专家到 65,536 个，从几千参数到万亿）。这是深度学习史上<strong>最美的进化之一</strong>。</p>
+
+  <p>1991 年 Jacobs 和 Hinton 在<strong>1988 年匹兹堡 Connectionist Summer School</strong> 上首次提出这个想法时——他们<strong>不可能</strong>想到 36 年后法国巴黎一家成立 9 个月的初创公司会<strong>用同样的数学骨架做出全世界都能下载的开源 LLM</strong>，<strong>击败硅谷的所有专有模型</strong>。</p>
+
+  <p>但他们<strong>把对的想法写下来了</strong>。</p>
+
+  <p>"<strong>真正好的想法可以等</strong>"——这是 1991 年那篇被忽视了 25 年的论文教给我们的<strong>最深刻的一课</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>1991 → 2024——<br><strong>33 年</strong>。<br><br>Jacobs、Jordan、Nowlan、Hinton<br>把<strong>"分工 + 竞争"</strong>写成了一个公式。<br><br>2024 年，<br>这个公式让<strong>万亿参数语言模型</strong>能跑在你的电脑上——<br><strong>免费、开源、商业可用</strong>。<br><br>这就是<strong>研究的力量</strong>。<br>这就是<strong>开源的力量</strong>。<br>这就是<strong>把对的想法写下来</strong>的力量。</p>
+  <div class="src">— THE MOE LINEAGE, 1991-2024</div>
+</div>
+
+<div class="footer">
+  <div class="brand">MISTRAL AI · 2024/01</div>
+  <div>Mixtral of Experts · 中文版精校</div>
+  <div class="meta">原文：Mistral AI 26 位作者 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/moe-mixtral</div>
+</div>
+
+</div>
+</body>
+</html>

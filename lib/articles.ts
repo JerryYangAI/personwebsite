@@ -44,6 +44,122 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'moe-mixtral',
+    url: '/moe-mixtral/',
+    category: 'ai',
+    date: '2026-06-11',
+    tag: 'MISTRAL AI · 2024/01',
+    title: {
+      zh: 'Mixtral 8x7B：第一个流行的开源 MoE LLM',
+      en: 'Mixtral of Experts',
+      ja: 'Mixtral 8x7B：初の主流オープンソース MoE LLM',
+    },
+    subtitle: {
+      zh: 'Mistral AI · 中文精校版',
+      en: 'Mistral AI · Curated Chinese Edition',
+      ja: 'Mistral AI · 中国語精製版',
+    },
+    desc: {
+      zh: '2024 年 Mistral AI 发布的 Mixtral 8x7B 论文中文精校版。一群从 Meta/DeepMind 出走的法国研究者，发布第一个流行的开源 Sparse MoE LLM——47B 总参数 / 13B 激活，击败 Llama 2 70B 和 GPT-3.5，Apache 2.0 开源。MoE 从研究论文变成所有人都能用的工业产品。',
+      en: "Mistral AI's Mixtral 8x7B paper. The first widely-adopted open-source Sparse MoE LLM. 47B total / 13B active params, beats Llama 2 70B and GPT-3.5, Apache 2.0 — MoE goes from research to commodity.",
+      ja: 'Mistral AI による Mixtral 8x7B 論文。47B 総パラメータ／13B アクティブ、Llama 2 70B と GPT-3.5 を凌ぐ、Apache 2.0 オープンソース。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '开源 LLM'],
+      en: ['8 chapters', '~25 min read', 'Open-source LLM'],
+      ja: ['8 章', '約 25 分', 'オープンソース LLM'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'moe-switch',
+    url: '/moe-switch/',
+    category: 'ai',
+    date: '2026-06-11',
+    tag: 'JMLR 2022 · GOOGLE',
+    title: {
+      zh: 'Switch Transformers：万亿参数 MoE',
+      en: 'Switch Transformers',
+      ja: 'Switch Transformers：兆パラメータ MoE',
+    },
+    subtitle: {
+      zh: 'Fedus · Zoph · Shazeer · 中文精校版',
+      en: 'Fedus · Zoph · Shazeer · Curated Chinese Edition',
+      ja: 'Fedus · Zoph · Shazeer · 中国語精製版',
+    },
+    desc: {
+      zh: '2021 年 Fedus/Zoph/Shazeer 把 MoE 路由从 top-k 简化到 top-1，配合 bfloat16 选择性精度训练，把稀疏激活模型推到万亿参数——4 倍快过 T5-XXL，101 个语言全面提升。MoE 在 LLM 时代的工程奇迹。',
+      en: 'Switch simplifies MoE routing from top-k to top-1, adds selective bfloat16 precision and scaling tricks — pushing sparse models to trillion params, 4x faster than T5-XXL across 101 languages.',
+      ja: '2021 年 Fedus らが MoE ルーティングを top-1 に簡素化、bfloat16 選択的精度で兆パラメータ。T5-XXL の 4 倍速。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '含公式'],
+      en: ['8 chapters', '~25 min read', 'With formulas'],
+      ja: ['8 章', '約 25 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'moe-sparse',
+    url: '/moe-sparse/',
+    category: 'ai',
+    date: '2026-06-11',
+    tag: 'ICLR 2017 · GOOGLE BRAIN',
+    title: {
+      zh: 'Outrageously Large Neural Networks：稀疏门控 MoE',
+      en: 'The Sparsely-Gated Mixture-of-Experts Layer',
+      ja: 'Outrageously Large Neural Networks：スパースゲート MoE',
+    },
+    subtitle: {
+      zh: 'Shazeer / Hinton / Dean et al. · 中文精校版',
+      en: 'Shazeer / Hinton / Dean et al. · Curated Chinese Edition',
+      ja: 'Shazeer / Hinton / Dean ら · 中国語精製版',
+    },
+    desc: {
+      zh: 'Shazeer / Hinton / Dean 等人 2017 年 ICLR 论文中文精校版。Google Brain 把 1991 年的 MoE 从故纸堆翻出来——加上 Noisy Top-K 门控和负载平衡损失，规模到 137 billion 参数——LSTM 语言模型 perplexity 降低 39%。这是 MoE 从"小众思想"变成"大模型必备"的转折点。',
+      en: "Shazeer et al. ICLR 2017. Google Brain resurrects MoE with Noisy Top-K gating + load balancing — 137 billion parameters in LSTM language models, perplexity down 39%. The turning point for MoE in the LLM era.",
+      ja: 'Shazeer ら ICLR 2017 論文。Google Brain が MoE を再活性化、Noisy Top-K と負荷バランスで 137 億パラメータ、Perplexity 39% 改善。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '含公式'],
+      en: ['8 chapters', '~25 min read', 'With formulas'],
+      ja: ['8 章', '約 25 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'moe-original',
+    url: '/moe-original/',
+    category: 'ai',
+    date: '2026-06-11',
+    tag: 'NEURAL COMPUTATION · 1991',
+    title: {
+      zh: 'Adaptive Mixtures of Local Experts：MoE 的开山之作',
+      en: 'Adaptive Mixtures of Local Experts',
+      ja: 'Adaptive Mixtures of Local Experts：MoE の原典',
+    },
+    subtitle: {
+      zh: 'Jacobs / Jordan / Nowlan / Hinton · 中文精校版',
+      en: 'Jacobs / Jordan / Nowlan / Hinton · Curated Chinese Edition',
+      ja: 'Jacobs / Jordan / Nowlan / Hinton · 中国語精製版',
+    },
+    desc: {
+      zh: '1991 年 Jacobs / Jordan / Nowlan / Hinton 那篇被引用上万次的原始 MoE 论文中文精校版。一个修改了误差函数的小动作，把多任务网络从"合作"改成了"竞争"——33 年后，这同一个数学骨架支撑起 GPT-4、Mixtral、Switch Transformer 的万亿参数。',
+      en: 'Jacobs / Jordan / Nowlan / Hinton 1991 — the original MoE paper. One small change to the error function turned cooperating networks into competing experts. 33 years later, the same math powers GPT-4, Mixtral, Switch Transformer at trillion-parameter scale.',
+      ja: 'Jacobs / Jordan / Nowlan / Hinton 1991 年の原典。誤差関数の小さな修正が「協力」を「競争」に変えた。33 年後、GPT-4 や Mixtral の数学的骨格となった。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', '含公式'],
+      en: ['8 chapters', '~20 min read', 'With formulas'],
+      ja: ['8 章', '約 20 分', '数式付き'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'attention',
     url: '/attention/',
     category: 'ai',

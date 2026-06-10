@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outrageously Large Neural Networks · Sparsely-Gated MoE | 广哥在硅谷</title>
+<meta name="description" content="Shazeer / Hinton / Dean 等人 ICLR 2017 的论文中文精校版。Google Brain 把 1991 年的 MoE 从故纸堆翻出来，加上 Noisy Top-K 门控 + 负载平衡损失，规模到 137 billion 参数——让 LSTM 语言模型 perplexity 降低 39%。这是 MoE 从"小众思想"变成"大模型必备"的转折点。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Sparsely-Gated MoE, Shazeer, Outrageously Large, Conditional Computation, 137B, Hinton, Jeff Dean, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/moe-sparse/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Outrageously Large Neural Networks · Sparsely-Gated MoE">
+<meta property="og:description" content="Shazeer 2017 ICLR · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/moe-sparse/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Outrageously Large Neural Networks">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ICLR 2017 · GOOGLE BRAIN</div>
+  <h1>Outrageously Large Neural Networks<br>稀疏门控 MoE 让 LSTM 涨到 137B 参数</h1>
+  <div class="subtitle-en">The Sparsely-Gated Mixture-of-Experts Layer · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Shazeer · Hinton · Dean · Le et al.</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2017 年 1 月，<strong>Noam Shazeer、Azalia Mirhoseini、Krzysztof Maziarz、Andy Davis、Quoc Le、Geoffrey Hinton、Jeff Dean</strong> ——<strong>Google Brain 半个团队</strong>——把 1991 年 Jacobs / Jordan / Hinton 的 MoE 思想<strong>从故纸堆里翻出来</strong>。他们提出 <strong>Sparsely-Gated Mixture-of-Experts Layer</strong>——<strong>嵌入到堆叠 LSTM 之间</strong>——加上 <strong>Noisy Top-K Gating</strong>（噪声门控保证稀疏性 + 负载平衡），实现了"<strong>模型容量提升 1000 倍 + 计算只增加微量</strong>"。最终模型——<strong>65,536 个专家、137 billion 参数</strong>——在 1B Word 和 100B Word Google News 语料上<strong>大幅超过 LSTM SOTA</strong>。这是 MoE <strong>从"小众思想"变成"大模型必备"</strong>的转折点——8 年后 GPT-4、Mixtral、Switch 都在用这套机制。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 条件计算的承诺<br><span class="en">The promise of conditional computation</span></a></li>
+    <li><a href="#ch2">五大工程挑战<br><span class="en">Five performance challenges</span></a></li>
+    <li><a href="#ch3">Noisy Top-K Gating · 核心创新<br><span class="en">Noisy top-k gating</span></a></li>
+    <li><a href="#ch4">收缩批次问题与并行解法<br><span class="en">The shrinking batch problem</span></a></li>
+    <li><a href="#ch5">负载平衡 · L_importance + L_load<br><span class="en">Load balancing losses</span></a></li>
+    <li><a href="#ch6">1B Word 实验 · 24% perplexity 下降<br><span class="en">1B Word benchmark</span></a></li>
+    <li><a href="#ch7">100B Word · 137B 参数极限<br><span class="en">100B Word & 137B params</span></a></li>
+    <li><a href="#ch8">影响 · 大模型时代的种子<br><span class="en">The seed for the LLM era</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 条件计算的承诺</h2>
+  <div class="en-title">The promise of conditional computation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2017 年 1 月，<strong>Google Brain 7 个人</strong>——包括 <strong>Hinton</strong>、<strong>Jeff Dean</strong>、<strong>Quoc Le</strong>、<strong>Noam Shazeer</strong>（同年是 Transformer 一作）——一起发表了这篇论文。<strong>核心问题</strong>——神经网络的<strong>容量被参数数量限制</strong>，但<strong>"条件计算"</strong>（每个样本只激活网络一部分）理论上能<strong>大幅提升容量而不成比例增加计算</strong>。但<strong>实践中</strong>有"<strong>显著的算法和性能挑战</strong>"。这篇论文<strong>第一次完整解决了这些挑战</strong>——<strong>"模型容量增加超过 1000 倍，计算效率只有轻微损失"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Shazeer 2017</span>
+    <span class="tag">Conditional Computation</span>
+    <span class="tag">1000x Capacity</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2017 年 1 月 23 日，<strong>Noam Shazeer</strong>（一作，同年也是 <em>Attention is All You Need</em> 的核心作者之一）、<strong>Azalia Mirhoseini</strong>、<strong>Krzysztof Maziarz</strong>、<strong>Andy Davis</strong>、<strong>Quoc Le</strong>、<strong>Geoffrey Hinton</strong>、<strong>Jeff Dean</strong> ——<strong>Google Brain 7 个人</strong>，在 ICLR 2017 提交了这篇论文。</p>
+
+  <p>论文标题的两个词都<strong>非常有意思</strong>——</p>
+
+  <p>· <strong>"Outrageously"</strong>（离谱地） — Shazeer 风格的幽默标题——"<strong>离谱地大的神经网络</strong>"<br>
+  · <strong>"Sparsely-Gated Mixture-of-Experts Layer"</strong> — 这是技术名字——"<strong>稀疏门控的混合专家层</strong>"</p>
+
+  <p>论文摘要开门见山——</p>
+</div>
+
+<div class="quote">
+  <p>神经网络<strong>吸收信息的容量</strong>受限于<strong>参数数量</strong>。<br><br><strong>条件计算</strong>——网络部分在<strong>每个样本基础上</strong>激活——<br>理论上被提议为<strong>大幅增加模型容量而不成比例增加计算</strong>的途径。<br><br>但<strong>实践中</strong>——存在<strong>显著的算法和性能挑战</strong>。<br><br>这项工作里我们<strong>解决了这些挑战</strong>，<br><strong>最终实现了条件计算的承诺</strong>——<br>在现代 GPU 集群上<strong>实现超过 1000 倍模型容量改进</strong>，<br>只有<strong>轻微的计算效率损失</strong>。</p>
+  <div class="src">— SHAZEER ET AL., ICLR 2017</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>整篇论文的承诺</strong>——<strong>1000 倍容量增加 + 几乎没多花计算</strong>。这听起来不真——但实验数据证明了它。</p>
+
+  <p>核心新组件——<strong>Sparsely-Gated MoE Layer</strong>——由<strong>多达数千个前馈子网络</strong>组成。<strong>可训练的门控网络</strong>为每个样本<strong>稀疏地</strong>组合这些专家。</p>
+
+  <p>论文应用 MoE 到<strong>语言建模和机器翻译</strong>——这两个任务里<strong>模型容量对吸收训练语料里的大量知识至关重要</strong>。结果——<strong>137 billion 参数的 MoE 层夹在堆叠的 LSTM 之间</strong>——<strong>在公开语言建模和翻译基准上大幅超过 SOTA，同时计算成本更低</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · CHALLENGES</div>
+  <h2>五大工程挑战</h2>
+  <div class="en-title">Five performance challenges</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2017 年之前的"条件计算"想法都没成功大规模化——Shazeer 团队归因为<strong>五大挑战</strong>——<strong>(1) GPU 算术快但分支慢</strong>——硬件不喜欢"if/else"；<strong>(2) 大批量是高效的关键</strong>——但条件计算让"激活部分"批量变小；<strong>(3) 网络带宽是瓶颈</strong>——专家激活需要跨设备传；<strong>(4) 需要负载平衡损失</strong>——否则少数专家被滥用；<strong>(5) 模型容量对超大数据集最关键</strong>——小数据集证明不了 MoE 的价值。这篇论文<strong>"第一次"</strong>同时解决了这五个挑战。</p>
+</div>
+
+<div class="body">
+  <p>论文指出——"<strong>尽管这些想法在理论上有前途，没有工作至今展示出模型容量、训练时间、模型质量上的<em>巨大</em>改进</strong>"。问题归因为<strong>五个挑战</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚠️ 五大挑战</div>
+  <ul>
+    <li><strong>(1) GPU 不喜欢分支</strong>——"现代计算设备，尤其是 GPU，在算术上比在分支上快得多"。所以大多数条件计算工作选择"<strong>每次门控决定都打开/关闭大块网络</strong>"。</li>
+    <li><strong>(2) 大批量是关键</strong>——"<strong>大批量摊销了参数传输和更新的成本</strong>"。条件计算<strong>降低了激活部分的批量大小</strong>——这是性能杀手。</li>
+    <li><strong>(3) 网络带宽是瓶颈</strong>——GPU 集群的<strong>算力</strong>比<strong>设备间带宽</strong>大几千倍。要计算高效——算法的"<strong>算力 vs 带宽需求比</strong>"必须超过这个比例。</li>
+    <li><strong>(4) 损失项保证稀疏性</strong>——可能需要额外损失保证"<strong>每块/每样本的稀疏性水平</strong>"。Bengio 2015 用了 3 个这种损失。</li>
+    <li><strong>(5) 模型容量对大数据集最关键</strong>——之前的条件计算文献在<strong>"最多 60 万张图像"</strong>的相对小数据集上做实验。"<strong>很难想象这些图像的标签提供足够的信号来训练一个百万、更别说十亿参数的模型</strong>"。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>"<strong>在这项工作里，我们第一次解决了上述所有挑战，终于实现了条件计算的承诺。</strong>"</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · GATING</div>
+  <h2>Noisy Top-K Gating · 核心创新</h2>
+  <div class="en-title">Noisy Top-K Gating</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2017 论文的<strong>核心算法创新</strong>就在<strong>门控网络</strong>。Jordan & Jacobs 1994 的"<strong>Softmax Gating</strong>" $G_\sigma(x) = \text{Softmax}(x \cdot W_g)$ 不稀疏。Shazeer 加了<strong>两个改进</strong>——<strong>稀疏性</strong>（softmax 前只保留 top-k logits，其他设为 $-\infty$）和<strong>噪声</strong>（加可训练的高斯噪声）。<strong>稀疏性</strong>节省计算——没被选的专家不需要算。<strong>噪声</strong>帮助<strong>负载平衡</strong>——避免门控网络陷在"总选少数几个专家"的局部最小。这两个修改让 MoE 可<strong>大规模实用化</strong>。</p>
+  <div class="terms">
+    <span class="tag">Noisy Top-K</span>
+    <span class="tag">Sparsity</span>
+    <span class="tag">Load Balance</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>MoE 层由 $n$ 个"专家网络" $E_1, \ldots, E_n$ 和一个"门控网络" $G$ 组成。$G$ 的输出是一个<strong>稀疏 $n$ 维向量</strong>。MoE 模块对输入 $x$ 的输出是——</p>
+</div>
+
+<div class="math-block">
+$$y = \sum_{i=1}^n G(x)_i E_i(x) \quad (1)$$
+</div>
+
+<div class="body">
+  <p>基于 $G(x)$ 的<strong>稀疏性节省计算</strong>——在 $G(x)_i = 0$ 的地方，<strong>我们不需要算 $E_i(x)$</strong>。"<strong>我们的实验里有多达数千个专家，但每个样本只需要评估其中几个</strong>"。</p>
+
+  <p>怎么生成稀疏的 $G(x)$？Shazeer 提出 <strong>Noisy Top-K Gating</strong>——</p>
+
+  <p>从 Jordan & Jacobs 1994 的简单 Softmax 门控开始——</p>
+</div>
+
+<div class="math-block">
+$$G_\sigma(x) = \text{Softmax}(x \cdot W_g) \quad (2)$$
+</div>
+
+<div class="body">
+  <p>这<strong>不稀疏</strong>。Shazeer 加两个东西——</p>
+
+  <p><strong>第一——稀疏性</strong>。在做 softmax 之前，<strong>只保留 top-k logits</strong>，其余设为 $-\infty$（这让对应的门控值变成 0）。</p>
+
+  <p><strong>第二——噪声</strong>。加<strong>可调高斯噪声</strong>，由<strong>另一个可训练权重矩阵 $W_{\text{noise}}$</strong> 控制。"<strong>噪声项帮助负载平衡</strong>"。</p>
+</div>
+
+<div class="math-block">
+$$G(x) = \text{Softmax}(\text{KeepTopK}(H(x), k)) \quad (3)$$
+$$H(x)_i = (x \cdot W_g)_i + \text{StandardNormal}() \cdot \text{Softplus}((x \cdot W_{\text{noise}})_i) \quad (4)$$
+$$\text{KeepTopK}(v, k)_i = \begin{cases} v_i & \text{if } v_i \text{ is in top-k elements} \\ -\infty & \text{otherwise} \end{cases} \quad (5)$$
+</div>
+
+<div class="body">
+  <p>这个 gating <strong>看起来吓人</strong>，做的事其实很简单——</p>
+
+  <p>· 算每个专家的<strong>logits</strong>（线性变换）<br>
+  · 加<strong>可学习的高斯噪声</strong><br>
+  · <strong>只留 top-k 个最大的</strong>，其他变 $-\infty$<br>
+  · <strong>softmax 归一化</strong></p>
+
+  <p>结果——每个样本<strong>只激活 $k$ 个专家</strong>。Shazeer 论文里通常 <strong>$k = 4$</strong>（每个样本激活 4 个专家）。后来 Switch 简化到 $k = 1$，Mixtral 用 $k = 2$。</p>
+
+  <p>门控网络<strong>用普通反向传播训练</strong>——和模型其他部分一起。如果 $k > 1$，top-k 专家的 gate values <strong>对门控权重有非零导数</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · BATCHING</div>
+  <h2>收缩批次问题与并行解法</h2>
+  <div class="en-title">The shrinking batch problem</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>"收缩批次问题"</strong>——如果门控网络从 $n$ 个专家里选 $k$ 个，那一批 $b$ 个样本里<strong>每个专家平均只收到 $kb/n \ll b$ 个样本</strong>。专家越多，每个专家的批越小——<strong>GPU 效率暴跌</strong>。解法——<strong>把原始批量做得尽可能大</strong>。具体技巧——<strong>数据并行 + 模型并行的混合</strong>——所有数据并行副本<strong>共享一份专家</strong>。$d$ 设备时——每个专家收到的批是<strong>$kbd/n$</strong>——比单机大 $d$ 倍。<strong>"利用卷积性"</strong>——所有时间步的输入一起作为一个大批传给 MoE。</p>
+</div>
+
+<div class="body">
+  <p>"收缩批次问题"——简单说——一批 $b$ 个样本，门控选 $k$ 个专家——<strong>每个专家平均只看到 $kb/n$ 个样本</strong>。专家越多，每个专家的批就越小——<strong>GPU 利用率暴跌</strong>。</p>
+
+  <p>例如——$n = 1000$ 个专家，$b = 256$ 批量，$k = 4$——<strong>每个专家平均只看到 1 个样本</strong>。基本上等于<strong>没批量</strong>。</p>
+
+  <p>Shazeer 团队的解法——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚙️ 数据并行 + 模型并行混合</div>
+  <p>传统分布式训练——<strong>模型在多设备上复制</strong>，每个设备<strong>异步处理不同批量数据</strong>，参数通过 parameter server 同步。</p>
+  <p>Shazeer 的改进——<strong>这些不同批次同步运行，可以为 MoE 层组合在一起</strong>。普通层<strong>按数据并行方案分布</strong>，但 MoE 层<strong>只保留每个专家的一份共享副本</strong>。每个专家收到<strong>来自所有数据并行输入批次的相关样本的<em>组合</em>批次</strong>。</p>
+  <p>同一组设备<strong>同时</strong>作为——<strong>数据并行副本</strong>（对普通层和门控）<strong>和模型并行分片</strong>（每个 host 一部分专家）。</p>
+  <p>结果——$d$ 设备，每设备批量 $b$——<strong>每个专家收到的批量是 $kbd/n$</strong>——比单机大 $d$ 倍。"<strong>专家批量的 $d$ 倍改进</strong>"。</p>
+</div>
+
+<div class="body">
+  <p>论文还提了<strong>"利用卷积性"</strong>——在语言模型里，<strong>同一个 MoE 被应用到上一层的每个时间步</strong>。如果等上一层做完，<strong>可以把所有时间步的输入一起作为一个大批量传给 MoE</strong>——增加批量到<strong>"unrolled 时间步数</strong>"倍。</p>
+
+  <p>"<strong>我们的目标是用一万亿词的语料训练一万亿参数模型</strong>"——他们写于 2017 年。这个目标在 2021 年的 Switch Transformer 真的实现了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · LOAD BALANCING</div>
+  <h2>负载平衡 · L_importance + L_load</h2>
+  <div class="en-title">Balancing expert utilization</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>"<strong>我们观察到门控网络倾向收敛到一种状态——它总是给同样几个专家产出大权重</strong>"。这种不平衡<strong>自我强化</strong>——受偏爱的专家被<strong>训练得更快</strong>，于是<strong>被选得更多</strong>。Shazeer 团队的<strong>软约束方法</strong>——定义专家的"<strong>importance</strong>"为<strong>批量内门控值之和</strong>，加一个 <strong>$L_{\text{importance}}$ 损失</strong> = importance 的<strong>变异系数（CV）的平方</strong> × 缩放因子。这鼓励所有专家<strong>importance 相等</strong>。<strong>第二个损失 $L_{\text{load}}$</strong>——保证<strong>负载</strong>（每个专家收到的样本数）也平衡，不只是 importance。</p>
+</div>
+
+<div class="body">
+  <p>这是 MoE 系统最微妙的工程细节——<strong>负载平衡</strong>。</p>
+
+  <p>"<strong>我们观察到门控网络倾向收敛到一种状态——它总是给同样几个专家产出大权重</strong>"。</p>
+
+  <p>这种不平衡<strong>是自我强化的</strong>——</p>
+
+  <p>· 一开始随机偏向几个专家<br>
+  · 这几个专家被<strong>训练得快</strong>，所以<strong>变强</strong><br>
+  · 门控网络<strong>更倾向选它们</strong><br>
+  · 它们<strong>训练得更快</strong>⋯⋯<strong>恶性循环</strong></p>
+
+  <p>结果——其他专家<strong>从来没被锻炼</strong>。MoE 退化成"<strong>只用几个专家的小模型</strong>"——失去了 MoE 的意义。</p>
+
+  <p>Shazeer 团队提出<strong>软约束法</strong>。定义专家相对于一个训练批量的<strong>"importance"</strong>为<strong>批量内该专家门控值之和</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\text{Importance}(X) = \sum_{x \in X} G(x) \quad (6)$$
+</div>
+
+<div class="body">
+  <p>定义额外损失 <strong>$L_{\text{importance}}$</strong>——加到总损失里。它等于 importance 集合的<strong>变异系数（coefficient of variation）的平方</strong>乘以手调缩放因子 $w_{\text{importance}}$——</p>
+</div>
+
+<div class="math-block">
+$$L_{\text{importance}}(X) = w_{\text{importance}} \cdot \text{CV}(\text{Importance}(X))^2 \quad (7)$$
+</div>
+
+<div class="body">
+  <p>"<strong>这个额外损失鼓励所有专家有相等的 importance</strong>"。</p>
+
+  <p>但 importance 相等不代表<strong>实际负载</strong>相等——一个专家可能<strong>用大权重收几个样本</strong>，另一个<strong>用小权重收很多样本</strong>。Shazeer 团队引入<strong>第二个损失 $L_{\text{load}}$</strong>——保证<strong>负载平衡</strong>。具体定义在 Appendix A 里。</p>
+
+  <p>这两个损失加上 noisy gating 一起——<strong>保证了所有专家被充分使用</strong>，让 MoE 真正能<strong>扩展到上千专家</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · 1B WORD</div>
+  <h2>1B Word 实验 · 24% perplexity 下降</h2>
+  <div class="en-title">1 Billion Word benchmark</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文先在 <strong>1 Billion Word</strong> 语料上做语言建模——这是当时<strong>最大公开语言建模 benchmark</strong>，由 Chelba 2013 提出——<strong>8.29 亿词、793,471 词汇</strong>。模型——<strong>两层堆叠 LSTM 之间嵌入 MoE 层</strong>。<strong>"低计算高容量"</strong>实验——所有模型相同计算预算（~8M ops/timestep），变化的是专家数——<strong>4 → 32 → 256（扁平 MoE），256 → 1024 → 4096（分层 MoE）</strong>。最大模型——<strong>4096 个专家 → test perplexity 比同等计算预算 baseline 低 24%</strong>。</p>
+  <div class="terms">
+    <span class="tag">1B Word</span>
+    <span class="tag">4096 Experts</span>
+    <span class="tag">24% Drop</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Shazeer 团队在两个公开 benchmark 上做实验。第一个——<strong>1 Billion Word Language Modeling Benchmark</strong>——Chelba 2013 提出。这个数据集——<strong>8.29 亿词、793,471 词汇</strong>——是当时最大的公开语言建模基准。</p>
+
+  <p>之前的 SOTA 是 Jozefowicz 2016 的 LSTM 模型——参数从 200 万到 1.51 亿不等。<strong>质量随参数增加而提升</strong>——但计算成本也快速增加。</p>
+
+  <p>Shazeer 团队的模型——<strong>两层堆叠 LSTM 之间嵌入 MoE 层</strong>。"<strong>低计算高容量</strong>"实验——所有模型大约相同计算预算（~8M ops/timestep），变化的是专家数——</p>
+
+  <p>· <strong>扁平 MoE</strong>——4 个、32 个、256 个专家<br>
+  · <strong>分层 MoE</strong>——256 个、1024 个、4096 个专家</p>
+
+  <p>每个专家约 100 万参数。每个 MoE 层，<strong>每个输入激活 4 个专家</strong>。</p>
+
+  <p>结果——<strong>4 个 always-active 专家的模型表现和 baseline 相似</strong>（不意外，因为容量和计算几乎一样）。但<strong>最大模型——4096 个专家——test perplexity 比同等计算预算的 baseline 低 24%</strong>。</p>
+
+  <p>"<strong>高计算高容量</strong>"实验——再训两个 MoE 模型，容量同样高（4 billion 参数），但<strong>计算预算更高</strong>。结果——</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="num">28.0</div><div class="lbl">High-Budget MoE<br>test perplexity (100 epochs)</div></div>
+  <div class="stat-card"><div class="num">30.6</div><div class="lbl">Best Published Result<br>(Jozefowicz 2016 LSTM)</div></div>
+  <div class="stat-card"><div class="num">4 B</div><div class="lbl">MoE 模型总参数<br>vs 151M baseline</div></div>
+  <div class="stat-card"><div class="num">6%</div><div class="lbl">最快 MoE 模型的计算<br>vs 最佳 baseline</div></div>
+</div>
+
+<div class="body">
+  <p>"<strong>即使最快的 MoE 模型也击败了最佳已发表结果（在控制训练 epoch 数量时），尽管只需要 6% 的计算</strong>"。</p>
+
+  <p>这是 MoE 在大规模语言建模上<strong>第一次</strong>显示出"<strong>容量增大十倍 + 计算几乎不变 + 质量大幅提升</strong>"——这就是<strong>条件计算的承诺第一次被实现</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · 100B WORD</div>
+  <h2>100B Word · 137B 参数极限</h2>
+  <div class="en-title">100B Word Google News & 137B params</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>团队接着在 <strong>Google 内部 1000 亿词新闻语料</strong>上测试——这是 1B Word 的 100 倍大。猜想——<strong>更大的训练集应该让更高容量产生显著质量改进</strong>。结果完全符合预期——专家数<strong>32, 256, 1024, 4096, 16384, 65536, 131072</strong>——<strong>对应到 MoE 层 137 billion 参数</strong>。在完整 1000 亿词训练后，<strong>测试 perplexity 持续改善到 65,536 个专家（68 billion 参数）</strong>，<strong>比同等计算 baseline 低 39%</strong>。<strong>65,536 个专家时（99.994% 层稀疏度）</strong>——<strong>计算效率仍然 0.72 TFLOPS/GPU</strong>。</p>
+  <div class="terms">
+    <span class="tag">100B Words</span>
+    <span class="tag">137B Params</span>
+    <span class="tag">99.994% Sparse</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>"<strong>在 1 billion 词语料上，添加更多容量似乎在 MoE 层参数超过 1 billion 后产生收益递减</strong>"。团队猜想——<strong>更大的训练集</strong>应该让<strong>更高容量产生显著质量改进</strong>。</p>
+
+  <p>他们用 <strong>Google 内部新闻语料</strong>——总共<strong>大约 1000 亿词</strong>——做了类似实验。同样约 8M ops/timestep——但专家数<strong>32, 256, 1024, 4096, 16384, 65536, 131072</strong>。最高对应——<strong>137 billion 参数</strong>。</p>
+
+  <p>结果——<strong>训练完整 1000 亿词后</strong>，test perplexity 显著改善到 <strong>65,536 个专家（68 billion 参数）</strong>，<strong>比同等计算 baseline 低 39%</strong>。但<strong>131,072 个专家时降级</strong>——"<strong>可能由于稀疏性过度</strong>"。</p>
+
+  <p>更让人惊讶的是计算效率——</p>
+</div>
+
+<div class="quote">
+  <p>即使是 <strong>65,536 个专家</strong>的模型——<br>对应<strong>层稀疏度 99.994%</strong>——<br><br>计算效率<strong>依然停留在合理的 0.72 TFLOPS/GPU</strong>。</p>
+  <div class="src">— SHAZEER ET AL., 2017</div>
+</div>
+
+<div class="body">
+  <p>"<strong>99.994% 稀疏度</strong>" 这个数字让我读完后久久不能忘。意思是——<strong>每次只有 0.006% 的专家被用到</strong>。<strong>99.994% 的参数在每次推理时是"睡着"的</strong>——但<strong>整个模型仍然学会了世界级的语言建模</strong>。</p>
+
+  <p>这是<strong>MoE 的真正魔力</strong>——<strong>把"模型总知识量"和"每次推理算力"<em>解耦</em></strong>。你可以有<strong>无限大的容量</strong>，但<strong>每次推理只激活其中一小块</strong>。</p>
+
+  <p>论文还把 MoE 应用到<strong>机器翻译</strong>（单语言对和多语言对）——结果同样显著超过当时的 GNMT SOTA。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · LEGACY</div>
+  <h2>影响 · 大模型时代的种子</h2>
+  <div class="en-title">The seed for the LLM era</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2017 年这篇论文<strong>正好赶上 Transformer</strong>——同一个 Shazeer 同年是 <em>Attention is All You Need</em> 的核心作者之一。但 MoE 当时<strong>主要在 LSTM 里用</strong>。<strong>真正的爆发在 2020 年后</strong>——Google 的 <strong>GShard</strong>（2020）把 MoE 引入 Transformer，<strong>Switch Transformer</strong>（2021）简化到 top-1 + 万亿参数，<strong>GLaM</strong>（2021）做 1.2T MoE，<strong>Mixtral 8x7B</strong>（2024）成为<strong>第一个流行的开源 MoE LLM</strong>。<strong>GPT-4</strong> 也<strong>被广泛认为是 MoE</strong>。这篇 2017 论文<strong>奠定了所有人都在用的工程范式</strong>——<strong>稀疏门控、负载平衡、并行架构</strong>。</p>
+  <div class="terms">
+    <span class="tag">GShard 2020</span>
+    <span class="tag">Switch 2021</span>
+    <span class="tag">GPT-4 (rumored MoE)</span>
+    <span class="tag">Mixtral 2024</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2017 年 1 月这篇论文发出来时，正好是<strong>深度学习历史上最神奇的几个月</strong>——</p>
+
+  <p>· <strong>2017 年 1 月</strong>——这篇 Sparsely-Gated MoE<br>
+  · <strong>2017 年 6 月</strong>——Vaswani 等人的 <strong>Transformer</strong>（"Attention is All You Need"）——<strong>同一个 Noam Shazeer 是核心作者之一</strong></p>
+
+  <p>但 MoE 当时<strong>主要在 LSTM 里用</strong>——而 Transformer 没有它也已经在<strong>占领 NLP</strong>。所以 MoE <strong>从 2017 到 2020 又"沉寂"了 3 年</strong>。</p>
+
+  <p>真正的爆发是<strong>2020 年</strong>——Google 的 <strong>GShard</strong>（Lepikhin 等）把 MoE <strong>第一次引入 Transformer</strong>。然后——</p>
+
+  <p>· <strong>2021 Switch Transformer</strong>（Fedus, Zoph, Shazeer）——简化到 top-1 路由，<strong>万亿参数</strong><br>
+  · <strong>2021 GLaM</strong>（Du 等）——<strong>1.2 trillion MoE</strong>，比 GPT-3 强还更便宜<br>
+  · <strong>2022 ST-MoE</strong>——稳定 MoE 训练的更多技巧<br>
+  · <strong>2023 GPT-4</strong>——<strong>广泛认为是 MoE</strong>（OpenAI 没明确说但大量泄露表明是）<br>
+  · <strong>2024 Mixtral 8x7B</strong>——<strong>第一个流行的开源 MoE LLM</strong>，47B 总参数 / 13B 激活<br>
+  · <strong>2024 DeepSeek MoE / DBRX / Grok-1</strong>——其他开源 MoE 大量涌现</p>
+
+  <p>每一个都建立在<strong>这篇 2017 论文奠定的工程范式上</strong>——<strong>稀疏门控、负载平衡、专家+数据并行架构</strong>。</p>
+
+  <p>更让我感慨的是——<strong>这篇论文的一作 Noam Shazeer 是同年 Transformer 的核心作者</strong>。一个人在<strong>同一年</strong>共同发明了<strong>两个</strong>深度学习历史上最重要的架构。后来他离开 Google 创办了 <strong>Character.AI</strong>，2024 年被 Google 以 27 亿美元收购，<strong>Shazeer 重新回到 Google 做 Gemini</strong>。</p>
+
+  <p>1991 年的 Jacobs/Jordan/Hinton 写下的<strong>骨架</strong>——经过 26 年——在 2017 年被这位天才工程师<strong>第一次完全实现</strong>。<strong>这就是好想法的力量</strong>——<strong>它可以等</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ICLR 2017 · GOOGLE BRAIN</div>
+  <div>Outrageously Large Neural Networks · 中文版精校</div>
+  <div class="meta">原文：Shazeer · Mirhoseini · Maziarz · Davis · Le · Hinton · Dean · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/moe-sparse</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Switch Transformers · 万亿参数 MoE | 广哥在硅谷</title>
+<meta name="description" content="Fedus / Zoph / Shazeer 2021 年的 Switch Transformer 论文中文精校版。把 MoE 路由从 top-k 简化到 top-1，配合 bfloat16 选择性精度训练，把稀疏激活模型推到万亿参数——4 倍快过 T5-XXL，101 个语言全面提升。MoE 在 LLM 时代的工程奇迹。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Switch Transformer, MoE, Trillion Parameters, Fedus, Zoph, Shazeer, T5, bfloat16, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/moe-switch/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Switch Transformers · 万亿参数 MoE">
+<meta property="og:description" content="Fedus 2021 万亿参数 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/moe-switch/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Switch Transformers · 万亿参数 MoE">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .math-block{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-radius:10px;text-align:center;overflow-x:auto;}
+  mjx-container{font-size:1.05em !important;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">JMLR 2022 · GOOGLE</div>
+  <h1>Switch Transformers<br>万亿参数 + Top-1 路由的极简哲学</h1>
+  <div class="subtitle-en">Scaling to Trillion Parameter Models · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Fedus · Zoph · Shazeer · Google</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 25 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2021 年，<strong>William Fedus、Barret Zoph、Noam Shazeer</strong>（Google）发表 <em>Switch Transformer</em>——MoE 谱系第三个里程碑。核心想法只有<strong>一个</strong>——<strong>把 MoE 路由从 top-k 简化到 top-1</strong>。Shazeer 2017 说"<strong>必须 $k > 1$ 才能有有意义的梯度</strong>"——Switch 论文<strong>反驳</strong>这个假设，证明 <strong>k=1 不仅可行而且更好</strong>。简化路由 + <strong>选择性 bfloat16 精度</strong> + <strong>更小初始化</strong> + <strong>专家正则化</strong>——让稀疏模型规模到<strong>万亿参数</strong>，<strong>比 T5-XXL 快 4 倍</strong>，在 <strong>101 个语言</strong>上全面提升。<strong>蒸馏</strong>把万亿参数稀疏模型<strong>压缩 99%</strong>到 dense 模型，<strong>保留 30% 质量增益</strong>。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 第四个扩展轴<br><span class="en">The fourth scaling axis</span></a></li>
+    <li><a href="#ch2">Switch Routing · 反 Shazeer 2017<br><span class="en">Top-1 instead of top-k</span></a></li>
+    <li><a href="#ch3">专家容量 + Token Dropping<br><span class="en">Expert capacity</span></a></li>
+    <li><a href="#ch4">可微负载平衡损失<br><span class="en">Differentiable load balance</span></a></li>
+    <li><a href="#ch5">选择性 bfloat16 精度<br><span class="en">Selective precision</span></a></li>
+    <li><a href="#ch6">扩展性质 · 7 倍预训练加速<br><span class="en">7x pretraining speedup</span></a></li>
+    <li><a href="#ch7">蒸馏 · 99% 压缩，30% 增益保留<br><span class="en">Distillation</span></a></li>
+    <li><a href="#ch8">万亿参数 · 4 倍快过 T5-XXL<br><span class="en">Trillion-parameter Switch</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 第四个扩展轴</h2>
+  <div class="en-title">The fourth scaling axis</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>Kaplan 2020</strong> 的 scaling law 揭示了三个扩展轴——<strong>模型大小、数据集大小、计算预算</strong>。Switch Transformer 提出<strong>第四个轴</strong>——<strong>"在保持每样本 FLOPs 不变的同时增加参数数量"</strong>。假设是——<strong>参数数量本身就是<em>独立的重要</em>扩展维度</strong>。Switch 通过"<strong>稀疏激活的模型</strong>"实现——<strong>它高效利用 GPU/TPU 这种为<em>稠密矩阵乘法</em>设计的硬件</strong>。分布式训练里——<strong>稀疏激活的层把唯一权重分散到不同设备</strong>。<strong>模型权重随设备数增加</strong>，但<strong>每设备的内存和计算占用保持可管理</strong>。</p>
+  <div class="terms">
+    <span class="tag">Kaplan 2020</span>
+    <span class="tag">4th Scaling Axis</span>
+    <span class="tag">TPU Optimized</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2021 年 1 月（arXiv 提交日期），<strong>William Fedus、Barret Zoph、Noam Shazeer</strong>——同一个 Noam Shazeer，2017 年是<strong>Sparsely-Gated MoE</strong>的一作，也是<strong>Transformer</strong>的核心作者——在 Google 发表《<em>Switch Transformers: Scaling to Trillion Parameter Models with Simple and Eﬃcient Sparsity</em>》。</p>
+
+  <p>论文摘要直接——</p>
+</div>
+
+<div class="quote">
+  <p>深度学习里，模型<strong>对所有输入复用同样参数</strong>。<br><br>MoE 模型<strong>违背这一点</strong>——<br>它<strong>给每个输入选不同参数</strong>——<br>结果是一个<strong>稀疏激活的、参数离谱地多的、计算成本恒定的模型</strong>。<br><br>但<strong>尽管 MoE 有几个显著成功</strong>，<br>广泛采用<strong>被复杂性、通信成本、训练不稳定性阻碍</strong>。<br><br>我们引入 <strong>Switch Transformer</strong> 解决这些。</p>
+  <div class="src">— FEDUS, ZOPH, SHAZEER, 2021</div>
+</div>
+
+<div class="body">
+  <p>Switch 的指导原则——"<strong>用简单和计算高效的方式最大化 Transformer 参数数</strong>"。</p>
+
+  <p>Kaplan 2020 的 scaling law 揭示了<strong>三个扩展轴</strong>——<strong>模型大小、数据集大小、计算预算</strong>。Switch 提出<strong>第四个轴</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>我们探索<strong>第四个轴</strong>——<br>在<strong>保持每样本 FLOPs 恒定</strong>的同时<br><strong>增加参数数量</strong>。<br><br>我们的假设是——<br><strong>参数数量</strong>，独立于总计算——<br>是一个<strong>独立的重要扩展维度</strong>。</p>
+  <div class="src">— SWITCH TRANSFORMER</div>
+</div>
+
+<div class="body">
+  <p>Switch 通过<strong>稀疏激活模型</strong>实现——<strong>"高效利用为<em>稠密矩阵乘法</em>设计的 GPU/TPU 硬件"</strong>。论文的核心贡献——</p>
+
+  <p>· <strong>Switch Transformer 架构</strong>——简化并改进 MoE<br>
+  · <strong>vs T5 的扩展性质</strong>——<strong>7x+ 预训练加速</strong>，同样 FLOPS/token<br>
+  · <strong>蒸馏成功</strong>——99% 压缩 + 30% 质量增益保留<br>
+  · <strong>改进训练技巧</strong>——选择性 bfloat16 精度、更小初始化、更强专家正则<br>
+  · <strong>多语言全面提升</strong>——<strong>101 个语言</strong>，<strong>91% 的语言在 mT5 上有 4x+ 加速</strong><br>
+  · <strong>万亿参数模型</strong>——T5-XXL 强基线上<strong>4 倍加速</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · SWITCH ROUTING</div>
+  <h2>Switch Routing · 反 Shazeer 2017</h2>
+  <div class="en-title">Top-1 instead of top-k</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Shazeer 2017 主张<strong>必须 $k > 1$</strong>——"<strong>学习路由如果没有<em>比较至少两个专家</em>的能力就不能工作</strong>"。Ramachandran-Le 2018 进一步研究 top-k——发现<strong>底层用更大 k 重要</strong>。Switch 反驳——<strong>"我们用一个简化策略，只路由到<em>一个</em>专家"</strong>。三大好处——<strong>(1) 路由计算减少</strong>；<strong>(2) 每个专家的批量至少减半</strong>；<strong>(3) 路由实现简化、通信成本降低</strong>。这是<strong>反直觉的洞察</strong>——MoE 越简单越好。</p>
+  <div class="terms">
+    <span class="tag">k = 1</span>
+    <span class="tag">Anti-Shazeer 2017</span>
+    <span class="tag">3 Benefits</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Shazeer 2017 的 MoE 路由——给定 token $x$，<strong>路由到 top-k 专家</strong>。router 变量 $W_r$ 产生 logits $h(x) = W_r \cdot x$，过 softmax 归一化——</p>
+</div>
+
+<div class="math-block">
+$$p_i(x) = \frac{e^{h(x)_i}}{\sum_j^N e^{h(x)_j}} \quad (1)$$
+$$y = \sum_{i \in T} p_i(x) E_i(x) \quad (2)$$
+</div>
+
+<div class="body">
+  <p>其中 $T$ 是<strong>选中的 top-k 索引集合</strong>。Shazeer 2017 主张——<strong>"路由到 $k > 1$ 专家是必要的——为了有意义的梯度"</strong>。直觉——<strong>学习路由如果没有比较至少两个专家的能力就不能工作</strong>。Ramachandran-Le 2018 进一步研究——发现<strong>底层用更大 k 重要</strong>。</p>
+
+  <p>Switch 论文<strong>反驳</strong>这两个观察——</p>
+</div>
+
+<div class="quote">
+  <p>相反——我们用<strong>简化策略</strong>——<br>只路由到<strong>一个专家</strong>。<br><br>我们证明这个简化<strong>保留模型质量</strong>，<br><strong>减少路由计算</strong>，<strong>表现更好</strong>。<br><br>这个 $k = 1$ 路由策略被称为 <strong>Switch 层</strong>。</p>
+  <div class="src">— SWITCH ROUTING</div>
+</div>
+
+<div class="body">
+  <p>"Switch" 这个名字的含义——<strong>路由器只是"开关"——把 token 切换到<em>一个</em>专家</strong>。</p>
+
+  <p>Switch 层的三个好处——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚡ 三大好处</div>
+  <ul>
+    <li><strong>(1) 路由计算减少</strong>——因为只路由 token 到<strong>单个专家</strong>。</li>
+    <li><strong>(2) 每个专家批量至少减半</strong>——因为每个 token <strong>只路由到一个专家</strong>。每个专家的"<strong>专家容量</strong>"可以更小。</li>
+    <li><strong>(3) 路由实现简化、通信成本降低</strong>——top-1 选择<strong>实现起来非常简单</strong>，跨设备通信也<strong>大幅减少</strong>。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>注意——MoE 和 Switch 路由<strong>都</strong>用 $p_i(x)$ 作为<strong>乘子</strong>（Eq. 2 里的 gate value）——<strong>让路由器可微</strong>。这是关键——<strong>梯度仍然能流过路由器</strong>。</p>
+
+  <p>这是 Switch 最美的地方——<strong>反直觉</strong>，但<strong>简单战胜复杂</strong>。MoE 越简单越好——这是 Switch 给出的<strong>哲学</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · CAPACITY</div>
+  <h2>专家容量 + Token Dropping</h2>
+  <div class="en-title">Expert capacity</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>TPU 需要<strong>静态声明大小</strong>——所以 Switch 的张量形状<strong>编译时确定</strong>，但路由<strong>动态</strong>。<strong>专家容量</strong>解决这个矛盾——把 token 数平均分给专家，再乘<strong>容量因子（capacity factor）</strong>——比 1.0 大留<strong>缓冲</strong>。如果某专家收到的 token <strong>超过容量</strong>——"<strong>dropped token</strong>"——计算被跳过，token 表示<strong>通过残差连接直接传到下一层</strong>。增大容量因子<strong>减少 token drop</strong>，但<strong>浪费计算和内存</strong>。Switch 论文发现——dropped token 率<strong>低于 1%</strong>，<strong>不依赖专家数量</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Switch 论文用 <strong>Mesh-TensorFlow</strong>——为分布式数据 + 模型并行设计的库。模型为 <strong>TPU</strong> 设计——<strong>需要静态声明大小</strong>。</p>
+
+  <p>但 Switch 路由<strong>动态</strong>——<strong>不同 batch 不同 token 会路由到不同专家</strong>。这两件事如何统一？</p>
+
+  <p>解法——<strong>专家容量</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\text{expert capacity} = \left( \frac{\text{tokens per batch}}{\text{number of experts}} \right) \times \text{capacity factor} \quad (3)$$
+</div>
+
+<div class="body">
+  <p>专家容量是<strong>每个专家计算的 token 数</strong>——预先设定。容量因子大于 1.0 <strong>留缓冲</strong>，应付 token 分配不完美平衡。</p>
+
+  <p>如果一个专家收到的 token <strong>超过容量</strong>——这些 token 被称为 <strong>"dropped tokens"</strong>——<strong>计算被跳过</strong>，<strong>token 表示通过残差连接直接传到下一层</strong>。</p>
+
+  <p>容量因子的权衡——</p>
+
+  <p>· <strong>太小</strong>——很多 token 被 drop——模型质量下降<br>
+  · <strong>太大</strong>——浪费计算和内存（很多缓冲空槽）</p>
+
+  <p>Switch 论文发现——用<strong>负载平衡损失</strong>（下一章）配合<strong>足够高的系数</strong>，<strong>dropped token 率通常 < 1%</strong>，并且<strong>不依赖专家数</strong>——这意味着<strong>负载平衡有效</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · LOAD BALANCE</div>
+  <h2>可微负载平衡损失</h2>
+  <div class="en-title">Differentiable load balance loss</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Switch 简化了 Shazeer 2017 的<strong>"两个分离损失"</strong>（importance + load）——合成<strong>一个</strong>辅助损失。给定 $N$ 个专家、$T$ 个 token 的批量——损失是<strong>"实际分配比例 $f_i$"和"路由概率比例 $P_i$"的缩放点积</strong>。<strong>$f_i$</strong>——分到专家 $i$ 的 token 比例（不可微）。<strong>$P_i$</strong>——批内分给专家 $i$ 的路由概率比例（可微）。两者都希望 = $1/N$（均匀路由）。损失<strong>在均匀分布下最小化</strong>。<strong>$P$ 可微</strong>所以梯度能流回。系数 $\alpha = 10^{-2}$——<strong>"既保证平衡又不淹没主损失"</strong>。</p>
+</div>
+
+<div class="body">
+  <p>Switch 简化了 Shazeer 2017 的原始设计——把<strong>负载平衡损失</strong>和<strong>importance weighting 损失</strong>合成<strong>一个辅助损失</strong>。</p>
+
+  <p>给定 $N$ 个专家（索引 $i = 1$ 到 $N$）、批量 $B$ 含 $T$ 个 token——辅助损失为<strong>缩放点积</strong>——</p>
+</div>
+
+<div class="math-block">
+$$\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i \quad (4)$$
+</div>
+
+<div class="body">
+  <p>其中——</p>
+
+  <p>· <strong>$f_i$</strong> 是<strong>实际分配到专家 $i$ 的 token 比例</strong>——</p>
+</div>
+
+<div class="math-block">
+$$f_i = \frac{1}{T} \sum_{x \in B} \mathbb{1}\{\text{argmax } p(x) = i\} \quad (5)$$
+</div>
+
+<div class="body">
+  <p>· <strong>$P_i$</strong> 是<strong>批内分给专家 $i$ 的路由概率比例</strong>——</p>
+</div>
+
+<div class="math-block">
+$$P_i = \frac{1}{T} \sum_{x \in B} p_i(x) \quad (6)$$
+</div>
+
+<div class="body">
+  <p>我们想要<strong>批内 token 均匀分到 $N$ 个专家</strong>——所以希望两个向量<strong>都 = $1/N$</strong>。Eq. 4 的辅助损失<strong>鼓励均匀路由</strong>——它在均匀分布下最小化。</p>
+
+  <p>注意——<strong>$P$ 可微，$f$ 不可微</strong>。但 $f \cdot P$ 通过 $P$ <strong>可以求导</strong>——梯度能流回路由器。</p>
+
+  <p>损失乘以专家数 $N$ ——保持<strong>损失值随专家数变化而恒定</strong>。最后——超参 $\alpha$ 是辅助损失系数——Switch 论文用 <strong>$\alpha = 10^{-2}$</strong>——"<strong>足够大保证负载平衡，足够小不淹没主交叉熵目标</strong>"。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · BFLOAT16</div>
+  <h2>选择性 bfloat16 精度</h2>
+  <div class="en-title">Selective precision</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>稀疏专家模型有<strong>训练不稳定性</strong>问题——硬切换决策让 softmax 计算<strong>对 bfloat16 精度敏感</strong>。GShard（Lepikhin 2020）<strong>不得不用 float32 训练</strong>——但<strong>通信成本巨大</strong>。Switch 论文展示——<strong>在模型的"局部区域选择性 cast 到 float32"</strong> 就能<strong>保持稳定性</strong>，不付出<strong>跨设备通信 float32 张量</strong>的代价。具体做法——<strong>把路由器输入 cast 到 float32</strong>，<strong>路由计算在 float32 里做</strong>，<strong>函数末尾把 dispatch/combine 张量 cast 回 bfloat16</strong>。结果——<strong>近乎 bfloat16 的速度 + float32 的训练稳定性</strong>。</p>
+</div>
+
+<div class="body">
+  <p>稀疏专家模型可能引入<strong>普通 Transformer 没有的训练困难</strong>——<strong>硬切换路由决策</strong>每层都做，<strong>可能造成不稳定</strong>。低精度格式 <strong>bfloat16</strong> 在路由 softmax 计算里会<strong>加剧问题</strong>。</p>
+
+  <p>GShard（Lepikhin 2020）的解法——<strong>整个 MoE Transformer 都用 float32 训练</strong>。但 float32 比 bfloat16<strong>慢、占内存大、跨设备通信成本高</strong>。</p>
+
+  <p>Switch 的解法——<strong>选择性精度</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>我们展示——<br>通过<strong>在模型的<em>局部</em>部分选择性 cast 到 float32 精度</strong>，<br>稳定性可以达成——<br><strong>而不付出<em>float32 张量跨设备通信</em>的昂贵成本</strong>。</p>
+  <div class="src">— SELECTIVE PRECISION</div>
+</div>
+
+<div class="body">
+  <p>具体做法——<strong>把路由器输入 cast 到 float32</strong>。路由函数接收 token，产生<strong>"dispatch 和 combine 张量"</strong>用于专家计算的选择和重组。<strong>float32 精度只在路由函数<em>内部</em>使用——在本地设备上的计算</strong>。</p>
+
+  <p>因为<strong>函数末尾</strong>，dispatch 和 combine 张量被<strong>cast 回 bfloat16</strong>——<strong>不需要昂贵的 float32 张量跨设备通信</strong>。</p>
+
+  <p>结果——<strong>"接近 bfloat16 的速度 + float32 的训练稳定性"</strong>。</p>
+
+  <p>这是 Switch 的关键工程贡献——<strong>稀疏模型第一次可以稳定地用 bfloat16 训练</strong>。这<strong>解锁了万亿参数</strong>——因为<strong>float32 训练万亿参数太贵</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · SCALING</div>
+  <h2>扩展性质 · 7 倍预训练加速</h2>
+  <div class="en-title">7x pretraining speedup</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Switch 在 C4（Colossal Clean Crawled Corpus）上做 mask LM 预训练。<strong>Switch vs T5（dense）头对头比较</strong>——同样 FLOPs/token、同样硬件、同样训练步数。三大发现——<strong>(1) Switch 在速度-质量上同时打败 dense 和 MoE Transformer</strong>；<strong>(2) Switch 计算占用比 MoE 小</strong>；<strong>(3) Switch 在低容量因子（1.0, 1.25）下表现更好</strong>——更适合<strong>大模型内存稀缺的场景</strong>。<strong>Switch-Base 1.0 容量因子达到质量阈值用 62.8 小时，T5-Large 用 131.1 小时——2 倍快</strong>。在 mT5 baseline 上 <strong>91% 的 101 个语言</strong>得到<strong>4x+ 加速</strong>。</p>
+  <div class="terms">
+    <span class="tag">7x Speedup</span>
+    <span class="tag">101 Languages</span>
+    <span class="tag">91% with 4x+ gain</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Switch Transformer 的第一个测试——在 <strong>C4（Colossal Clean Crawled Corpus）</strong> 上做<strong>mask LM 预训练</strong>。用<strong>负对数 perplexity</strong>作为指标。</p>
+
+  <p>Switch vs MoE Transformer 头对头比较 (Table 1)——</p>
+</div>
+
+<table>
+  <thead>
+    <tr><th>模型</th><th>容量因子</th><th>100k 步质量 ↑</th><th>到质量阈值 -1.50 时间 ↓</th><th>速度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>T5-Base</td><td>—</td><td>-1.731</td><td>未达到</td><td>1600</td></tr>
+    <tr><td>T5-Large</td><td>—</td><td>-1.550</td><td>131.1 h</td><td>470</td></tr>
+    <tr><td>MoE-Base</td><td>1.0</td><td>-1.572</td><td>80.1 h</td><td>860</td></tr>
+    <tr><td><strong>Switch-Base</strong></td><td><strong>1.0</strong></td><td><strong>-1.561</strong></td><td><strong>62.8 h</strong></td><td><strong>1000</strong></td></tr>
+    <tr><td>Switch-Base+</td><td>1.0</td><td>-1.534</td><td>67.6 h</td><td>780</td></tr>
+  </tbody>
+</table>
+
+<div class="body">
+  <p>三大发现——</p>
+
+  <p><strong>(1) Switch 在速度-质量上同时打败 dense 和 MoE</strong>——固定计算和时间，Switch 取得最好结果。</p>
+
+  <p><strong>(2) Switch 计算占用比 MoE 小</strong>——把 Switch 扩大到匹配 MoE 训练速度时（Switch-Base+），<strong>每步基础上也击败所有 MoE 和 Dense</strong>。</p>
+
+  <p><strong>(3) Switch 在低容量因子（1.0, 1.25）下更好</strong>——更适合<strong>大模型内存稀缺的场景</strong>。</p>
+
+  <p>论文还测了<strong>多语言学习</strong>——在 <strong>101 个语言</strong>上和 mT5-Base 对比。<strong>所有 101 个语言都得到普遍提升</strong>。<strong>91% 的语言在 mT5 baseline 上得到 4x+ 加速</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · DISTILLATION</div>
+  <h2>蒸馏 · 99% 压缩，30% 增益保留</h2>
+  <div class="en-title">Distillation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Switch 论文做了一件让我读完后惊讶的事——把<strong>稀疏预训练 + 专门化微调</strong>的模型<strong>成功蒸馏</strong>到<strong>小 dense 模型</strong>。"<strong>模型大小减少最多 99%，同时保留大稀疏教师 30% 的质量增益</strong>"。这是<strong>"训练用 MoE，推理用 dense"</strong>的有趣范式——<strong>训练时用稀疏的便宜容量，推理时用 dense 的部署简便</strong>。这给<strong>边缘部署、移动设备</strong>开了一条路。</p>
+  <div class="terms">
+    <span class="tag">99% Compression</span>
+    <span class="tag">30% Gain Preserved</span>
+    <span class="tag">Sparse → Dense</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Switch 论文做了一件让我特别注意的事——<strong>蒸馏</strong>。</p>
+
+  <p>大稀疏模型有部署难题——<strong>万亿参数不适合每台设备都装一份</strong>。蒸馏可以解决——</p>
+</div>
+
+<div class="quote">
+  <p>我们<strong>成功蒸馏稀疏预训练模型和专门化微调模型</strong>——<br>到<strong>小 dense 模型</strong>。<br><br>我们<strong>把模型大小最多减少 99%</strong>——<br>同时<strong>保留大稀疏教师 30% 的质量增益</strong>。</p>
+  <div class="src">— SWITCH TRANSFORMER DISTILLATION</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>"训练用稀疏，推理用 dense"</strong>的<strong>新范式</strong>——</p>
+
+  <p>· <strong>训练时</strong>——用 Switch 的便宜容量训出一个大稀疏模型<br>
+  · <strong>蒸馏时</strong>——把它的知识压缩到小 dense 模型<br>
+  · <strong>推理时</strong>——只部署 dense 模型——<strong>每台设备都能跑</strong></p>
+
+  <p>"30% 质量增益保留"听起来不多——但<strong>对于 99% 压缩比来说是巨大的</strong>。例如——如果大稀疏模型比 dense baseline 提升 100%，那压缩后的小模型保留 30%——<strong>仍然显著好于原始 dense baseline</strong>。</p>
+
+  <p>这给<strong>边缘部署、移动设备、低延迟服务</strong>开了一条路。"<strong>训练用云，推理用本地</strong>"——这个范式后来被很多 LLM 工作借鉴。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · TRILLION</div>
+  <h2>万亿参数 · 4 倍快过 T5-XXL</h2>
+  <div class="en-title">Trillion-parameter Switch</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文最后展示<strong>万亿参数 Switch Transformer</strong>。结合<strong>数据并行 + 模型并行 + 专家并行</strong>三种并行——达到约 <strong>1 万亿参数</strong>。在 <strong>C4 上预训练</strong>——<strong>对比 T5-XXL 强基线（11 billion 参数 dense）</strong>——<strong>同时间到同质量阈值，Switch 快 4 倍</strong>。这是 MoE 谱系里的<strong>里程碑</strong>——<strong>稀疏激活模型第一次达到"参数千万亿级别"</strong>。<strong>从 1991 的几个专家到 2021 的万亿参数——30 年——MoE 完成了从"小众思想"到"前沿 LLM 必备"的完整转变</strong>。</p>
+  <div class="terms">
+    <span class="tag">~1 Trillion Params</span>
+    <span class="tag">4x faster than T5-XXL</span>
+    <span class="tag">3-way Parallelism</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文最后一节展示<strong>万亿参数 Switch Transformer</strong>——<strong>"把神经语言模型的规模又推进一步"</strong>。</p>
+
+  <p>结合三种并行——</p>
+
+  <p>· <strong>数据并行</strong>——多设备处理不同 batch<br>
+  · <strong>模型并行</strong>——一个层切到多设备<br>
+  · <strong>专家并行</strong>——不同专家放不同设备</p>
+
+  <p>组合让模型规模达到约 <strong>1 万亿参数</strong>。</p>
+
+  <p>实验——<strong>vs T5-XXL（11 billion 参数 dense）</strong>——在 C4 上预训练。结果——<strong>同时间到同质量阈值，Switch 比 T5-XXL 快 4 倍</strong>。</p>
+
+  <p>这是 MoE 谱系里的<strong>里程碑</strong>——稀疏激活模型<strong>第一次正式达到"参数万亿级"</strong>。</p>
+
+  <p>从<strong>1991 的几个专家</strong>到<strong>2017 的 137B 参数</strong>到<strong>2021 的万亿参数</strong>——<strong>30 年里 MoE 完成了从"小众思想"到"前沿 LLM 必备"的完整转变</strong>。</p>
+
+  <p>Switch 之后——<strong>2021 GLaM（Google 1.2T MoE LLM）</strong>、<strong>2023 GPT-4（被广泛认为是 MoE）</strong>、<strong>2024 Mixtral 8x7B（第一个流行开源 MoE）</strong>——每一个都<strong>建立在 Switch 奠定的工程范式上</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>2021 年 1 月——<br><strong>Switch Transformer 第一次达到万亿参数</strong>。<br><br>2024 年——<br><strong>Mixtral 8x7B 把同样的范式开源给所有人</strong>。<br><br>2017 年的 Noam Shazeer——<br>2021 年的 Fedus + Zoph + Shazeer——<br>1991 年的 Jacobs + Jordan + Hinton——<br><br><strong>34 年——同一个想法的进化</strong>。</p>
+  <div class="src">— THE MOE LINEAGE</div>
+</div>
+
+<div class="footer">
+  <div class="brand">JMLR 2022 · GOOGLE</div>
+  <div>Switch Transformers · 中文版精校</div>
+  <div class="meta">原文：Fedus · Zoph · Shazeer · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/moe-switch</div>
+</div>
+
+</div>
+</body>
+</html>
