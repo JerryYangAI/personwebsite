@@ -33,4 +33,653 @@
   .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
   .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
   @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
-  PLACEHOLDER_ABORTED_TOO_RISKY
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:28px 0;}
+  .stat-card{background:#fff;border:1px solid var(--light-gray);border-radius:10px;padding:18px 20px;}
+  .stat-card .num{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--blue);letter-spacing:-1px;line-height:1.1;}
+  .stat-card .lbl{font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#5a5854;margin-top:4px;letter-spacing:.5px;}
+  @media (max-width:480px){.stat-grid{grid-template-columns:1fr;}}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  table{border-collapse:collapse;width:100%;margin:20px 0;font-family:'Poppins',Arial,sans-serif;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--light-gray);}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--light-gray);vertical-align:top;}
+  th{background:#fbf9f2;color:var(--dark);font-weight:600;}
+  td{color:#3a3937;}
+  tr:last-child td{border-bottom:none;}
+  code{font-family:'JetBrains Mono','Menlo',monospace;font-size:.92em;background:#f4f2eb;padding:1px 6px;border-radius:4px;color:var(--dark);}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">ARXIV 2604 · MBZUAI · 2026/04</div>
+  <h1>深入 Claude Code<br>今天和未来 AI 智能体的设计空间</h1>
+  <div class="subtitle-en">Dive into Claude Code · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Liu / Zhao / Shang / Shen · MBZUAI</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 10 章 · 约 40 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 4 月，<strong>MBZUAI（穆罕默德·本·扎耶德人工智能大学）VILA Lab</strong> 的 Liu、Zhao、Shang、Shen 四位研究者发表了一篇 46 页的论文——<strong>对 Claude Code 公开的 TypeScript 源码做了一次系统的"逆向架构考古"</strong>。这是<strong>第一次有学术团队认真读完 Anthropic 这款 agentic coding 工具的源码，并把它的设计哲学完整拆解</strong>。研究识别出 <strong>5 个人类价值观</strong>（决策权、安全、可靠执行、能力放大、上下文适应）→ <strong>13 个设计原则</strong> → <strong>具体实现选择</strong>的清晰链条。核心发现震撼——<strong>真正"AI 决策逻辑"只占代码的 1.6%</strong>，剩下 <strong>98.4% 都是围绕一个简单的 while 循环</strong>构建的<strong>权限系统、5 层压缩管道、4 种扩展机制、子代理委托、append-only 持久化</strong>。本文是这篇论文的中文精校版——读完你就理解了"<strong>AI 代理软件工程</strong>"今天和未来的全貌。</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 一次源码级的考古<br><span class="en">Source-level archaeology</span></a></li>
+    <li><a href="#ch2">5 个人类价值观 · 设计的源头<br><span class="en">5 human values</span></a></li>
+    <li><a href="#ch3">13 个设计原则 · 把价值翻译成代码<br><span class="en">13 design principles</span></a></li>
+    <li><a href="#ch4">7 组件 + 5 层架构 · 系统骨架<br><span class="en">7 components, 5 layers</span></a></li>
+    <li><a href="#ch5">Query Loop · 一个简单的 while 循环<br><span class="en">The simple while loop</span></a></li>
+    <li><a href="#ch6">权限系统 · Deny-first + 7 种模式<br><span class="en">Permission system</span></a></li>
+    <li><a href="#ch7">5 层压缩管道 · Context 的稀缺艺术<br><span class="en">5-layer compaction pipeline</span></a></li>
+    <li><a href="#ch8">可扩展性 · MCP / 插件 / 技能 / Hooks<br><span class="en">Four extensibility mechanisms</span></a></li>
+    <li><a href="#ch9">Subagent + 持久化 · 隔离与可恢复<br><span class="en">Subagents & persistence</span></a></li>
+    <li><a href="#ch10">6 个开放方向 + 一份长期之问<br><span class="en">Open directions</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 一次源码级的考古</h2>
+  <div class="en-title">Source-level archaeology</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>2026 年 4 月，<strong>MBZUAI</strong>（穆罕默德·本·扎耶德人工智能大学，阿联酋阿布扎比的顶级 AI 研究机构）的 <strong>VILA Lab</strong> 四位研究者，做了一件之前没人系统做过的事——<strong>读完 Claude Code v2.1.88 公开的 TypeScript 源代码</strong>，把它的<strong>架构设计哲学</strong>完整反向工程出来。论文不在 NeurIPS 不在 ICML——在 arXiv，编号 <code>2604.14228v1</code>。但<strong>对今天每一个想理解 AI Agent 系统的工程师来说</strong>，它<strong>可能比那些会议论文都重要</strong>。Anthropic 自己有面向用户的文档，但<strong>没有架构级文档</strong>——MBZUAI 团队把这个空白填上了。</p>
+  <div class="terms">
+    <span class="tag">MBZUAI VILA Lab</span>
+    <span class="tag">arXiv 2604.14228</span>
+    <span class="tag">TypeScript Source</span>
+    <span class="tag">v2.1.88</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 4 月 14 日，<strong>Jiacheng Liu、Xiaohan Zhao、Xinyi Shang、Zhiqiang Shen</strong> 四位研究者（前三位在 <strong>MBZUAI VILA Lab</strong>，第三位同时在 <strong>UCL</strong>）在 arXiv 上传了一篇 46 页的论文——《<em>Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems</em>》。</p>
+
+  <p>论文的目的非常明确——</p>
+</div>
+
+<div class="quote">
+  <p>Claude Code 是一个 <strong>agentic coding tool</strong>——<br>能<strong>代表用户运行 shell 命令、编辑文件、调用外部服务</strong>。<br><br>本研究通过<strong>分析公开的 TypeScript 源代码</strong>，<br>描述其<strong>全面的架构</strong>——<br><br>并和 <strong>OpenClaw</strong>（一个独立开源 AI agent 系统）对比，<br>展示<strong>同样的设计问题在不同部署语境下产生不同的架构答案</strong>。</p>
+  <div class="src">— LIU, ZHAO, SHANG, SHEN · MBZUAI · 2026/04</div>
+</div>
+
+<div class="body">
+  <p>这项工作做了两件以前没人做过的事——</p>
+
+  <p><strong>第一</strong>——<strong>用源码级证据</strong>说明 Anthropic 的架构选择，<strong>而不是从产品描述推断</strong>。Anthropic 自己有面向用户的文档（<code>code.claude.com/docs</code>），但<strong>没有公开的架构文档</strong>。</p>
+
+  <p><strong>第二</strong>——把 Claude Code 跟 <strong>OpenClaw</strong>（一个多通道个人助理网关）做<strong>架构对比</strong>——展示<strong>同样的设计问题在不同部署语境下产生不同答案</strong>——商业 vs 开源、CLI vs 网关、per-action 安全 vs 边界访问控制。</p>
+
+  <p>论文里有一个让我读完后停了很久的数字——</p>
+</div>
+
+<div class="quote">
+  <p>社区对提取源码的分析估算——<br><strong>只有大约 1.6% 的 Claude Code 代码库构成"AI 决策逻辑"</strong>，<br><strong>剩下 98.4% 是<em>运营基础设施</em></strong>——<br><br>这个比例说明<strong>核心 agent 推理层多薄</strong>。</p>
+  <div class="src">— DIVE INTO CLAUDE CODE</div>
+</div>
+
+<div class="body">
+  <p>这件事让我想了一下——<strong>"我们一直以为 AI Agent 是 AI"——但事实是 98.4% 是软件工程</strong>。Claude Code 的强大不在于"决策逻辑写得多巧妙"——<strong>在于围绕一个简单 while 循环构建的<em>极其复杂的工程脚手架</em></strong>——权限、压缩、扩展、委托、持久化。</p>
+
+  <p>论文还引用了 <strong>Anthropic 内部对 132 个工程师和研究员的调查</strong>（Huang et al., 2025）——发现<strong>大约 27% 的 Claude Code 辅助任务是"没有这个工具就不会被尝试的工作"</strong>。这说明 Claude Code 的架构<strong>使能了质的新工作流</strong>——而<strong>不只是加速已有的</strong>。</p>
+
+  <p>论文承接的<strong>"运行示例"</strong>很简单——把"<strong>Fix the failing test in auth.test.ts</strong>"这一个用户请求<strong>从第 3 节追到第 9 节</strong>——看它如何<strong>激活多个架构层</strong>。这种"追踪"式的写作让 46 页变得非常具体。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · VALUES</div>
+  <h2>5 个人类价值观 · 设计的源头</h2>
+  <div class="en-title">5 human values</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>MBZUAI 团队的论文写法非常人本——<strong>"production coding agents are built by humans, for humans"</strong>——架构决策反映创造者认为什么重要。Anthropic 在 <strong>"Safe Agent Framework"</strong> 里写下核心张力——<strong>"Agent 必须能自主工作；其独立运作正是它有价值的原因。但人类应保留对'目标如何被追求'的控制"</strong>。Claude 的宪法不是用刚性决策程序解决这个张力，而是培养<strong>"可以情境化应用的良好判断和健全价值观"</strong>。论文识别 <strong>5 个塑造架构的人类价值观</strong>——<strong>Authority、Safety、Reliability、Capability、Adaptability</strong>。</p>
+  <div class="terms">
+    <span class="tag">Authority</span>
+    <span class="tag">Safety</span>
+    <span class="tag">Reliability</span>
+    <span class="tag">Capability</span>
+    <span class="tag">Adaptability</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文第 2 节是<strong>整篇论文的灵魂</strong>——它<strong>不直接讲技术</strong>，而是先把<strong>"为什么这样设计"</strong>讲清楚。这是一种非常少见的论文写法——<strong>从价值观开始</strong>。</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 5 个人类价值观</div>
+  <ul>
+    <li><strong>(1) Human Decision Authority 人类决策权</strong>——人类保留对系统行为的<strong>最终决策权</strong>。组织成<strong>"principal hierarchy"</strong>——Anthropic → operators → users——形式化"谁对什么有权"。系统让人类能<strong>实时观察、批准/拒绝、中断兼容操作、事后审计</strong>。Anthropic 发现用户对 93% 的权限提示都批准——回应不是加更多警告，而是<strong>重构问题</strong>——定义"<strong>沙箱、自动模式分类器</strong>"等边界，<strong>而不是 per-action 批准</strong>（用户被习惯后就不再审视）。</li>
+    <li><strong>(2) Safety, Security, Privacy 安全、保密、隐私</strong>——系统保护人类、代码、数据、基础设施<strong>免受伤害</strong>——<strong>即使人类不专心或犯错</strong>。这跟 Authority 不同——<strong>Authority 是关于人的"权力"</strong>，<strong>Safety 是关于系统的"义务"</strong>。Auto-mode 威胁模型明确针对四类风险——<strong>过度积极、诚实失误、prompt injection、模型不对齐</strong>。</li>
+    <li><strong>(3) Reliable Execution 可靠执行</strong>——agent <strong>做用户真正想做的事</strong>，<strong>跨时间保持一致</strong>，<strong>支持验证</strong>。涵盖<strong>单轮正确性</strong>和<strong>长期可靠性</strong>。Anthropic 的三阶段循环——<strong>gather context, take action, verify results</strong>——重复直到任务完成。Harness 设计指南指出——"<strong>agents 倾向于自信地赞美自己的工作</strong>"，所以需要<strong>分离"生成"和"评估"</strong>。</li>
+    <li><strong>(4) Capability Amplification 能力放大</strong>——系统<strong>显著增加每单位努力和成本能做的事</strong>。27% 的任务是"<strong>没这工具不会做的</strong>"——意味着架构<strong>使能新工作流而非加速旧的</strong>。系统被创造者描述为<strong>"Unix utility 而非传统产品"</strong>——由<strong>最小化、可理解、可扩展的构建块</strong>构成。架构<strong>投资在"确定性基础设施"</strong>（上下文管理、工具路由、恢复）<strong>而不是"决策脚手架"</strong>（显式规划器、状态图）——基于"<strong>越能干的模型越受益于丰富的运营环境，而不是约束选择的框架</strong>"。</li>
+    <li><strong>(5) Contextual Adaptability 上下文适应</strong>——系统<strong>适应用户的具体语境</strong>（项目、工具、惯例、技能水平），<strong>关系随时间改善</strong>。扩展架构（CLAUDE.md、skills、MCP、hooks、plugins）在<strong>多个 context-cost 层级</strong>提供可配置性。纵向数据显示——<strong>自动批准率从 &lt;50 session 时的 20% 涨到 750 session 时的 40%+</strong>——<strong>"autonomy is co-constructed by the model, the user, and the product"</strong>——系统为<strong>"信任轨迹"</strong>而非<strong>"固定信任状态"</strong>设计。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>这 5 个价值观<strong>不是论文虚构的</strong>——而是论文从<strong>Anthropic 的公开文档、Claude 宪法、内部研究</strong>里抽离出来。最有意思的——<strong>论文还加了一个"评价之镜"</strong>，作为<strong>第 6 个非设计驱动的关注点</strong>——<strong>长期人类能力保留</strong>。Anthropic 的研究发现<strong>"supervision paradox"</strong>——过度依赖 AI 风险<strong>萎缩监督 AI 的技能</strong>。独立研究发现 AI 辅助下开发者<strong>理解测试得分低 17%</strong>。<span class="hl">这件事不是 Anthropic 的设计驱动——但论文坚持把它作为<strong>跨切关注点</strong>来评价</span>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · PRINCIPLES</div>
+  <h2>13 个设计原则 · 把价值翻译成代码</h2>
+  <div class="en-title">13 design principles</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文把 5 个价值观<strong>"操作化"</strong>成 <strong>13 个设计原则</strong>——每一个都<strong>回答一个 production coding agent 必须解决的反复出现的问题</strong>。最关键的几个——<strong>Deny-first + 人类升级</strong>（不识别的动作被拒/问，而不是允许）；<strong>渐进信任谱系</strong>（不是固定权限，而是用户随时间走的频谱）；<strong>分层防御</strong>（不是单一安全边界，而是多重重叠机制）；<strong>外部化可编程策略</strong>（不硬编码，而是配置 + 生命周期 hooks）；<strong>把 context 当作稀缺资源 + 渐进管理</strong>（不是一次性截断，而是分级管道）；<strong>append-only 持久状态</strong>（不可变 + 可审计）；<strong>最小脚手架 + 最大运营 harness</strong>（不投资规划器，投资基础设施）；<strong>价值观高于规则</strong>（不刚性程序，而是情境判断 + 确定性 guardrail）。</p>
+  <div class="terms">
+    <span class="tag">Deny-first</span>
+    <span class="tag">Defense in Depth</span>
+    <span class="tag">Reversibility-weighted Risk</span>
+    <span class="tag">Values over Rules</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文用一张表把 13 个原则、它们服务的价值观、它们回答的设计问题列出来。我挑几个最关键的——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚙️ 核心设计原则（节选）</div>
+  <ul>
+    <li><strong>Deny-first with human escalation</strong>——不识别的动作<strong>拒绝或问</strong>，而不是<strong>静默允许</strong>。Deny 规则覆盖 Allow 规则。</li>
+    <li><strong>Graduated trust spectrum</strong>——不是固定权限层级，而是<strong>用户随时间穿越的信任频谱</strong>——从全人工批准到 auto-mode。</li>
+    <li><strong>Defense in depth with layered mechanisms</strong>——不是单一安全边界，而是<strong>多个用不同技术的重叠机制</strong>——permission rules、PreToolUse hooks、auto-mode classifier、shell sandbox。任何一个都能阻止动作。</li>
+    <li><strong>Externalized programmable policy</strong>——不硬编码策略，而是<strong>外部配置 + 生命周期 hooks</strong>——CLAUDE.md、settings.json、hooks 等。</li>
+    <li><strong>Context as scarce resource with progressive management</strong>——把上下文窗口看作<strong>"binding resource constraint"</strong>——单次截断 → 渐进管道（5 层）。</li>
+    <li><strong>Append-only durable state</strong>——不可变状态、不快照、不日志——而是<strong>"只追加日志"</strong>。可审计 + 不丢失。</li>
+    <li><strong>Minimal scaffolding, maximal operational harness</strong>——不投资"scaffolding 端"的推理（显式规划器、状态图），<strong>投资"运营基础设施"</strong>——让模型自由推理。<strong>1.6% vs 98.4% 的比例</strong>就是这个原则的具体体现。</li>
+    <li><strong>Values over rules</strong>——不用刚性决策程序，而是<strong>"情境判断 + 确定性 guardrails"</strong>。这是 Claude 宪法的核心精神。</li>
+    <li><strong>Reversibility-weighted risk assessment</strong>——不对所有动作同样监督——<strong>可逆和只读的动作监督更轻</strong>。读文件不批准、写文件需要批准。</li>
+    <li><strong>Isolated subagent boundaries</strong>——subagent <strong>不共享父的上下文和权限</strong>，<strong>在隔离里运行</strong>，只返回 summary。</li>
+    <li><strong>Graceful recovery and resilience</strong>——错误<strong>不硬失败</strong>，<strong>静默恢复</strong>，把人类注意力<strong>留给不可恢复的情况</strong>。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>论文把这套原则放到<strong>三大对手设计家族</strong>里对比——</p>
+
+  <p><strong>第一</strong>——<strong>rule-based orchestration</strong>（如 LangGraph）——把决策逻辑编码为<strong>显式状态图 + 类型化边</strong>——<strong>选 scaffolding 而非 minimal harness</strong>。</p>
+
+  <p><strong>第二</strong>——<strong>container-isolated execution</strong>（如 SWE-Agent、OpenHands）——依赖 <strong>Docker 隔离</strong>而非<strong>分层策略执行</strong>。</p>
+
+  <p><strong>第三</strong>——<strong>version-control-as-safety</strong>（如 Aider）——用 <strong>Git rollback</strong> 作为主要安全机制而非 deny-first 评估。</p>
+
+  <p>Claude Code 的原则集<strong>独特之处</strong>——<strong>"minimal decision scaffolding + 分层策略执行 + values-based 判断 + deny-first defaults + 渐进 context 管理 + 可组合 extensibility"</strong>的组合。<strong>每一项单独都不新，组合起来是独特的"设计点"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · ARCHITECTURE</div>
+  <h2>7 组件 + 5 层架构 · 系统骨架</h2>
+  <div class="en-title">7 components, 5 layers</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文给出两个层次的架构图。<strong>高层 7 组件</strong>——<strong>User → Interfaces → Agent Loop → Permission System → Tools → State & Persistence → Execution Environment</strong>。所有交互入口（交互 CLI、headless CLI <code>claude -p</code>、Agent SDK、IDE）<strong>汇聚到同一个 agent loop</strong>——只有渲染层不同。<strong>5 层子系统</strong>——<strong>Surface（入口和渲染）+ Core（agent loop + 压缩管道）+ Safety/Action（权限 + hooks + 扩展 + 工具 + sandbox + subagent）+ State（context assembly + session persistence + CLAUDE.md）+ Backend（执行后端 + 外部资源）</strong>。重要的"安全 by default"通过 <strong>7 层独立保护</strong>实现——<strong>工具 pre-filter、deny-first rule、permission mode、auto-mode classifier、shell sandbox、不在 resume 时恢复 permission、hook 拦截</strong>。任一层都能阻断请求。</p>
+  <div class="terms">
+    <span class="tag">7 Components</span>
+    <span class="tag">5 Subsystem Layers</span>
+    <span class="tag">7-layer Safety</span>
+    <span class="tag">54 Built-in Tools</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文给出<strong>两层架构图</strong>。先是<strong>高层 7 组件</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🏗️ 7 组件高层结构</div>
+  <ul>
+    <li><strong>(1) User</strong>——提交 prompt、批准权限、审查输出</li>
+    <li><strong>(2) Interfaces</strong>——Interactive CLI、Headless CLI（<code>claude -p</code>）、Agent SDK、IDE/Desktop/Browser。<strong>所有 surface 都汇聚到同一个 agent loop</strong>。</li>
+    <li><strong>(3) Agent Loop</strong>——迭代式的"模型调用 + 工具派发 + 结果收集"循环——实现为 <code>query.ts</code> 里的 <code>queryLoop()</code> async generator</li>
+    <li><strong>(4) Permission System</strong>——Deny-first rule 评估（<code>permissions.ts</code>）、auto-mode ML classifier、hook 拦截</li>
+    <li><strong>(5) Tools</strong>——<strong>多达 54 个内置工具</strong>（19 个无条件、35 个条件激活）+ MCP 工具，通过 <code>assembleToolPool()</code> 组装</li>
+    <li><strong>(6) State &amp; Persistence</strong>——主要 append-only 的 JSONL session 转录（<code>sessionStorage.ts</code>）、global prompt history、subagent sidechain 文件</li>
+    <li><strong>(7) Execution Environment</strong>——shell 执行（可选 sandbox）、文件系统操作、网页获取、MCP server 连接、远程执行</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>注意——<strong>所有交互入口都汇聚到同一个 agent loop</strong>，<strong>只有渲染和用户交互层不同</strong>。这是 Claude Code 架构最优雅的地方——<strong>"a single queryLoop() function executes regardless of whether the user is interacting through an interactive terminal, a headless CLI, the Agent SDK, or an IDE integration"</strong>。</p>
+
+  <p>论文接着展开<strong>5 层子系统架构</strong>——</p>
+
+  <p>· <strong>Surface 层</strong>——入口点 + 渲染。<code>src/entrypoints/</code> 启动路径 + <code>src/screens/</code> 全屏布局 + <code>src/components/</code> 基于 <code>ink</code> 框架的终端 UI<br>
+  · <strong>Core 层</strong>——<code>queryLoop()</code> async generator + 5 层压缩管道<br>
+  · <strong>Safety/Action 层</strong>——权限系统（7 模式 + auto-mode classifier）+ hook 管道（<strong>27 个事件类型</strong>，其中 5 个安全相关，22 个生命周期/编排）+ 扩展子系统 + 工具池 + shell sandbox + subagent spawn<br>
+  · <strong>State 层</strong>——context assembly + 运行时状态 + session persistence + CLAUDE.md + sidechain<br>
+  · <strong>Backend 层</strong>——执行后端（BashTool、PowerShellTool）+ 远程执行（<code>src/remote/</code>）+ <strong>MCP 多种传输</strong>（stdio、SSE、HTTP、WebSocket、SDK、IDE 适配器）+ <strong>42 个工具子目录</strong></p>
+</div>
+
+<div class="intuit">
+  <div class="label">🛡️ 7 层独立安全</div>
+  <p>"safety-by-default"通过 <strong>7 层独立保护</strong>实现——<strong>请求必须通过所有适用层，任一层能阻断</strong>——</p>
+  <ul>
+    <li><strong>(1) Tool pre-filtering</strong>——彻底拒绝的工具在<strong>模型看到之前</strong>就移除</li>
+    <li><strong>(2) Deny-first rule 评估</strong>——Deny 规则<strong>始终</strong>优先于 Allow 规则</li>
+    <li><strong>(3) Permission mode 约束</strong>——activated mode 决定<strong>未匹配规则的请求的基线处理</strong></li>
+    <li><strong>(4) Auto-mode classifier</strong>——ML 基础的 classifier 评估工具安全，<strong>可能拒绝 rule 系统允许的请求</strong></li>
+    <li><strong>(5) Shell sandboxing</strong>——批准的 shell 命令<strong>仍可能在 sandbox 里执行</strong>——限制文件系统和网络访问</li>
+    <li><strong>(6) Resume 时不恢复 permission</strong>——session-scoped 权限<strong>不在 resume/fork 时恢复</strong>——避免遗留权限被复用</li>
+    <li><strong>(7) Hook-based interception</strong>——PreToolUse hooks 可<strong>修改权限决策</strong>；PermissionRequest hooks 可异步解析决策</li>
+  </ul>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · QUERY LOOP</div>
+  <h2>Query Loop · 一个简单的 while 循环</h2>
+  <div class="en-title">The simple while loop</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>整个 Claude Code 的<strong>核心算法极其简单</strong>——一个 <code>queryLoop()</code> async generator 实现的 <strong>while-true 循环</strong>——每一轮做<strong>"设置解析 → 状态初始化 → context 组装 → 5 个 pre-model shapers → 模型调用 → 工具派发 → 权限检查 → 工具执行 → 收集结果 → 停止判断"</strong>。论文说——"<strong>The reactive design trades search completeness for simplicity and latency: each turn commits to one action sequence without backtracking</strong>"——这个反应式设计<strong>用搜索完备性换取简单性和低延迟</strong>——每一轮只承诺一个动作序列，<strong>不回溯</strong>。这是 ReAct 模式的工业化实现。工具调度可<strong>并行执行只读工具</strong>，<strong>串行执行状态修改工具</strong>。</p>
+  <div class="terms">
+    <span class="tag">queryLoop()</span>
+    <span class="tag">ReAct Pattern</span>
+    <span class="tag">StreamingToolExecutor</span>
+    <span class="tag">7 Continue Sites</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>论文用<strong>"Fix the failing test in auth.test.ts"</strong>这个任务追踪——它进入<strong>反应式循环</strong>——一个 production coding agent 可选的<strong>多种编排模式</strong>之一。</p>
+
+  <p>论文写下整个 query pipeline 每一轮的<strong>固定 9 步</strong>——</p>
+
+  <p><strong>1. Settings resolution</strong>——<code>queryLoop()</code> 解构不可变参数——system prompt、user context、permission callback、model config<br>
+  <strong>2. Mutable state initialization</strong>——单个 <code>State</code> 对象存所有可变状态——messages、tool context、compaction tracking、recovery counters。循环的 <strong>7 个 continue site</strong>（"continue sites"）每个都<strong>整体覆盖此对象</strong>而非逐字段修改<br>
+  <strong>3. Context assembly</strong>——<code>getMessagesAfterCompactBoundary()</code> 从最后 compact boundary 向前取消息，<strong>确保压缩内容由 summary 代表而非原始消息</strong><br>
+  <strong>4. Pre-model context shapers</strong>——5 个 shapers 顺序执行（第 7 章详述）<br>
+  <strong>5. Model call</strong>——<code>for await</code> 流式接收响应——包括 thinking 配置、可用工具集、abort signal、模型规格、fast-mode 设置、effort 值、fallback model<br>
+  <strong>6. Tool-use dispatch</strong>——如果响应包含 <code>tool_use</code> blocks，流到工具编排层<br>
+  <strong>7. Permission gate</strong>——每个工具请求过权限系统<br>
+  <strong>8. Tool execution + result collection</strong>——工具结果作为 <code>tool_result</code> 加到对话<br>
+  <strong>9. Stop condition</strong>——响应不含 <code>tool_use</code>（仅文本），<strong>turn 结束</strong></p>
+
+  <p><strong>这就是整个 Claude Code 的"决策大脑"</strong>。看起来太简单——但论文指出——</p>
+</div>
+
+<div class="quote">
+  <p>反应式设计<strong>用搜索完备性换取<em>简单性和低延迟</em></strong>——<br>每一轮<strong>承诺一个动作序列</strong>，<br><strong>不回溯</strong>。</p>
+  <div class="src">— THE QUERY LOOP DESIGN TRADEOFF</div>
+</div>
+
+<div class="body">
+  <p>Claude Code 遵循 <strong>ReAct pattern</strong>（Yao 2022）——模型生成推理和工具调用，harness 执行动作，结果喂下一轮。<strong>不像 LangGraph 用显式状态图，不像 LATS 用树搜索探索多条轨迹</strong>。</p>
+
+  <p><strong>工具派发</strong>有两条路径——<strong>StreamingToolExecutor</strong> 和 <strong>runTools()</strong>。两者都分类<strong>"concurrent-safe"</strong>和<strong>"exclusive"</strong>——<strong>只读操作可并行</strong>，<strong>状态修改操作（如 shell）被串行化</strong>。</p>
+
+  <p>StreamingToolExecutor 有<strong>两个协调机制</strong>——</p>
+
+  <p>· <strong>Sibling abort controller</strong>——任何 Bash 工具出错时立即终止<em>其他正在跑的</em>子进程<br>
+  · <strong>Progress-available signal</strong>——新输出就绪时唤醒 <code>getRemainingResults()</code> 消费者</p>
+
+  <p>结果<strong>buffer + 按工具接收顺序 emit</strong>——<strong>哪怕并行执行，输出顺序也保证不变</strong>。这是<strong>"concurrent-read, serial-write"</strong>执行模型——<strong>介于完全串行和激进推测</strong>之间。</p>
+
+  <p>论文还提到<strong>5 类恢复机制</strong>——max output tokens escalation、reactive compaction、prompt-too-long handling、streaming fallback、fallback model——和<strong>5 个 stop 条件</strong>——no tool use、max turns、context overflow、hook intervention、explicit abort。<strong>都是工程上的细节但每一个都关乎"长任务的鲁棒性"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · PERMISSION</div>
+  <h2>权限系统 · Deny-first + 7 种模式</h2>
+  <div class="en-title">Permission system · Deny-first + 7 modes</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>当 Claude 决定执行工具（比如运行 <code>npm test</code> 通过 BashTool 复现 auth 测试失败）——请求进入权限管道。每一次工具调用都<strong>过权限系统</strong>，<strong>默认行为是拒绝或问</strong>，<strong>而不是静默允许</strong>。Anthropic 内部数据显示——<strong>用户对 93% 的 permission 提示都批准</strong>——这暗示<strong>simple per-action approval 失效</strong>。Claude Code 的回应是<strong>"deny-first + 渐进信任"</strong>——deny 规则覆盖 allow，<strong>auto-mode classifier</strong> 让"已建立信任的"自动批准。<strong>7 种权限模式</strong>从 manual 到 auto——配合 <strong>auto-mode threat model</strong>（针对 overeager、honest mistake、prompt injection、misalignment 四类风险）。</p>
+  <div class="terms">
+    <span class="tag">93% Approval Rate</span>
+    <span class="tag">Yolo Classifier</span>
+    <span class="tag">7 Permission Modes</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>当 Claude 决定执行工具——请求进入权限管道。每一次工具调用都<strong>过权限系统</strong>。Anthropic 的<strong>"93% 自动批准率"</strong>现象意义重大——</p>
+</div>
+
+<div class="quote">
+  <p>当 Anthropic 发现<strong>用户批准 93% 的权限提示</strong>时——<br>反应<strong>不是加更多警告</strong>，<br>而是<strong>重构问题</strong>——<br><br>定义<strong>边界</strong>（sandboxing、auto-mode classifier）<br>让 agent 能在边界内自由工作——<br><strong>而不是 per-action 批准</strong>——<br>因为用户被习惯后<strong>会停止审视</strong>。</p>
+  <div class="src">— PERMISSION DESIGN INSIGHT</div>
+</div>
+
+<div class="body">
+  <p>这背后是<strong>很深的人因工程洞察</strong>——<strong>"approval fatigue"</strong>是真实的。Claude Code 的<strong>7 种权限模式</strong>从严到宽——</p>
+
+  <p>· <strong>Manual</strong>——所有需问<br>
+  · <strong>Approve once / always</strong>——批准这次/这类<br>
+  · <strong>Allow list</strong>——预定义允许列表<br>
+  · <strong>Plan mode</strong>——先规划再执行<br>
+  · <strong>Auto-mode</strong>——分类器自动批准<br>
+  · <strong>YOLO</strong>——全部自动（极少推荐）<br>
+  · 还有<strong>内部 <code>bubble</code> 和 feature-gated <code>auto</code></strong></p>
+
+  <p><strong>Auto-mode 的核心</strong>是 <code>yoloClassifier.ts</code>——一个 ML-based 的<strong>两阶段</strong>评估器——<strong>fast filter</strong> 快速判断 + <strong>chain-of-thought 评估</strong>慢但准。它针对的<strong>auto-mode 威胁模型</strong>有 4 类——</p>
+
+  <p>· <strong>Overeager behavior</strong>——agent 过度积极做超出意图的事<br>
+  · <strong>Honest mistakes</strong>——agent 误解请求<br>
+  · <strong>Prompt injection</strong>——外部内容里的恶意指令<br>
+  · <strong>Model misalignment</strong>——模型不对齐</p>
+
+  <p>论文还指出一个关键<strong>原则</strong>——<strong>"reversibility-weighted risk"</strong>——<strong>可逆动作监督轻，不可逆动作监督重</strong>。例如<strong>读文件无须批准、写文件需要批准、删除文件需要双重确认</strong>。</p>
+
+  <p>关键设计——<strong>session-scoped 权限不在 resume 时恢复</strong>。论文写：<strong>这是"故意的安全选择"</strong>——避免遗留权限被复用。即使你昨天对 <code>rm -rf node_modules</code> 说了 "always allow"，<strong>今天 resume session 后还得重新批准</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · COMPACTION</div>
+  <h2>5 层压缩管道 · Context 的稀缺艺术</h2>
+  <div class="en-title">5-layer compaction pipeline</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文最让我兴奋的一节。Claude Code 把 context window（<strong>老模型 200K、Claude 4.6 系列 1M</strong>）当作<strong>"the binding resource constraint"</strong>——每次模型调用前执行<strong>5 个 context-reduction strategy</strong>。<strong>5 层压缩管道</strong>——<strong>(1) Budget reduction</strong> 单 tool 输出超 size 限制时替换为内容引用；<strong>(2) Snip</strong> 去除老的历史段落；<strong>(3) Microcompact</strong> 细粒度压缩（time-based + 可选 cache-aware）；<strong>(4) Context collapse</strong> 长历史的读时投影；<strong>(5) Auto-compact</strong> 最后手段——调模型生成完整 summary。<strong>每层"成本-收益"不同，早的便宜先跑，贵的最后</strong>。这套设计反驳了<strong>"单次截断"</strong>方案——它<strong>承认不同上下文压力需要不同 strategy</strong>。</p>
+  <div class="terms">
+    <span class="tag">5-Layer Pipeline</span>
+    <span class="tag">1M Context</span>
+    <span class="tag">Budget / Snip / Micro / Collapse / Auto</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Context window 是 Claude Code 架构里被<strong>反复回到的稀缺资源</strong>。<strong>200K → 1M（Claude 4.6）</strong>看起来很大——但 agent 任务（多文件读、多工具调用、长对话）能<strong>很快撑爆</strong>。论文说——</p>
+</div>
+
+<div class="quote">
+  <p>5 层管道<strong>存在</strong>是因为——<br><strong>没有<em>单一</em>压缩策略能解决所有类型的 context 压力</strong>。<br><br>· <strong>Budget reduction</strong> 针对单个 tool 输出溢出 size 限制<br>· <strong>Snip</strong> 处理"<strong>时间深度</strong>"<br>· <strong>Microcompact</strong> 对应 cache overhead<br>· <strong>Context collapse</strong> 管理非常长的历史<br>· <strong>Auto-compact</strong> 作为最后手段做语义压缩<br><br>每一层<strong>不同的成本-收益权衡</strong>——<strong>早、便宜的层先跑，贵的层后跑</strong>。</p>
+  <div class="src">— THE 5-LAYER COMPACTION PIPELINE</div>
+</div>
+
+<div class="body">
+  <p>具体每一层做什么——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">⚙️ 5 层 shapers 详解</div>
+  <ul>
+    <li><strong>(1) Budget reduction</strong> · <code>applyToolResultBudget()</code>——强制 per-message 大小限制，<strong>超大的 tool 输出替换为"content reference"</strong>。豁免工具（<code>maxResultSizeChars</code> 不有限）保留全输出。<strong>替换被持久化</strong>，能在 resume 时重建。</li>
+    <li><strong>(2) Snip</strong> · <code>snipCompactIfNeeded()</code>——<strong>轻量级修剪</strong>，去除老的历史段落。返回 <code>{messages, tokensFreed, boundaryMessage}</code>。<strong>tokensFreed 必须显式 plumb 给 auto-compact</strong>——因为主 token 计数从最近 assistant 消息的 <code>usage</code> 字段衍生，那个消息<strong>带着 pre-snip 的 input_tokens</strong>，snip 的节省<strong>对 counter 不可见</strong>。</li>
+    <li><strong>(3) Microcompact</strong>——<strong>细粒度压缩</strong>。总是跑 time-based 路径，<strong>可选 cache-aware</strong>（<code>CACHED_MICROCOMPACT</code> gated）。cache 路径开时，<strong>boundary message 延迟到 API 响应后</strong>，能用<strong>真实的 <code>cache_deleted_input_tokens</code></strong>而非估算。</li>
+    <li><strong>(4) Context collapse</strong>——<strong>对话历史的"读时投影"</strong>。源码注释——"<strong>Nothing is yielded; the collapsed view is a read-time projection over the REPL's full history</strong>"。<strong>不修改 REPL 存储的历史</strong>——只在 <code>messagesForQuery</code> 数组上替换为投影。模型看到压缩版，<strong>full history 仍可用于重建</strong>。</li>
+    <li><strong>(5) Auto-compact</strong>——<strong>最后手段</strong>。触发<strong>完整 model-generated summary</strong>。仅在 context 在所有前 4 个 shapers 跑完后<strong>仍超 pressure threshold</strong> 时启动。执行 PreCompact hooks → 创建 summary 请求 → 调模型 → 重构对话。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>论文还提到 <strong>context 压力之外的几个工程决定</strong>——</p>
+
+  <p>· <strong>CLAUDE.md lazy loading</strong>——基本 CLAUDE.md 启动时加载，<strong>嵌套目录的指令文件只在 agent 读那些目录的文件时才加载</strong><br>
+  · <strong>Deferred tool schemas</strong>——ToolSearch 开启时，部分工具<strong>只把名字放在初始 context，full schema 按需加载</strong>（<em>就是你正在用的工具！</em>）<br>
+  · <strong>Subagent summary-only return</strong>——subagent 只返回 summary 文本给 parent，<strong>不返回完整对话历史</strong><br>
+  · <strong>Per-tool-result budget</strong>——单个工具结果上限<strong>防止 verbose 输出消耗不成比例的 context</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · EXTENSIBILITY</div>
+  <h2>可扩展性 · MCP / 插件 / 技能 / Hooks</h2>
+  <div class="en-title">Four extensibility mechanisms</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Claude Code <strong>不用单一统一的扩展 API</strong>——而是<strong>4 个不同 context-cost 层级的扩展机制</strong>——<strong>MCP</strong>（外部工具协议，最重）、<strong>Plugins</strong>（可重用包，间接通过 MCP 和 skill/command registry）、<strong>Skills</strong>（按需触发的能力包）、<strong>Hooks</strong>（生命周期钩子，最轻）。这是"<strong>composable multi-mechanism extensibility</strong>"原则的体现——<strong>不同任务用不同 cost 的工具</strong>。MCP 现已捐给 <strong>Linux Foundation 的 Agentic AI Foundation</strong>，成为<strong>de facto 标准</strong>。Hook 系统覆盖 <strong>27 个事件</strong>——其中 <strong>5 个安全相关</strong>、<strong>22 个生命周期/编排</strong>。CLAUDE.md 有<strong>四层指令层级</strong>——从 managed settings 到 directory-specific 文件——加上 <strong>auto-memory</strong>（Claude 在对话中自己写的）。</p>
+  <div class="terms">
+    <span class="tag">MCP</span>
+    <span class="tag">Plugins</span>
+    <span class="tag">Skills</span>
+    <span class="tag">27 Hook Events</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Claude Code 的<strong>扩展架构</strong>是论文最有趣的部分之一。<strong>它没有"一个 unified extension API"</strong>——而是<strong>4 种不同 cost 层级的机制</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🔌 四种扩展机制</div>
+  <ul>
+    <li><strong>(1) MCP（Model Context Protocol）</strong>——<strong>外部工具协议</strong>。Anthropic 在 2024 年发明的开放协议——<strong>2025 年捐给 Linux Foundation 的 Agentic AI Foundation</strong>，已成 de facto 标准。<strong>多种 transport 支持</strong>——<code>stdio、SSE、HTTP、WebSocket、SDK、IDE 适配器</code>。<strong>Hou et al. 2025 把 MCP 服务器编目成 4 个攻击类别 + 16 个场景</strong>——Claude Code 的 deny-rule 和 pre-filter 步骤<strong>就是这个安全研究指出的"运行时缓解"</strong>。</li>
+    <li><strong>(2) Plugins</strong>——可重用包，<strong>间接通过 MCP servers + skill/command registry</strong> 贡献能力。</li>
+    <li><strong>(3) Skills</strong>——按需触发的能力包——<strong>你能看到的 SKILL.md 系统</strong>就是这个。</li>
+    <li><strong>(4) Hooks</strong>——生命周期钩子——<strong>27 个事件类型</strong>。<strong>5 个安全相关</strong>（PreToolUse、PostToolUse 等）+ <strong>22 个生命周期/编排</strong>。Hook 可<strong>block、rewrite、annotate</strong> 工具请求。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>这套<strong>"layered mechanisms at different context costs"</strong>设计的好处——<strong>简单事用便宜机制（hook 或 skill），复杂事用 MCP 全协议</strong>。论文称之为<strong>"composable multi-mechanism extensibility"</strong>原则——<strong>"layered mechanisms at different context costs"</strong>。</p>
+
+  <p>更让我注意的是 <strong>CLAUDE.md 体系</strong>——</p>
+
+  <p>· <strong>四层指令层级</strong>——<strong>managed settings → 全局 user CLAUDE.md → 项目 CLAUDE.md → 目录-specific CLAUDE.md</strong>。<br>
+  · <strong>Auto-memory entries</strong>——Claude 在对话中<strong>自己写入</strong>的记忆（<code>claudemd.ts</code>）。</p>
+
+  <p>论文强调一个原则——<strong>"transparent file-based configuration and memory"</strong>——<strong>不是 opaque 数据库、不是 embedding-based 检索，而是<em>用户可见、可版本控制</em>的文件</strong>。这是 Claude Code 跟<strong>很多"AI memory startup"</strong>截然不同的取向——<strong>把 memory 暴露给人，而不是藏在向量数据库里</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 9 -->
+<div class="chapter" id="ch9">
+  <div class="chapter-num">CHAPTER 09 · SUBAGENT</div>
+  <h2>Subagent + 持久化 · 隔离与可恢复</h2>
+  <div class="en-title">Subagents &amp; persistence</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Claude Code 通过 <strong>AgentTool</strong>（<code>AgentTool.tsx</code>、<code>runAgent.ts</code>）派生 subagent——<strong>跟其他所有工具一样通过 <code>buildTool()</code> factory</strong>。这是"<strong>isolated subagent boundaries</strong>"原则——subagent <strong>不共享父的 context 和权限</strong>，<strong>重新进入 queryLoop()</strong> 跑独立的子任务，<strong>只把 summary 返回给 parent</strong>。Subagent 的 sidechain 转录<strong>存到单独的文件</strong>，<strong>不污染 parent 的 context</strong>。<strong>持久化方面</strong>——append-only JSONL session 转录（<code>sessionStorage.ts</code>）、global prompt history（<code>history.jsonl</code>）、subagent sidechain 文件。Resume/fork 通过 <code>conversationRecovery.ts</code> 重建。<strong>session-scoped 权限故意不在 resume 时恢复</strong>——这是<strong>"safety choice"</strong>。</p>
+  <div class="terms">
+    <span class="tag">Isolated Subagent</span>
+    <span class="tag">JSONL Append-only</span>
+    <span class="tag">Sidechain</span>
+    <span class="tag">Summary-only Return</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Subagent 是 Claude Code 的<strong>核心扩展手段</strong>——当主 agent 觉得任务可以委托（"<strong>orchestrator-workers 模式</strong>"），它通过 <code>AgentTool</code> 派生子代理。</p>
+
+  <p><strong>关键设计——subagent 被像其他所有工具一样通过 <code>buildTool()</code> factory 创建</strong>——<strong>统一的接口</strong>。新派的 subagent <strong>重新进入 <code>queryLoop()</code></strong>——但带<strong>"isolated context window"</strong>——它<strong>看不到 parent 的对话历史</strong>。任务完成后——<strong>只把 summary 文本返回 parent</strong>——<strong>不返回完整对话</strong>——避免 parent context 被 subagent 噪音污染。</p>
+
+  <p>这就是"<strong>isolated subagent boundaries</strong>"原则——服务<strong>Reliability、Safety、Capability</strong>三个价值观。它的 trade-off——<strong>subagent 之间无法直接通信</strong>——只能通过 parent 协调。如果 parent context 不够，<strong>subagent 之间会重复工作</strong>。</p>
+
+  <p><strong>持久化</strong>——论文称之为<strong>"append-oriented session storage"</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">💾 持久化层</div>
+  <ul>
+    <li><strong>Session 转录</strong>——大部分 append-only 的 <strong>JSONL 文件</strong>（<code>sessionStorage.ts</code>），存到 project-specific 路径。每一轮新消息<strong>追加</strong>，<strong>不改写</strong>。例外情况是 <strong>cleanup rewrite</strong>——但这是<strong>明确的例外</strong>。</li>
+    <li><strong>Global prompt history</strong>——<code>history.jsonl</code>——跨所有 session 的提示历史。</li>
+    <li><strong>Subagent sidechain</strong>——每个 subagent 的对话<strong>存到独立文件</strong>——<strong>防止 subagent 内容膨胀 parent 的 context</strong>。</li>
+    <li><strong>Resume + Fork</strong>——通过 <code>conversationRecovery.ts</code> 从转录重建 session 状态。但<strong>session-scoped 权限<em>不</em>在 resume 时恢复</strong>——这是<strong>"deliberate safety choice"</strong>。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>"<strong>append-only durable state</strong>"原则的好处——<strong>auditable history + 可重现 + 不丢失</strong>。坏处——<strong>session 文件会一直增长</strong>。Claude Code 通过<strong>压缩管道</strong>（第 7 章）应对这个问题——历史在<strong>内存里被压缩</strong>，但<strong>磁盘上的转录保持完整</strong>。</p>
+
+  <p>论文的<strong>"reversibility-weighted risk"</strong>原则在持久化里也体现——<strong>"resume 不恢复权限"</strong>是<strong>选了"安全方面错"</strong>而非<strong>"方便方面错"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 10 -->
+<div class="chapter" id="ch10">
+  <div class="chapter-num">CHAPTER 10 · OPEN DIRECTIONS</div>
+  <h2>6 个开放方向 + 一份长期之问</h2>
+  <div class="en-title">Open directions</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>论文第 12 节梳理 <strong>6 个开放方向</strong>——<strong>(1) 静默失败和 observability-evaluation gap</strong>；<strong>(2) 跨 session 持久化</strong>（CLAUDE.md 和 session 转录之间的"持久状态"中间层）；<strong>(3) Harness boundary 演化</strong>（where、when、what、with whom——VLA、多 agent 辩论、proactive agent 等）；<strong>(4) Horizon scaling</strong>（从 session 到"science program"——多天、多周的自主研究）；<strong>(5) 治理和监督的规模化</strong>（EU AI Act 2026 年 8 月生效，外部审计要求）；<strong>(6) 长期人类能力之问</strong>（"sustainability gap" 是否能成为<strong>first-class 设计问题</strong>）。最后一节论文留下的"<strong>长期人类能力</strong>"之问——是给所有 AI Agent 工程师的<strong>沉重邀请</strong>。</p>
+  <div class="terms">
+    <span class="tag">Cross-Session Persistence</span>
+    <span class="tag">Horizon Scaling</span>
+    <span class="tag">EU AI Act 2026</span>
+    <span class="tag">Sustainability Gap</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第 12 节是论文<strong>真正的"未来工作"</strong>——但论文不像普通"future work"那样空洞。每一个方向都有<strong>具体的文献支撑</strong>。</p>
+
+  <p><strong>(1) Observability-Evaluation Gap</strong>——14 类失败模式（Cemri 2025）、anomaly detection benchmark（Pathak 2025）、pass@k 一致性 gap（Yao 2024）。论文留下的问题——<strong>Rajasekaran 2026 提倡的"generator-evaluator 分离 + sprint contract + post-hoc check"该放在 harness 内（作为新 hook 事件）还是 harness 外（作为独立评估层）</strong>？</p>
+
+  <p><strong>(2) 跨 session 持久化</strong>——目前架构里——<strong>CLAUDE.md 是"静态指令"，session 转录是"单 session 历史"</strong>。<strong>中间什么都没有</strong>。论文引 Packer 2023（LLM as OS with paged memory）、Chhikara 2025（production memory store that survives restarts）、Wang 2023（自我累积的 skill library）——但<strong>"单一 substrate 能否同时承载用户个人指令层级和共享组织上下文，同时保持 file-based 透明性"</strong>是<strong>未解的设计问题</strong>。</p>
+
+  <p><strong>(3) Harness boundary 演化</strong>——Rajasekaran 2026 说：<strong>"interesting harness combinations 的空间不会随着模型改进而缩小——它在移动"</strong>。论文按<strong>where、when、what、with whom</strong>四个轴梳理——</p>
+
+  <p>· <strong>Where</strong>——Martin 2026 的 Managed Agents 把 session、harness、sandbox 虚拟化为独立可替换接口<br>
+  · <strong>When</strong>——proactive agent 设计——Chen 2025 报告 12-18% 任务通过率提升，但<strong>"高频 Persistent Suggest"</strong>变体偏好得分大跌（47% vs 80-90%）——<strong>主动性是一把双刃剑</strong><br>
+  · <strong>What</strong>——VLA（vision-language-action）模型已能执行物理动作——把 harness 推到<strong>非文本动作</strong>——但<strong>"reversibility-weighted risk"原则在非文本动作上的成本不对称没量化</strong><br>
+  · <strong>With whom</strong>——多 agent 辩论（Du 2024、Liang 2024）、图结构工作流（Zhuge 2024）——探索<strong>parent/subagent 之外的协调模式</strong></p>
+
+  <p><strong>(4) Horizon scaling</strong>——从 session 到<strong>"科学项目"</strong>。Lu 2024 端到端自主研究管道；Gottweis 2025 多 agent 假说生成系统跑<strong>多天</strong>而非多轮；Novikov 2025 算法发现跑<strong>之前人类专家需要数周</strong>的时间尺度。<strong>METR 测量"50% reliability 时长"</strong>——agent 能可靠完成的任务时长——每一代模型推进。当 session 组合成<strong>多 session 项目</strong>时——Claude Code 的<strong>第 7 章压缩管道、第 8 章 last-assistant-text 返回策略、第 9 章 append-only 持久化是否仍足够</strong>是<strong>开放问题</strong>。</p>
+
+  <p><strong>(5) 治理和监督</strong>——EU AI Act 在 <strong>2026 年 8 月全面适用</strong>；MIT AI Agent Index、International AI Safety Report 都推动<strong>外部审计</strong>。论文指出 Claude Code 当前架构里<strong>"deny-first evaluation 是内部可审计的"</strong>（通过 session 转录）——<strong>但不是外部可审计的方式</strong>（GPAI Code of Practice 设想的形式）。</p>
+
+  <p><strong>(6) 长期人类能力</strong>——这是论文<strong>最有思想性的部分</strong>。论文引 Becker 2025（16 个开发者 RCT）、Shen-Tamkin 2026（理解测试得分低 17%）、Kosmyna 2025（EEG 研究）、He 2025（807 个仓库因果分析）、Liu 2026（30 万 commit 审计）、Rak 2025（招聘下降时间序列）——<strong>所有这些证据都指向一件事</strong>——<strong>AI 辅助带来短期生产力提升的同时，可能伴随长期人类能力的萎缩</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>未来的系统可以把<strong>"可持续性 gap"</strong>当作<br><strong>一等设计问题</strong>来处理——<br>而<strong>不是事后评估指标</strong>。<br><br>这是<strong>这篇论文留给所有 AI Agent 工程师的最重要的邀请</strong>。</p>
+  <div class="src">— FROM THE CONCLUSION</div>
+</div>
+
+<div class="body">
+  <p>读完这 46 页，我有几个感受想分享——</p>
+
+  <p><strong>第一</strong>——<strong>1.6% vs 98.4% 这个数字会反复回到我脑海</strong>。我们总以为 AI Agent 是 AI——但 98.4% 是软件工程。这意味着<strong>"做一个好的 AI Agent"</strong>需要的<strong>大部分</strong>是<strong>工程师能力，不是 ML 能力</strong>。这跟硅谷叙事完全相反。</p>
+
+  <p><strong>第二</strong>——<strong>Claude Code 的优雅在于"统一的 queryLoop"</strong>。CLI、Headless、SDK、IDE——同一个循环。这是<strong>"少即是多"</strong>哲学的工业级体现。</p>
+
+  <p><strong>第三</strong>——<strong>"deny-first + 7 层独立安全 + reversibility-weighted risk"</strong> 这套组合<strong>展示了 Anthropic 的"安全文化是真的"</strong>。这不是营销——是架构里写出来的。</p>
+
+  <p><strong>第四</strong>——MBZUAI 这种"<strong>读人家源码写综述</strong>"的研究值得被鼓励。Anthropic 的源码本来就是公开的——但<strong>有人愿意花 46 页认真读</strong>，<strong>这是研究社区健康的标志</strong>。</p>
+
+  <p><strong>第五</strong>——论文最后那个<strong>"长期人类能力"</strong>之问，让我想起 Dario 在《<a href="https://jerryyang.ai/adolescence/">技术的青春期</a>》里写的"<strong>supervision paradox</strong>"——AI 越能干，监督 AI 所需的人类能力<strong>越关键，也越容易萎缩</strong>。这两篇论文从<strong>完全不同的角度</strong>都指向<strong>同一个 open problem</strong>。这是我们这一代<strong>都需要思考的问题</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">ARXIV 2604 · MBZUAI VILA LAB</div>
+  <div>Dive into Claude Code · 中文版精校</div>
+  <div class="meta">原文：Liu / Zhao / Shang / Shen · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/claude-code</div>
+</div>
+
+</div>
+</body>
+</html>
