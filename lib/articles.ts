@@ -44,6 +44,122 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'guido-kingsday',
+    url: '/guido-kingsday/',
+    category: 'thinking',
+    date: '2026-06-30',
+    tag: 'GUIDO VAN ROSSUM · 2016/04',
+    title: {
+      zh: '国王节演讲：由社区创造的编程语言',
+      en: "King's Day Speech: A Language Created by a Community",
+      ja: '国王の日スピーチ：コミュニティが作った言語',
+    },
+    subtitle: {
+      zh: 'Guido van Rossum · Python 之父 · 中文精校版',
+      en: 'Guido van Rossum · Father of Python · Curated Chinese Edition',
+      ja: 'Guido van Rossum · Python の父 · 中国語精製版',
+    },
+    desc: {
+      zh: 'Python 创造者 Guido van Rossum 2016/04/27 在旧金山荷兰大使馆做的 King\'s Day Speech 中文精校版。从 10 岁的飞利浦电子套件、阿姆斯特丹大学地下室的大型机，到 ABC 失败的"没有互联网就没有反馈回路"，再到 1990 年 35 岁创造 Python、Google 第一版用 Python、伊拉克巴比伦大学的 Python 课堂——一位真正的 nerd 用一生写下的"由社区创造的编程语言"的故事。Python 的大义不是技术，是 happiness。',
+      en: "Guido van Rossum's 2016 King's Day Speech at the Dutch embassy in San Francisco. From a Philips electronics kit at age 10 to the Amsterdam University basement mainframe, from ABC's failure (no internet, no feedback loop) to Python's birth in 1990, from Google's first version in Python to a Python classroom at Babylon University in Iraq — one nerd's life-long demonstration that a programming language created by a community fosters happiness around the world.",
+      ja: 'Python 創造者 Guido の 2016 年国王の日スピーチ。10 歳の電子キットから、アムステルダムの大型機、ABC の失敗、1990 年の Python 誕生、Google の最初の Python 版、イラク・バビロン大学の Python 教室まで——コミュニティが作った言語が世界に幸福をもたらす物語。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', '个人散文'],
+      en: ['8 chapters', '~20 min read', 'Personal essay'],
+      ja: ['8 章', '約 20 分', '個人エッセイ'],
+    },
+    theme: 'green',
+    featured: true,
+  },
+  {
+    slug: 'mcp-vs-cli',
+    url: '/mcp-vs-cli/',
+    category: 'ai',
+    date: '2026-06-29',
+    tag: 'MARIO ZECHNER · 2025/08',
+    title: {
+      zh: 'MCP vs CLI：120 次评测的真相',
+      en: 'MCP vs CLI: Benchmarking Tools for Coding Agents',
+      ja: 'MCP vs CLI：120 回評価が示した真実',
+    },
+    subtitle: {
+      zh: 'Mario Zechner · 中文精校版',
+      en: 'Mario Zechner · Curated Chinese Edition',
+      ja: 'Mario Zechner · 中国語精製版',
+    },
+    desc: {
+      zh: 'libGDX 作者 Mario Zechner 2025/08 实证研究中文精校版。3 任务 × 4 工具 × 10 重复 = 120 次评测，第一手数据告诉你—— MCP 和 CLI 在 Claude Code 上几乎等价（成功率都 100%）；MCP 快 23%、便宜 2.5%；screen 在项目分析任务 0% 通过。最惊人发现——MCP 完全绕过 Claude Code 的恶意命令检测（35K vs 1.3-2M Haiku tokens）。结论：工具设计比协议选择更重要。',
+      en: "Mario Zechner's empirical benchmark: 3 tasks × 4 tools × 10 reps = 120 evals. MCP and CLI essentially equivalent (both 100% success); MCP 23% faster, 2.5% cheaper; screen 0% on project analysis. Shocking finding: MCP bypasses Claude Code's malicious command detection. Conclusion: tool design matters more than protocol choice.",
+      ja: 'Mario Zechner の実証研究。3 タスク × 4 ツール × 10 回 = 120 評価。MCP と CLI ほぼ同等。最も衝撃的：MCP は Claude Code の悪意あるコマンド検出を完全にバイパス。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '实证基准'],
+      en: ['8 chapters', '~25 min read', 'Empirical benchmark'],
+      ja: ['8 章', '約 25 分', '実証ベンチマーク'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'cloudflare-mcp',
+    url: '/cloudflare-mcp/',
+    category: 'ai',
+    date: '2026-06-29',
+    tag: 'CLOUDFLARE ONE · 2026/06',
+    title: {
+      zh: 'Cloudflare MCP 服务器门户：企业级 MCP 网关',
+      en: 'Cloudflare MCP Server Portal',
+      ja: 'Cloudflare MCP サーバーポータル：企業級ゲートウェイ',
+    },
+    subtitle: {
+      zh: 'Cloudflare One · 中文精校版',
+      en: 'Cloudflare One · Curated Chinese Edition',
+      ja: 'Cloudflare One · 中国語精製版',
+    },
+    desc: {
+      zh: 'Cloudflare 2026/06 发布的企业级 MCP 网关产品文档中文精读。把多个 MCP 服务器集中到一个 HTTP 端点——配合 OAuth、Access Policy、工具别名、上下文优化（4 种模式包含 Code Mode）、Gateway 路由 + DLP 审计。MCP 协议从"开发者工具"走向"企业基础设施"的关键节点。',
+      en: "Cloudflare One's MCP Server Portal: centralize multiple MCP servers behind one HTTP endpoint. OAuth + Access Policy + tool aliases + context optimization (4 modes incl. Code Mode) + Gateway + DLP. The moment MCP graduates from dev tool to enterprise infrastructure.",
+      ja: 'Cloudflare One の MCP サーバーポータル。複数 MCP を 1 つの HTTP エンドポイントに集約。OAuth・Access・別名・コンテキスト最適化（Code Mode 含む）・Gateway・DLP。MCP が企業基盤になる瞬間。',
+    },
+    meta: {
+      zh: ['8 章', '约 25 分钟', '产品文档'],
+      en: ['8 chapters', '~25 min read', 'Product docs'],
+      ja: ['8 章', '約 25 分', '製品ドキュメント'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
+    slug: 'thariq-claude-code',
+    url: '/thariq-claude-code/',
+    category: 'ai',
+    date: '2026-06-29',
+    tag: 'THARIQ · ANTHROPIC · 2026/02',
+    title: {
+      zh: '建 Claude Code 学到的事：像 agent 一样看世界',
+      en: 'Lessons from Building Claude Code: Seeing like an Agent',
+      ja: 'Claude Code を作って学んだこと：エージェントのように見る',
+    },
+    subtitle: {
+      zh: 'Thariq @trq212 · Anthropic · 中文精校版',
+      en: 'Thariq @trq212 · Anthropic · Curated Chinese Edition',
+      ja: 'Thariq @trq212 · Anthropic · 中国語精製版',
+    },
+    desc: {
+      zh: 'Anthropic Claude Code 团队工程师 Thariq 2026/02 X 长帖（3 天 390 万阅读）中文精校版。从 AskUserQuestion 的 3 次尝试，到 TodoWrite 演化成 Task Tool，从 RAG 到 Grep 到 Progressive Disclosure，再到 Claude Code Guide Subagent——一篇 Anthropic 内部工程师亲笔写的最有诚意的 agent 工具设计手记。结论：See like an agent。',
+      en: "Anthropic Claude Code engineer Thariq's X thread (3.9M views in 3 days). 4 engineering stories: 3 attempts at AskUserQuestion, TodoWrite → Task Tool evolution, RAG → Grep → Progressive Disclosure, and the Claude Code Guide subagent. Conclusion: See like an agent.",
+      ja: 'Anthropic Thariq の X スレッド中国語版。AskUserQuestion の 3 回試行、TodoWrite → Task Tool、Grep と Progressive Disclosure、Guide Subagent。結論：See like an agent。',
+    },
+    meta: {
+      zh: ['8 章', '约 20 分钟', '工程师笔记'],
+      en: ['8 chapters', '~20 min read', "Engineer's notes"],
+      ja: ['8 章', '約 20 分', 'エンジニア手記'],
+    },
+    theme: 'blue',
+    featured: true,
+  },
+  {
     slug: 'claude-code',
     url: '/claude-code/',
     category: 'ai',

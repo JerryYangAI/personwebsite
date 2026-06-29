@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建 Claude Code 学到的事 · 像 Agent 一样看 | 广哥在硅谷</title>
+<meta name="description" content="Thariq（Claude Code 工程师）2026 年 2 月 X 长帖中文精校版。从 AskUserQuestion 到 TodoWrite 到 Task Tool，从 RAG 到 Grep 到 Progressive Disclosure，从 Claude Code Guide Subagent 到"学会像 agent 一样看世界"——一篇 Anthropic 内部工程师写的最有诚意的 agent 工具设计手记。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Claude Code, AskUserQuestion, Tools, Progressive Disclosure, Subagent, Thariq, Anthropic, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/thariq-claude-code/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="建 Claude Code 学到的事 · 像 Agent 一样看">
+<meta property="og:description" content="Thariq Anthropic 工程师笔记 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/thariq-claude-code/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="建 Claude Code 学到的事 · 像 Agent 一样看">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(106,155,204,.40) 0%,rgba(106,155,204,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--blue);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--blue);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--blue);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--blue);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--blue);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--blue);background:rgba(106,155,204,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(106,155,204,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(106,155,204,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f0f4f7 0%,#faf9f5 100%);border-left:5px solid var(--blue);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--blue);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--blue);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--blue);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  code{font-family:'JetBrains Mono','Menlo',monospace;font-size:.92em;background:#f4f2eb;padding:1px 6px;border-radius:4px;color:var(--dark);}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--blue);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">THARIQ · ANTHROPIC · 2026/02</div>
+  <h1>建 Claude Code 学到的事<br>像一个 Agent 一样看世界</h1>
+  <div class="subtitle-en">Lessons from Building Claude Code · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Thariq @trq212 · Claude Code 团队</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--green);"></i> 8 章 · 约 20 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2026 年 2 月 28 日，<strong>Thariq</strong>（推特 @trq212，Anthropic Claude Code 团队工程师）在 X 上发了一篇长文，标题叫《<em>Lessons from Building Claude Code: Seeing like an Agent</em>》——<strong>3 天 390 万次阅读</strong>。这是一篇 Anthropic 内部工程师亲笔写的<strong>agent 工具设计手记</strong>——讲他们在构建 Claude Code 时<strong>真正经历过的 4 个工程困境和怎么走出来</strong>——<strong>AskUserQuestion 工具的 3 次尝试</strong>、<strong>TodoWrite 演化成 Task Tool</strong>、<strong>搜索接口从 RAG 到 Grep 到 Progressive Disclosure</strong>、以及<strong>Claude Code Guide Subagent</strong> 的诞生。最后他给出一句让我反复回味的话——<strong>"设计 agent 的工具，是艺术多于科学。多试、读输出、像 agent 一样看世界。"</strong></p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 数学题与计算机的类比<br><span class="en">A math problem and a computer</span></a></li>
+    <li><a href="#ch2">AskUserQuestion · 3 次尝试的演化<br><span class="en">3 attempts at elicitation</span></a></li>
+    <li><a href="#ch3">从 TodoWrite 到 Task Tool · 跟着模型能力升级<br><span class="en">Todos to Tasks</span></a></li>
+    <li><a href="#ch4">搜索接口 · 从 RAG 到 Grep 的觉醒<br><span class="en">From RAG to Grep</span></a></li>
+    <li><a href="#ch5">Progressive Disclosure · Skills 的递归发现<br><span class="en">Progressive disclosure</span></a></li>
+    <li><a href="#ch6">Claude Code Guide Subagent · 不加工具的扩展<br><span class="en">The guide subagent</span></a></li>
+    <li><a href="#ch7">艺术多于科学 · Thariq 的结论<br><span class="en">An art, not a science</span></a></li>
+    <li><a href="#ch8">广哥的总结 · 工程师才看得到的真相<br><span class="en">An engineer's truth</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 数学题与计算机的类比</h2>
+  <div class="en-title">A math problem and a computer</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Thariq 开篇问了一个核心问题——<strong>"如何设计你 agent 的工具？"</strong> 他用一个让人会心一笑的类比——给你一道难数学题，你需要什么工具？<strong>纸是最低标准</strong>（被手工计算限制）；<strong>计算器更好</strong>（但需要会操作高级功能）；<strong>电脑最快最强</strong>（但需要会写代码）。同样的逻辑——<strong>给 agent 的工具必须和它自己的能力相匹配</strong>。怎么知道这些能力？<strong>"You pay attention, read its outputs, experiment. You learn to see like an agent."</strong></p>
+  <div class="terms">
+    <span class="tag">Thariq @trq212</span>
+    <span class="tag">Action Space Design</span>
+    <span class="tag">See Like an Agent</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>2026 年 2 月 28 日，<strong>Thariq</strong>——推特 @trq212，<strong>Anthropic Claude Code 团队工程师</strong>（之前在 YC W20、South Park Commons、MIT Media Lab）——在 X 上发了一篇长帖。3 天<strong>390 万阅读</strong>，1.1 万转发，1.6 万点赞。</p>
+
+  <p>开篇一句话就把整个工程困境拎出来——</p>
+</div>
+
+<div class="quote">
+  <p>构建一个 agent harness <strong>最难的部分之一</strong>，<br>就是<strong>设计它的"行动空间"</strong>（action space）。<br><br>Claude 通过 <strong>Tool Calling</strong> 行动，<br>但 Claude API 里能用很多<strong>原语</strong>构造工具——<br><strong>bash、skills、最近的 code execution</strong>⋯⋯<br><br>给定这些选项——<strong>你怎么设计你 agent 的工具</strong>？<br>需要 1 个工具（比如 code execution 或 bash）？<br>还是 50 个工具（每个用例一个）？</p>
+  <div class="src">— THARIQ, 2026/02</div>
+</div>
+
+<div class="body">
+  <p>Thariq 给的思考框架很美——<strong>把自己放进模型的脑子里</strong>——</p>
+
+  <p>"<strong>想象你被给了一道难数学题</strong>。<strong>你需要什么工具</strong>来解？<strong>这取决于你自己的技能</strong>！"</p>
+
+  <p>纸——是<strong>最低标准</strong>，但被手工计算限制。<br>计算器——<strong>更好</strong>，但你需要知道怎么操作高级功能。<br>电脑——<strong>最快最强</strong>，但你需要会写代码。</p>
+
+  <p>"<strong>这是一个有用的框架来设计你的 agent</strong>。你想给它<strong>形状跟它自己能力相匹配</strong>的工具。但你怎么知道这些能力？<strong>You pay attention, read its outputs, experiment. You learn to see like an agent.</strong>"</p>
+
+  <p>"<strong>像一个 agent 一样看</strong>"——这句话是整篇文章的灵魂。下面的所有故事都在演示这种<strong>"观察 → 调整 → 再观察"</strong>的循环。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · ASKUSERQUESTION</div>
+  <h2>AskUserQuestion · 3 次尝试的演化</h2>
+  <div class="en-title">3 attempts at elicitation</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>这是一个非常典型的"<strong>工程师笔记</strong>"故事——团队想<strong>改进 Claude 提问的能力</strong>（elicitation）。Claude 当然可以用纯文本问问题——但<strong>"回答这些问题感觉花了不必要的时间"</strong>。他们做了 3 次尝试——<strong>(1) 修改 ExitPlanTool 加 questions 数组</strong>——失败，模型混淆"plan vs questions"；<strong>(2) 改输出格式让 Claude 输出特定 markdown</strong>——失败，模型不保证遵守格式；<strong>(3) 新建 AskUserQuestion 工具</strong>——成功。关键是<strong>"Claude 似乎喜欢调这个工具"</strong>——<strong>"即使最好设计的工具，如果 Claude 不理解怎么调，也不工作"</strong>。</p>
+  <div class="terms">
+    <span class="tag">AskUserQuestion</span>
+    <span class="tag">Elicitation</span>
+    <span class="tag">ExitPlanTool</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第一个故事——构建 <strong>AskUserQuestion 工具</strong>——目标是<strong>改进 Claude 提问的能力</strong>（elicitation，引发用户表达）。</p>
+
+  <p>背景——Claude 当然可以用<strong>纯文本</strong>问问题——但他们发现<strong>"回答这些问题感觉花了不必要的时间"</strong>。怎么<strong>降低这种摩擦</strong>，<strong>增加用户和 Claude 之间的沟通带宽</strong>？</p>
+
+  <p><strong>3 次尝试</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🔄 三次迭代</div>
+  <ul>
+    <li><strong>尝试 #1 · 修改 ExitPlanTool</strong>——加一个 questions 数组参数，让它在 plan 旁边问问题。<strong>最简单的实现</strong>。但失败——<strong>同时要 plan 和关于 plan 的 questions 会让 Claude 混淆</strong>。"如果用户的答案跟 plan 冲突怎么办？Claude 需要调 ExitPlanTool 两次吗？" <strong>需要新方法</strong>。</li>
+    <li><strong>尝试 #2 · 改输出格式</strong>——修改 Claude 的输出指令，让它服务一种<strong>稍微修改的 markdown 格式</strong>——比如要求"项目符号问题，可选项放在括号里"。然后解析这个格式渲染 UI。<strong>"最通用的改动"</strong>，Claude 似乎做得还行。但<strong>不保证</strong>——<strong>Claude 会加多余句子、省略选项、或用完全不同的格式</strong>。</li>
+    <li><strong>尝试 #3 · AskUserQuestion 工具</strong>——最后他们做了一个 Claude 可以<strong>在任何时候调用</strong>的工具——特别<strong>在 plan mode 被 prompt 去用</strong>。工具触发时显示 modal 显示问题，<strong>阻塞 agent 的循环</strong>直到用户回答。</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>这个工具让他们能<strong>prompt Claude 产出结构化输出</strong>，<strong>确保 Claude 给用户多个选项</strong>。它也让用户能<strong>组合这个功能</strong>——比如<strong>在 Agent SDK 里调</strong>或在 <strong>skills 里引用</strong>。</p>
+
+  <p>但 Thariq 最强调的不是技术细节——</p>
+</div>
+
+<div class="quote">
+  <p>最重要的是——<br><strong>Claude 似乎<em>喜欢</em>调这个工具</strong>，<br>我们发现它的输出工作得很好。<br><br><strong>即使最好设计的工具，<br>如果 Claude 不理解怎么调，也不工作。</strong></p>
+  <div class="src">— THE FUNDAMENTAL INSIGHT</div>
+</div>
+
+<div class="body">
+  <p>这是工程师才看得见的真相——<strong>"模型喜欢用"</strong>是<strong>工具设计的必要条件</strong>。你设计得再优雅，<strong>如果模型不调，就是死代码</strong>。<strong>这个标准很难量化，但 Anthropic 工程师每天都在用直觉去判断</strong>。</p>
+
+  <p>Thariq 末尾留下一个开放问题——<strong>"这是 Claude Code 里 elicitation 的最终形态吗？我们不确定"</strong>。<strong>下一节的故事正好说明——<em>对一个模型工作的，不一定对另一个最好</em></strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · TODOS TO TASKS</div>
+  <h2>从 TodoWrite 到 Task Tool · 跟着模型能力升级</h2>
+  <div class="en-title">Todos to Tasks</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Claude Code 首发时，他们意识到模型需要<strong>Todo 列表</strong>保持任务专注——所以给了 Claude 的 <strong>TodoWrite 工具</strong>。但模型还是常常<strong>忘记自己要做什么</strong>——所以每 5 轮插一个<strong>系统提醒</strong>。<strong>但当模型变强后</strong>——它们不只不需要被提醒，<strong>反而被限制了</strong>。Opus 4.5 还在子代理使用上变得更好——但子代理之间怎么协调一个共享 Todo 列表？<strong>他们用 Task Tool 替换了 TodoWrite</strong>——Tasks 关于"让 agent 之间通信"而非"让模型不跑偏"。<strong>"随着模型能力提升，模型曾经需要的工具可能现在限制它们。"</strong></p>
+  <div class="terms">
+    <span class="tag">TodoWrite</span>
+    <span class="tag">Task Tool</span>
+    <span class="tag">Opus 4.5</span>
+    <span class="tag">Subagent Coordination</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第二个故事——<strong>从 TodoWrite 演化到 Task Tool</strong>——展示了<strong>模型能力升级如何让旧工具变成限制</strong>。</p>
+
+  <p>Claude Code 首发时，团队意识到模型需要 <strong>Todo 列表保持专注</strong>。Todos 可在开始时写下，模型做工作时勾掉。<strong>TodoWrite 工具</strong>就是这样诞生的——能写或更新 Todos，<strong>显示给用户看</strong>。</p>
+
+  <p>但即使如此——他们经常看到 Claude <strong>忘记自己要做什么</strong>。<strong>适应方法</strong>——<strong>每 5 轮插入系统提醒</strong>提醒 Claude 它的目标。</p>
+
+  <p>然后<strong>模型变强了</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>但<strong>随着模型改进</strong>——<br>它们不只<strong>不需要被提醒</strong> Todo 列表，<br>反而<strong>被它限制</strong>。<br><br>被发提醒让 Claude 觉得<strong>它必须坚持原列表</strong>——<br>而不是<strong>修改它</strong>。<br><br>我们还看到 <strong>Opus 4.5 在用子代理上变得好得多</strong>——<br>但<strong>子代理怎么协调一个共享的 Todo 列表？</strong></p>
+  <div class="src">— TOOLS THAT BECOME LIMITS</div>
+</div>
+
+<div class="body">
+  <p>看到这个，他们<strong>用 Task Tool 替换 TodoWrite</strong>——</p>
+
+  <p>· <strong>Todos</strong> 关于<strong>让模型不跑偏</strong>（保持单一 agent 在轨）<br>
+  · <strong>Tasks</strong> 关于<strong>帮助 agent 之间通信</strong>——可以包括<strong>依赖、跨子代理共享更新、模型能修改和删除</strong></p>
+
+  <p>这是典型的<strong>工程哲学转变</strong>——从"<em>给单 agent 加 guardrails</em>"到"<em>给多 agent 系统加协调原语</em>"。</p>
+
+  <p>Thariq 给出的<strong>普遍教训</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>随着模型能力提升——<br>模型<strong>曾经需要</strong>的工具<br>可能<strong>现在限制</strong>它们。<br><br>不断重新审视<strong>"哪些工具是必须的"</strong>这一假设——是重要的。<br><br>这也是为什么<strong>坚持一小套能力大致相似的模型</strong>很有用——<br>更容易做这种维护。</p>
+  <div class="src">— THE EVOLUTIONARY PRINCIPLE</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>整篇文章最有思想性的洞察</strong>之一——<strong>"工具是模型能力的<em>函数</em>"</strong>。所有 agent 系统都需要<strong>跟着模型能力的演化重新评估自己的脚手架</strong>。<strong>"模型能力提升 → 工具被审视 → 旧工具被替换"</strong>是必然循环。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · SEARCH</div>
+  <h2>搜索接口 · 从 RAG 到 Grep 的觉醒</h2>
+  <div class="en-title">From RAG to Grep</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>Claude 最重要的工具集之一是"搜索工具"</strong>——用来<strong>构建它自己的上下文</strong>。Claude Code 首发时，他们用 <strong>RAG 向量数据库</strong>——快、强，但<strong>需要索引和设置</strong>，<strong>在不同环境里脆弱</strong>。更重要——<strong>Claude 被<em>给</em>这种上下文，而不是<em>自己找</em>上下文</strong>。他们的觉醒——<strong>"既然 Claude 能在 web 上搜索，为什么不能在你的代码库搜索？"</strong> 给 Claude 一个 <strong>Grep 工具</strong>——它就能搜文件、<strong>自己构建上下文</strong>。<strong>"Claude 越聪明，给它正确工具时它就越擅长构建自己的上下文。"</strong></p>
+  <div class="terms">
+    <span class="tag">RAG Vector DB</span>
+    <span class="tag">Grep Tool</span>
+    <span class="tag">Self-context Building</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>第三个故事——<strong>搜索接口的演化</strong>——展示了一个<strong>反 RAG 共识</strong>的觉醒。</p>
+
+  <p>Claude Code 首发时，他们用 <strong>RAG 向量数据库</strong>为 Claude 找上下文。<strong>RAG 强大快速</strong>——但有问题——</p>
+
+  <p>· 需要<strong>索引和设置</strong>——增加部署摩擦<br>
+  · 在<strong>不同环境里脆弱</strong>——不同代码库要重新调<br>
+  · 更重要——<strong>Claude 被<em>给</em>这种上下文，而不是<em>自己找</em></strong></p>
+
+  <p>Thariq 给出觉醒的那一刻——</p>
+</div>
+
+<div class="quote">
+  <p>但如果 <strong>Claude 能在 web 上搜索</strong>——<br>为什么<strong>不能搜你的代码库</strong>？<br><br>给 Claude 一个 <strong>Grep 工具</strong>——<br>我们就能让它<strong>搜文件、自己构建上下文</strong>。<br><br>这是我们看到的一个模式——<br><strong>Claude 越聪明，给它正确工具时它就越擅长构建自己的上下文</strong>。</p>
+  <div class="src">— THE GREP EPIPHANY</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>2024-2026 年 AI Agent 设计的一个重要转向</strong>——<strong>从"喂上下文"到"让 agent 自己找"</strong>。RAG 是<strong>"喂"</strong>的代表；Grep + 文件系统访问是<strong>"找"</strong>的代表。Claude Code 选了后者。</p>
+
+  <p>这有<strong>多重好处</strong>——<strong>(1)</strong> 部署简单（不需要建向量库索引）；<strong>(2)</strong> 跨环境 robust（在任何代码库都能用）；<strong>(3)</strong> Claude 知道自己<em>为什么</em>需要这个上下文（因为它自己问了）；<strong>(4)</strong> 不浪费上下文窗口（按需取，不是预先 dump）。</p>
+
+  <p>这个洞察后来变成更深的概念——<strong>"Progressive Disclosure"</strong>——下一章讲。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · PROGRESSIVE DISCLOSURE</div>
+  <h2>Progressive Disclosure · Skills 的递归发现</h2>
+  <div class="en-title">Progressive disclosure</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>引入 <strong>Agent Skills</strong> 时他们<strong>形式化了"渐进披露"</strong>——<strong>"allows agents to incrementally discover relevant context through exploration"</strong>。Claude 读 skill 文件，<strong>那些文件能引用其他文件</strong>，<strong>模型可以递归地读</strong>。skills 的一个常见用法——<strong>给 Claude 加搜索能力</strong>，比如"<em>如何用某 API、如何查询某数据库</em>"的指令。<strong>"在一年中，Claude 从'基本不能构建自己的上下文'变到'跨多层文件做嵌套搜索找到精确所需上下文'。"</strong> Progressive Disclosure 现在是<strong>不加工具而加功能的标准技术</strong>。</p>
+  <div class="terms">
+    <span class="tag">Agent Skills</span>
+    <span class="tag">Progressive Disclosure</span>
+    <span class="tag">Recursive Discovery</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>当 Anthropic 引入 <strong>Agent Skills</strong> 时，他们<strong>形式化了</strong>这个想法——<strong>"Progressive Disclosure"</strong>（渐进披露）——</p>
+</div>
+
+<div class="quote">
+  <p>渐进披露——<br>允许 agent <strong>通过<em>探索</em>增量地发现相关上下文</strong>。<br><br>Claude 能<strong>读 skill 文件</strong>——<br>那些文件能<strong>引用其他文件</strong>——<br>模型可以<strong>递归地读</strong>。<br><br>事实上——skills 的一个常见用法——<br><strong>给 Claude 加更多搜索能力</strong>——<br>比如给它指令<strong>怎么用某 API 或查询某数据库</strong>。</p>
+  <div class="src">— PROGRESSIVE DISCLOSURE FORMALIZED</div>
+</div>
+
+<div class="body">
+  <p>Thariq 给出一个让我合上文章想了很久的总结——</p>
+
+  <p>"<strong>在一年中，Claude 从'基本不能构建自己的上下文'，变到<em>跨多层文件做嵌套搜索找到它需要的精确上下文</em></strong>"。</p>
+
+  <p><strong>Progressive Disclosure 现在是一个常用技术——加新功能而不加工具</strong>。这是非常优雅的设计——<strong>"不在工具池里多塞一把锤子，而是给 agent 一本能扩展的指南"</strong>。</p>
+
+  <p>对照<strong>MBZUAI 那篇 Dive into Claude Code</strong>（我之前发过的）——它在<strong>第 7 章压缩管道</strong>里就提到 <strong>"CLAUDE.md lazy loading"</strong> 和 <strong>"Deferred tool schemas"</strong>——<strong>都是 Progressive Disclosure 原则的具体体现</strong>。两篇文章<strong>从不同角度</strong>都指向同一个工程哲学。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · GUIDE SUBAGENT</div>
+  <h2>Claude Code Guide Subagent · 不加工具的扩展</h2>
+  <div class="en-title">The guide subagent</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Claude Code 现有约 20 个工具——<strong>加新工具的门槛很高</strong>，因为这给模型<strong>多一个要思考的选项</strong>。<strong>"context rot"</strong>是真实问题。具体例子——<strong>Claude 不知道关于 Claude Code 自己的足够</strong>（"如果你问它怎么加 MCP 或某 slash 命令做什么，它答不上"）。可以把所有信息<strong>塞进 system prompt</strong>——但用户很少问这种问题，会<strong>加 context rot 干扰主要工作</strong>。他们用了 <strong>Progressive Disclosure</strong>——给 Claude 一个<strong>文档链接</strong>能加载查询。<strong>但 Claude 会把大量结果塞进 context 找答案</strong>——而其实你只需要答案。<strong>解法是 Claude Code Guide Subagent</strong>——专门 prompt 在"用户问你自己"时调用，subagent 有<strong>详细搜索文档的指令</strong>，返回精炼答案。</p>
+</div>
+
+<div class="body">
+  <p>Claude Code 现在有约 <strong>20 个工具</strong>。他们<strong>不断问自己"我们是否都需要"</strong>——加新工具的门槛<strong>很高</strong>，因为给模型<strong>多一个要思考的选项</strong>。</p>
+
+  <p>具体案例——他们发现 <strong>Claude 不知道关于 Claude Code 自己的足够</strong>——"如果你问它怎么加 MCP 或某 slash 命令做什么，它<strong>答不上</strong>"。</p>
+
+  <p>本可以把所有这些信息<strong>放进 system prompt</strong>——但用户很少问，<strong>会加 context rot 干扰 Claude Code 的主要工作——写代码</strong>。</p>
+
+  <p>第一次尝试——<strong>Progressive Disclosure</strong>——给 Claude 一个<strong>文档链接</strong>能加载查询。这<strong>能工作</strong>，但他们发现——<strong>Claude 会把大量结果塞进 context 找答案，而其实只需要答案</strong>。</p>
+
+  <p>所以最后他们<strong>建了 Claude Code Guide subagent</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🎯 Guide Subagent 设计</div>
+  <ul>
+    <li><strong>触发</strong>——Claude 被 prompt <strong>在用户问"关于 Claude Code 本身"</strong>时调用</li>
+    <li><strong>能力</strong>——subagent 有<strong>详细的"如何好地搜索文档"和"返回什么"的指令</strong></li>
+    <li><strong>结果</strong>——返回<strong>精炼答案</strong>，<strong>不污染主 context</strong></li>
+    <li><strong>关键</strong>——<strong>不加新工具</strong>——只<strong>加一个 subagent</strong>——但拓宽了 Claude 的"action space"</li>
+  </ul>
+</div>
+
+<div class="body">
+  <p>"<strong>虽然不完美</strong>——Claude 还会在你问它怎么设置自己时被搞糊涂——但比以前好多了。<strong>我们能在不加工具的情况下，给 Claude 的行动空间加东西</strong>"。</p>
+
+  <p>这是 Anthropic 工程师的<strong>"工程师才看得见的真相"</strong>——<strong>"加 subagent" 比 "加工具" 更便宜</strong>，因为 subagent <strong>不占主 context window</strong>，<strong>专门化的指令在 subagent 内部</strong>。这是<strong>非常聪明的设计选择</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · ART NOT SCIENCE</div>
+  <h2>艺术多于科学 · Thariq 的结论</h2>
+  <div class="en-title">An art, not a science</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Thariq 直接告诉读者——<strong>"如果你期望一套严格规则告诉你怎么建工具，<em>不好意思，这不是那种指南</em>"</strong>。设计 agent 的工具<strong>是艺术多于科学</strong>——<strong>"取决于你用的模型、agent 的目标、它操作的环境"</strong>。结论只有 5 个字——<strong>"Experiment often, read your outputs, try new things. <em>See like an agent</em>."</strong></p>
+</div>
+
+<div class="body">
+  <p>Thariq 的最后一节标题就是<strong>"An Art, not a Science"</strong>——这是这篇 X 长帖的<strong>诚实归宿</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>如果你<strong>期望一套关于如何建你工具的<em>严格规则</em></strong>——<br>不幸地，<strong>这不是那种指南</strong>。<br><br>设计你模型的工具——<br>是<strong>艺术多于科学</strong>。<br><br>它<strong>严重取决于你用的模型、agent 的目标、它操作的环境</strong>。<br><br><strong>Experiment often, read your outputs, try new things.<br>See like an agent.</strong></p>
+  <div class="src">— THARIQ'S CONCLUSION</div>
+</div>
+
+<div class="body">
+  <p>这个结论<strong>挺像 Anthropic 的文化味儿</strong>——<strong>不教条、不假设有银弹、把工程师的判断当成第一手洞察</strong>。</p>
+
+  <p><strong>"Read your outputs"</strong>——这一句尤其重要。AI 工程师很容易陷入<strong>"我设计了这个抽象，所以模型应该用得好"</strong>的错觉。<strong>真相只能从读输出里看到</strong>——Claude 是真的喜欢调这个工具吗？输出有多干净？token 浪费在哪里？</p>
+
+  <p><strong>"See like an agent"</strong>——把这句当成一种<strong>认知训练</strong>。每次设计工具时——<strong>把自己代入模型</strong>，问<strong>"如果我是 Claude，这个工具描述会让我想用吗？"</strong>"<strong>这个输出会让我下一步做对决定吗？</strong>"</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · EDITOR'S NOTE</div>
+  <h2>广哥的总结 · 工程师才看得到的真相</h2>
+  <div class="en-title">An engineer's truth</div>
+</div>
+
+<div class="body">
+  <p>读完这篇短文，我有几点感受——</p>
+
+  <p><strong>第一</strong>——这篇文章和我之前发的 <strong><a href="https://jerryyang.ai/claude-code/">《Dive into Claude Code》</a></strong>（MBZUAI 那篇）<strong>形成完美互补</strong>。MBZUAI 是<strong>外部研究者读源码的<em>架构</em>视角</strong>——5 个价值观、13 个设计原则、5 层子系统。Thariq 这一篇是<strong>内部工程师的<em>第一手</em>视角</strong>——4 个具体决策的演化故事。<strong>两篇一起读，你才看到 Claude Code 的"为什么"和"怎么做"</strong>。</p>
+
+  <p><strong>第二</strong>——<strong>"Claude 似乎喜欢调这个工具"</strong>这种说法<strong>看起来不科学</strong>，但<strong>是 Anthropic 工程师的核心审美判断</strong>。这种<strong>把模型当成"用户"</strong>的视角，<strong>是 AI agent 设计跟传统软件设计最大的不同</strong>。传统软件——你设计 API 给开发者用。AI agent——你设计工具给模型用。<strong>模型有偏好、有摩擦、有"我喜欢这个"</strong>——你必须尊重这一点。</p>
+
+  <p><strong>第三</strong>——<strong>从 TodoWrite 到 Task Tool 的故事</strong>给我一个深刻提醒——<strong>"今天的最佳实践可能是明天的限制"</strong>。所有 AI 工程团队都要建立<strong>"重新审视假设"</strong>的节律。<strong>每次模型大版本升级，整个工具集都该重新评估</strong>。</p>
+
+  <p><strong>第四</strong>——<strong>"Progressive Disclosure"</strong>是这篇文章给我留下的最实用的<strong>架构原则</strong>。下次我自己设计 agent 系统——<strong>第一选择是 Skills + Lazy Loading，<em>不是</em>所有功能塞 system prompt 或者加新工具</strong>。</p>
+
+  <p><strong>第五</strong>——<strong>"See like an agent"</strong>这句话值得贴在工位上。它<strong>反映了 Anthropic 内部的工程文化</strong>——<strong>不依赖框架、不依赖理论，依赖<em>持续观察、读输出、做实验</em></strong>。这跟 <strong>Dario 在《Adolescence of Technology》</strong>里说的<strong>"我们建 Claude 像在<em>养</em>一个东西而不是<em>造</em>"</strong>是同一种哲学。</p>
+
+  <p>这篇 X 帖子 3 天 390 万阅读不是偶然——<strong>它是工业界 AI Agent 工程师都需要的"诚实的工程笔记"</strong>。</p>
+</div>
+
+<div class="footer">
+  <div class="brand">THARIQ · CLAUDE CODE TEAM · 2026/02</div>
+  <div>Lessons from Building Claude Code · 中文版精校</div>
+  <div class="meta">原文：Thariq @trq212 · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/thariq-claude-code</div>
+</div>
+
+</div>
+</body>
+</html>

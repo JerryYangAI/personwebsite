@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guido 的国王节演讲 · 由社区创造的编程语言 | 广哥在硅谷</title>
+<meta name="description" content="Python 创始人 Guido van Rossum 2016 年 4 月 27 日在旧金山荷兰大使馆做的 King's Day Speech 中文精校版。从 10 岁的电子套件到阿姆斯特丹大学地下室的大型机，从 ABC 的失败到 Python 的诞生，从 Google 早期用 Python 到伊拉克巴比伦大学的 Python 课堂——一位真正的 nerd 用一生写下的"由社区创造的编程语言"的故事。Python 的大义不是技术，是 happiness。">
+<meta name="author" content="Jerry Yang">
+<meta name="keywords" content="Guido van Rossum, Python, King's Day Speech, Open Source, Community, 编程语言, 广哥在硅谷">
+<link rel="canonical" href="https://jerryyang.ai/guido-kingsday/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="广哥在硅谷">
+<meta property="og:title" content="Guido 的国王节演讲 · 由社区创造的编程语言">
+<meta property="og:description" content="Python 创始人 Guido van Rossum · 2016/04 · 中文精校版">
+<meta property="og:url" content="https://jerryyang.ai/guido-kingsday/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Guido 的国王节演讲">
+
+<link rel="preconnect" href="https://fonts.font.im" crossorigin>
+<link href="https://fonts.font.im/css?family=Poppins:400,500,600,700,800|Lora:400,500,600,700,400italic,500italic|JetBrains+Mono:400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+<style>
+  :root{--dark:#141413;--light:#faf9f5;--mid-gray:#b0aea5;--light-gray:#e8e6dc;--orange:#d97757;--blue:#6a9bcc;--green:#788c5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--light);color:var(--dark);font-family:'Lora','Georgia',serif;line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:740px;margin:0 auto;padding:32px 22px 64px;background:var(--light);}
+  .brandbar{background:var(--dark);color:var(--light);padding:10px 20px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:1px;border-bottom:2px solid var(--orange);position:relative;overflow:hidden;}
+  .brandbar::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+  .brandbar .bb-name{color:var(--orange);font-weight:700;letter-spacing:3px;margin-right:12px;}
+  .brandbar .bb-slogan{color:#cfcdc4;font-weight:400;font-size:11.5px;letter-spacing:.8px;}
+  .brandbar .bb-sep{color:#5a5854;margin:0 10px;}
+  @media (max-width:480px){.brandbar{padding:10px 14px;font-size:11px;}.brandbar .bb-name{display:block;margin:0 0 4px 0;letter-spacing:2px;}.brandbar .bb-sep{display:none;}.brandbar .bb-slogan{display:block;font-size:10.5px;}}
+  .cover{background:linear-gradient(135deg,#1a1918 0%,#141413 100%);color:var(--light);border-radius:18px;padding:48px 32px 40px;margin-bottom:36px;position:relative;overflow:hidden;}
+  .cover::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(120,140,93,.40) 0%,rgba(120,140,93,0) 70%);border-radius:50%;}
+  .cover::after{content:"";position:absolute;bottom:-80px;left:-50px;width:240px;height:240px;background:radial-gradient(circle,rgba(217,119,87,.18) 0%,rgba(217,119,87,0) 70%);border-radius:50%;}
+  .cover-tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:2px;padding:6px 14px;border:1px solid rgba(250,249,245,.35);border-radius:999px;color:var(--light);margin-bottom:24px;position:relative;z-index:1;}
+  .cover h1{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:30px;line-height:1.35;margin-bottom:12px;position:relative;z-index:1;}
+  .cover .subtitle-en{font-family:'Poppins',Arial,sans-serif;font-weight:400;font-size:14px;color:var(--mid-gray);letter-spacing:.5px;margin-bottom:28px;position:relative;z-index:1;}
+  .cover-meta{display:flex;flex-wrap:wrap;gap:18px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:#cfcdc4;position:relative;z-index:1;}
+  .cover-meta span{display:inline-flex;align-items:center;gap:6px;}
+  .cover-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .abstract{background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:12px;padding:24px 26px;margin-bottom:36px;}
+  .abstract-label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--green);margin-bottom:10px;}
+  .abstract p{font-size:15.5px;color:#3a3937;}
+  .toc{background:#fff;border-radius:14px;padding:28px 26px;margin-bottom:44px;border:1px solid var(--light-gray);}
+  .toc-title{font-family:'Poppins',Arial,sans-serif;font-size:15px;font-weight:600;color:var(--dark);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .toc-title::before{content:"";width:24px;height:2px;background:var(--green);}
+  .toc ol{list-style:none;counter-reset:toc;}
+  .toc li{counter-increment:toc;padding:10px 0;border-bottom:1px dashed var(--light-gray);display:flex;align-items:baseline;gap:14px;font-family:'Poppins',Arial,sans-serif;font-size:15px;}
+  .toc li:last-child{border-bottom:none;}
+  .toc li::before{content:counter(toc,decimal-leading-zero);font-family:'Poppins',Arial,sans-serif;font-weight:600;color:var(--green);font-size:14px;min-width:30px;}
+  .toc li a{color:var(--dark);text-decoration:none;flex:1;}
+  .toc li .en{color:var(--mid-gray);font-size:12px;font-style:italic;}
+  .chapter{margin:72px 0 24px;}
+  .chapter-num{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:3px;color:var(--green);margin-bottom:10px;}
+  .chapter h2{font-family:'Poppins',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--dark);line-height:1.35;margin-bottom:6px;}
+  .chapter .en-title{font-family:'Poppins',Arial,sans-serif;font-style:italic;font-weight:400;font-size:15px;color:var(--mid-gray);margin-bottom:24px;}
+  .insight{background:#fbf9f2;border:1px solid var(--light-gray);border-radius:12px;padding:24px 26px;margin:24px 0 32px;}
+  .insight-head{font-family:'Poppins',Arial,sans-serif;font-size:13px;font-weight:600;color:var(--dark);letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+  .insight-head .pin{color:var(--green);font-size:14px;}
+  .insight p,.insight ul{font-size:14.5px;color:#3a3937;line-height:1.8;}
+  .insight ul{padding-left:18px;margin-top:4px;}
+  .insight ul li{margin-bottom:4px;}
+  .terms{margin-top:16px;padding-top:14px;border-top:1px dashed var(--light-gray);display:flex;flex-wrap:wrap;gap:6px 8px;}
+  .terms .tag{display:inline-block;font-family:'Poppins',Arial,sans-serif;font-size:11px;color:var(--green);background:rgba(120,140,93,.10);padding:3px 10px;border-radius:6px;border:1px solid rgba(120,140,93,.25);}
+  .body p{margin:18px 0;font-size:16px;color:#2a2928;line-height:1.95;}
+  .body p .hl{background:linear-gradient(180deg,transparent 60%,rgba(120,140,93,.22) 60%);padding:0 2px;font-weight:500;color:var(--dark);}
+  .body strong{color:var(--dark);font-weight:600;}
+  .quote{margin:36px 0;padding:32px 28px;background:linear-gradient(135deg,#f1f3ed 0%,#faf9f5 100%);border-left:5px solid var(--green);border-radius:8px 14px 14px 8px;position:relative;}
+  .quote::before{content:""";position:absolute;top:8px;left:18px;font-family:'Poppins',serif;font-size:64px;color:var(--green);opacity:.25;line-height:1;}
+  .quote p{font-family:'Poppins',Arial,sans-serif;font-size:18px;line-height:1.6;color:var(--dark);font-weight:500;padding-left:22px;}
+  .quote .src{margin-top:10px;padding-left:22px;font-family:'Poppins',Arial,sans-serif;font-size:12px;color:var(--mid-gray);letter-spacing:1px;}
+  .intuit{margin:24px 0;padding:18px 22px;background:#fff;border:1px solid var(--light-gray);border-left:4px solid var(--green);border-radius:10px;}
+  .intuit .label{font-family:'Poppins',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--green);letter-spacing:2px;margin-bottom:6px;}
+  .intuit p{font-size:15px;color:#3a3937;}
+  .intuit ul{font-size:15px;color:#3a3937;padding-left:18px;margin-top:6px;}
+  .intuit ul li{margin-bottom:6px;}
+  .divider{margin:48px auto;display:flex;align-items:center;justify-content:center;gap:14px;}
+  .divider .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--mid-gray),transparent);max-width:100px;}
+  .divider .brand-mark{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--orange);font-family:'Poppins',Arial,sans-serif;font-size:12px;letter-spacing:3px;font-weight:600;white-space:nowrap;}
+  .divider .brand-mark .diamonds{color:var(--mid-gray);font-size:10px;letter-spacing:4px;font-weight:400;}
+  code{font-family:'JetBrains Mono','Menlo',monospace;font-size:.92em;background:#f4f2eb;padding:1px 6px;border-radius:4px;color:var(--dark);}
+  .footer{margin-top:64px;padding:40px 28px 32px;background:linear-gradient(180deg,#1a1918 0%,var(--dark) 100%);color:var(--mid-gray);border-radius:14px;text-align:center;font-family:'Poppins',Arial,sans-serif;font-size:13px;line-height:1.8;position:relative;overflow:hidden;}
+  .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--orange);border-radius:0 0 3px 3px;}
+  .footer .brand{color:var(--green);font-weight:600;letter-spacing:2px;margin-bottom:8px;}
+  .footer .footer-wechat{margin:14px auto 8px;padding:14px 20px;background:rgba(217,119,87,.08);border:1px solid rgba(217,119,87,.25);border-radius:10px;max-width:480px;}
+  .footer .footer-wechat .wc-label{font-size:10.5px;letter-spacing:3px;color:#a89e92;margin-bottom:6px;}
+  .footer .footer-wechat .wc-name{color:var(--light);font-weight:600;font-size:16px;letter-spacing:2px;margin-bottom:6px;}
+  .footer .footer-wechat .wc-slogan{color:#cfcdc4;font-family:'Lora','Georgia',serif;font-size:13px;font-style:italic;letter-spacing:.5px;line-height:1.6;}
+  .footer .meta{font-size:11.5px;color:#7a7972;margin-top:14px;}
+  @media (max-width:480px){.wrap{padding:18px 14px 40px;}.cover{padding:36px 22px 30px;}.cover h1{font-size:24px;}.chapter h2{font-size:22px;}.quote p{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span class="bb-name">广哥在硅谷</span>
+  <span class="bb-sep">·</span>
+  <span class="bb-slogan">用思考抵达清晰，用行动靠近自由</span>
+</div>
+
+<div class="wrap">
+
+<div class="cover">
+  <div class="cover-tag">GUIDO VAN ROSSUM · 2016/04</div>
+  <h1>国王节演讲<br>由社区创造的编程语言</h1>
+  <div class="subtitle-en">King's Day Speech · Curated Chinese Edition</div>
+  <div class="cover-meta">
+    <span><i class="dot"></i> Guido van Rossum · Python 之父</span>
+    <span><i class="dot" style="background:var(--orange);"></i> 中文精校版</span>
+    <span><i class="dot" style="background:var(--blue);"></i> 8 章 · 约 20 分钟阅读</span>
+  </div>
+</div>
+
+<div class="abstract">
+  <div class="abstract-label">📋 内容摘要</div>
+  <p>2016 年 4 月 27 日——荷兰<strong>国王节</strong>——旧金山的荷兰大使馆请 <strong>Guido van Rossum</strong>（Python 编程语言创造者）给一群<strong>荷兰和美国创业者</strong>做了一场"TED 风格"的演讲。Guido 把它叫做<strong>"我的自传 tl;dr + 编程语言的意义 + Python 的大义"</strong>。<strong>没有技术细节</strong>——一篇<strong>3000 字的个人散文</strong>。但读完你会被一种<strong>朴素而宏大的力量</strong>击中——<strong>10 岁拿到飞利浦电子套件 → 阿姆斯特丹大学地下室的大型机 → ABC 语言失败的教训（"没有互联网就没有反馈回路"） → 1990 年 35 岁创造 Python → Google 第一版用 Python 写的 → 伊拉克巴比伦大学的 Python 课堂</strong>——Guido 一生在演示一件事——<strong>"a programming language created by a community fosters happiness in its users around the world."</strong> 这是这个时代少有的、不矫情的"开源宣言"。Leve de koning！</p>
+</div>
+
+<div class="toc">
+  <div class="toc-title">章节目录</div>
+  <ol>
+    <li><a href="#ch1">引言 · 国王节与一份演讲<br><span class="en">King's Day &amp; the speech</span></a></li>
+    <li><a href="#ch2">"我是个 nerd" · 60 岁的自我介绍<br><span class="en">"I'm a nerd, a geek"</span></a></li>
+    <li><a href="#ch3">10 岁的飞利浦电子套件<br><span class="en">The Philips electronics kit</span></a></li>
+    <li><a href="#ch4">阿姆斯特丹的地下室 · 共享的诞生<br><span class="en">The basement &amp; sharing</span></a></li>
+    <li><a href="#ch5">ABC 的失败 · 没有互联网就没有反馈<br><span class="en">ABC: a one-way street</span></a></li>
+    <li><a href="#ch6">编程语言是给程序员看的<br><span class="en">Languages are for humans</span></a></li>
+    <li><a href="#ch7">Python 大义 · 由社区创造的语言<br><span class="en">Python's big idea</span></a></li>
+    <li><a href="#ch8">广哥的总结 · 巴比伦大学的眼泪<br><span class="en">Tears for Babylon</span></a></li>
+  </ol>
+</div>
+
+<!-- 1 -->
+<div class="chapter" id="ch1">
+  <div class="chapter-num">CHAPTER 01 · INTRODUCTION</div>
+  <h2>引言 · 国王节与一份演讲</h2>
+  <div class="en-title">King's Day &amp; the speech</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p><strong>2016 年 4 月 27 日</strong>——荷兰<strong>国王节</strong>（King's Day，全国放假庆祝当朝国王生日，街上人人穿橙色）——旧金山的荷兰大使馆请 <strong>Guido van Rossum</strong>（Python 之父）给一群<strong>荷兰和美国创业者</strong>做了一场<strong>"TED 风格"的演讲</strong>。Guido 当天读了这篇<strong>3000 字的稿子</strong>，回到家把它原文贴在自己的博客 <strong>Neopythonic</strong> 上。这不是技术演讲——他自己定义为<strong>"我的自传 tl;dr + 编程语言的意义 + Python 的大义"</strong>。最后他用一句荷兰语祝词收尾——<strong>"Leve de koning!"</strong>——<strong>"国王万岁！"</strong></p>
+  <div class="terms">
+    <span class="tag">King's Day 2016</span>
+    <span class="tag">Dutch Embassy SF</span>
+    <span class="tag">Neopythonic Blog</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>这篇演讲的<strong>题目</strong>叫做 <em>"King's Day Speech"</em>——国王节演讲。背景是这样——</p>
+
+  <p><strong>荷兰国王节</strong>是<strong>4 月 27 日</strong>，全国放假庆祝当朝国王（Willem-Alexander）的生日。<strong>所有人那天都穿橙色</strong>（橙色是荷兰王室色），<strong>街上有跳蚤市场、有音乐、有船游运河</strong>——是全荷兰人最爱的节日之一。海外的荷兰大使馆每年也会办活动。</p>
+
+  <p><strong>2016 年</strong>那一年，<strong>旧金山的荷兰大使馆</strong>请 <strong>Guido van Rossum</strong> 给一群<strong>荷兰和美国创业者</strong>做一场"TED talk"。Guido 是<strong>荷兰人</strong>，Python 是他<strong>1990 年在阿姆斯特丹</strong>开始写的语言，在硅谷已经成为<strong>事实上的标准编程语言</strong>。<strong>没有比他更合适的人选</strong>。</p>
+
+  <p>Guido 开场就告诉听众——他自己也不知道这是该叫"TED talk"还是叫"国王节祝词"——总之，<strong>"Excuse my ramblings. I'll get to a point eventually."</strong>——<strong>"原谅我会东拉西扯。我最终会说到一个点的。"</strong></p>
+
+  <p>这种<strong>自嘲式的开场</strong>就是 Guido 标志性的风格——<strong>自称 nerd、自称晚熟、自称"可能在自闭谱系上"</strong>。但接下来的 3000 字——<strong>每一段都在演示</strong>"<strong>什么叫一个真正的工程师如何看世界</strong>"。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 2 -->
+<div class="chapter" id="ch2">
+  <div class="chapter-num">CHAPTER 02 · I'M A NERD</div>
+  <h2>"我是个 nerd" · 60 岁的自我介绍</h2>
+  <div class="en-title">"I'm a nerd, a geek"</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Guido 的自我介绍极其朴素——<strong>"我是个 nerd、是个 geek。我大概在自闭谱系上的某个位置"</strong>。他详细列出自己的"晚熟史"——<strong>26 岁才大学毕业、45 岁才结婚、60 岁有一个 14 岁的儿子</strong>。在美国住了<strong>20 多年还是绿卡</strong>。"也许我就是<strong>难做决定</strong>"。他用这种<strong>赤裸的诚实</strong>把自己跟<strong>Steve Jobs、Mark Zuckerberg</strong>对比——<strong>"我不是 Jobs 也不是 Zuckerberg。但 35 岁时我创造了一门编程语言，有了一点 following。接下来发生的事——非常神奇。"</strong> 这种<strong>"不修饰的自我披露"</strong>是这篇演讲最打动人的地方之一。</p>
+  <div class="terms">
+    <span class="tag">Late Bloomer</span>
+    <span class="tag">Autism Spectrum</span>
+    <span class="tag">Anti-Hero Narrative</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Guido 的自我介绍方式非常少见。他不说"<strong>我是 Python 的创造者</strong>"——他说——</p>
+</div>
+
+<div class="quote">
+  <p>Let me introduce myself.<br><strong>我是一个 nerd，一个 geek。</strong><br><strong>我大概在自闭谱系上的某个位置。</strong><br>我也是一个<strong>晚熟者</strong>。<br>我 26 岁才大学毕业。<br>我 45 岁才结婚。<br>我现在 60 岁，<strong>有一个 14 岁的儿子</strong>。<br>也许我就是<strong>难做决定</strong>——<br>我在美国住了 20 多年，<strong>还是绿卡身份</strong>。</p>
+  <div class="src">— GUIDO INTRODUCES HIMSELF</div>
+</div>
+
+<div class="body">
+  <p>读到这里我想了很久。<strong>世界上没几个"科技教父级别"的人物会这样自我介绍</strong>——<strong>不说成就，说"晚熟"</strong>；<strong>不说聪明，说"难做决定"</strong>；<strong>不说英雄事迹，说"我大概在自闭谱系上"</strong>。</p>
+
+  <p>然后他<strong>立刻把自己跟硅谷的两大偶像并排</strong>——</p>
+
+  <p>"<strong>I'm no Steve Jobs or Mark Zuckerberg.</strong> 但 35 岁时我创造了一门编程语言，有了一点 following。接下来发生的事——非常神奇。<strong>但我等会再说。</strong>"</p>
+
+  <p>这种<strong>"反英雄叙事"</strong>是 Guido 整篇演讲的<strong>底色</strong>——<strong>"我不是天才。我只是恰好在恰好的时间做了恰好的事情。"</strong> 这种<strong>"故事的主角不是我，是机会和环境"</strong>的口吻——<strong>跟硅谷叙事完全相反</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 3 -->
+<div class="chapter" id="ch3">
+  <div class="chapter-num">CHAPTER 03 · THE PHILIPS KIT</div>
+  <h2>10 岁的飞利浦电子套件</h2>
+  <div class="en-title">The Philips electronics kit</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Guido 的"工程师起源故事"非常具体——<strong>10 岁那年父母送了他一个<strong>飞利浦的电子教育套件</strong>。一开始按说明书做，<strong>后来开始自己设计电路</strong>。最珍贵的——<strong>套件里的三（!）个晶体管</strong>。他把第一个自己做的"闪光灯"电子模型带去 <strong>5 年级的 show-and-tell</strong>——<strong>结果完全没人感兴趣或听懂</strong>。"<strong>我想这是我最早记得的'发现自己是个 geek'的时刻</strong>——在此之前我只是个安静的好学生。"</strong> 接着是中学——和"少数 nerd 同学厮混"——<strong>这是 Guido 对"被边缘化的童年"非常诚实的回忆</strong>。</p>
+  <div class="terms">
+    <span class="tag">Age 10</span>
+    <span class="tag">Three Transistors</span>
+    <span class="tag">5th Grade Show-and-Tell</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Guido 把"我怎么成为一个工程师"的故事讲得非常具体。<strong>不是"我从小就对计算机感兴趣"这种泛泛之词</strong>——是<strong>"10 岁那年父母送了我一个飞利浦的教育电子套件"</strong>。</p>
+</div>
+
+<div class="quote">
+  <p>10 岁那年，父母送了我一个<strong>飞利浦的电子教育套件</strong>。<br>这套件<strong>太神奇了</strong>。<br>一开始，我只是照说明书做，<br><strong>每一个都工作</strong>。<br>后来——我学会了<strong>自己设计电路</strong>。<br><br>我最珍贵的财产——<br>套件里的<strong>三（!）个晶体管</strong>。</p>
+  <div class="src">— GUIDO @ AGE 10</div>
+</div>
+
+<div class="body">
+  <p><strong>"三（!）个晶体管"</strong>——这个感叹号是 Guido 自己写的。1965 年的小孩，<strong>有 3 个晶体管已经是宝藏</strong>。今天一颗 Apple M3 芯片<strong>有 250 亿个晶体管</strong>——但 1965 年荷兰一个 10 岁小孩的<strong>"3 个"</strong>承载了一个未来 Python 之父的全部想象空间。</p>
+
+  <p>然后 Guido 讲了一个让我合上文章想了好久的小故事——</p>
+
+  <p>"<strong>我把第一个自己做的电子模型——一个闪光灯——带去 5 年级的 show-and-tell。</strong>"</p>
+
+  <p>"<strong>It was a total dud — nobody cared or understood its importance.</strong>"——<strong>完全冷场——没有人在乎，也没有人懂它的意义</strong>。</p>
+
+  <p>"<strong>我想这是我最早记得的'发现自己是个 geek'的时刻——在此之前我只是一个安静的好学生。</strong>"</p>
+
+  <p>这一段读到这里我心里很安静。<strong>每一个真正的工程师大概都有这样的时刻</strong>——<strong>带一件你觉得最 cool 的东西去学校</strong>——<strong>结果发现别人完全无感</strong>。<strong>从那一刻起，你开始默默地承认自己是"那种人"</strong>。</p>
+
+  <p>Guido 接着说——<strong>"中学里我把自己的 nerdiness 进一步发展——我跟一小群 nerd 同学厮混。"</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 4 -->
+<div class="chapter" id="ch4">
+  <div class="chapter-num">CHAPTER 04 · THE BASEMENT</div>
+  <h2>阿姆斯特丹的地下室 · 共享的诞生</h2>
+  <div class="en-title">The basement &amp; sharing</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>高中后 Guido 进了<strong>阿姆斯特丹大学</strong>——离家近、又是<strong>70 年代荷兰青少年眼里唯一"酷"的城市</strong>（"是的，1968 年的学生抗议还是触动了我一下"）。他<strong>没选物理</strong>（让高中物理老师"<strong>惊讶又失望</strong>"）——<strong>选了数学</strong>。但回头看，<strong>"反正都不重要"</strong>——因为<strong>科学楼地下室有一台大型机</strong>——<strong>"一见钟情"</strong>。<strong>打卡机！行式打印机！批处理！</strong>他很快学会了 Algol、Fortran、Pascal——<strong>大多数名字今天都被遗忘了——但在当时影响巨大</strong>。最重要的事情发生在地下室——<strong>"在大型机周围，是一群松散组织的有共同兴趣的学生和员工</strong>——<strong>我们交换技巧、共享子程序、共享程序、联合对抗大型机管理员（特别在无尽的磁盘空间猫鼠游戏里）</strong>"。这就是<strong>"软件需要被共享"</strong>这个 idea 的源头——<strong>"今天我们叫它开源"</strong>。</p>
+  <div class="terms">
+    <span class="tag">University of Amsterdam</span>
+    <span class="tag">Mainframe Basement</span>
+    <span class="tag">Algol / Fortran / Pascal</span>
+    <span class="tag">Birth of Sharing</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>高中毕业后 Guido 去了<strong>阿姆斯特丹大学</strong>——他给的理由很真实——</p>
+
+  <p>"<strong>离家近，而且对一个 70 年代在荷兰长大的青少年来说，阿姆斯特丹是唯一'酷'的城市。</strong>"（括号里加一句——<strong>"是的，1968 年的学生抗议还是触动了我一下。"</strong>）</p>
+
+  <p>他<strong>没选物理</strong>——<strong>让他高中物理老师"惊讶又失望"</strong>——选了<strong>数学</strong>。但回头看——<strong>"反正都不重要"</strong>。因为——</p>
+</div>
+
+<div class="quote">
+  <p>在科学楼的<strong>地下室</strong>，有一台<strong>大型机</strong>。<br>那是<strong>一见钟情</strong>。<br><br><strong>打卡机！</strong><br><strong>行式打印机！</strong><br><strong>批处理！</strong><br><br>更重要的——<br>我很快学会了编程——<br>用<strong>Algol、Fortran、Pascal</strong>这种名字的语言。<br>大多数名字今天都<strong>被遗忘了</strong>——<br>但当时<strong>影响巨大</strong>。</p>
+  <div class="src">— THE BASEMENT LOVE STORY</div>
+</div>
+
+<div class="body">
+  <p>"一见钟情"——<strong>love at first sight</strong>——一个 60 岁的工程师用这个词描述自己 18 岁第一次看到大型机的感觉。<strong>这种"古典浪漫"在今天的硅谷里几乎绝迹</strong>。</p>
+
+  <p>但接下来的一段话——<strong>是整篇演讲最深的一段</strong>——</p>
+</div>
+
+<div class="intuit">
+  <div class="label">🌱 共享精神的诞生</div>
+  <p>"在那个地下室，<strong>在大型机周围</strong>，发生着一件神奇的事——</p>
+  <p>是一群<strong>松散组织的有共同兴趣的学生和员工</strong>——我们<strong>交换技巧</strong>、我们<strong>共享子程序</strong>、我们<strong>共享程序</strong>、我们<strong>联合对抗大型机管理员</strong>——<strong>特别是在无尽的"磁盘空间猫鼠游戏"里</strong>（磁盘空间在那时的珍贵程度是你今天<strong>无法理解</strong>的）。"</p>
+  <p>"但我学到最重要的一课<strong>是关于共享的</strong>——<strong>我在那里学到的大部分编程技巧都跟大型机时代一起死了</strong>——<strong>但"软件需要被共享"这个 idea 比以往任何时候都更强</strong>。<strong>今天我们叫它<em>开源</em>——这是一个 movement。</strong>"</p>
+  <p>"<strong>Hold that thought!</strong>"——<strong>记住这个想法！</strong></p>
+</div>
+
+<div class="body">
+  <p>读到 <strong>"Hold that thought!"</strong> 时我笑出来了。<strong>这是一个 60 岁的演讲者在告诉听众"接下来还会回到这个点上"</strong>——非常 nerd 的演讲技巧——<strong>但 effectively 把整场演讲的主线串起来了</strong>。后面 Python 大义的部分——<strong>就是这个 thought 的回响</strong>。</p>
+
+  <p>地下室经历的<strong>第二个 game-changer</strong>——大型机操作系统组招兼职学生，<strong>Guido 应聘——拿到了</strong>。<strong>"这是一件改变人生的事件！"</strong>——<strong>突然有了无限的大型机访问权</strong>，<strong>看得到操作系统源代码</strong>，<strong>有几十个同事教他这些东西怎么工作</strong>。</p>
+
+  <p>这件事直接导致他<strong>"基本上退学了"</strong>——如果不是<strong>"开明的经理 + 没放弃他的教授"</strong>把他<strong>nudge 回去上课、拉关系</strong>——他不会毕业。<strong>"With much delay, I did graduate. Yay!"</strong></p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 5 -->
+<div class="chapter" id="ch5">
+  <div class="chapter-num">CHAPTER 05 · ABC FAILED</div>
+  <h2>ABC 的失败 · 没有互联网就没有反馈</h2>
+  <div class="en-title">ABC: a one-way street</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>毕业后 Guido<strong>立刻找到了"另一个理想工作"——这个工作没有学位就拿不到</strong>。他加入了一个<strong>建造新编程语言</strong>的团队——<strong>"这种事情不常见"</strong>。语言叫 <strong>ABC</strong>——目标是<strong>"消灭 Basic"</strong>（80 年代 Apple II 和 Commodore 64 上的业余编程之王）。<strong>"我们团队认为 Basic 是一种瘟疫，世界应该摆脱"</strong>——他们的口号是<strong>"ABC will stamp out Basic"</strong>。<strong>4 年后 ABC 被放弃</strong>。Guido 花了<strong>很多小时</strong>想清楚为什么——<strong>"除了有点过度设计——我最好的答案是 ABC 死在'当时没有互联网'</strong>，结果<strong>无法在语言创造者和用户之间有健康的反馈回路</strong>——<strong>ABC 的设计本质上是一条单向街</strong>"。半个十年后——<strong>当他从 ABC 的灰烬里挑想法做自己的语言时——这个"缺失的反馈回路"是他决定要改进的事情之一</strong>。<strong>"Release early, release often"</strong>就此诞生（自由改编自老芝加哥民主党的"vote early, vote often"）。<strong>1990 年的互联网虽然小而慢——但已经足够了</strong>。</p>
+  <div class="terms">
+    <span class="tag">ABC Language</span>
+    <span class="tag">Stamp out Basic</span>
+    <span class="tag">Release Early, Release Often</span>
+    <span class="tag">Feedback Loop</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>毕业后 Guido 加入了一个<strong>建编程语言的团队</strong>——语言叫 <strong>ABC</strong>。<strong>目标是消灭当时统治微机的 Basic</strong>。<strong>口号是 "ABC will stamp out Basic"</strong>。</p>
+
+  <p>但 4 年后——<strong>ABC 被放弃</strong>。Guido 用很多小时想清楚为什么——</p>
+</div>
+
+<div class="quote">
+  <p>除了<strong>有点过度设计</strong>——<br>我最好的答案是——<br><strong>ABC 死在"当时没有互联网"</strong>。<br><br>结果<strong>无法在语言创造者和用户之间<br>有<em>健康的反馈回路</em></strong>。<br><br>ABC 的设计——<br><strong>本质上是一条<em>单向街</em></strong>。</p>
+  <div class="src">— WHY ABC DIED</div>
+</div>
+
+<div class="body">
+  <p>"<strong>One-way street</strong>"——单向街——这个隐喻非常有力。<strong>没有反馈回路的语言，就是设计者把它<em>扔出去</em>，用户<em>用它或不用</em>，没有第三种可能</strong>。<strong>设计者听不到用户的真实反应</strong>。</p>
+
+  <p>半个十年后——Guido 从 ABC 的灰烬里挑想法做自己的语言时——<strong>"这个'缺失的反馈回路'是我决定要改进的事情之一"</strong>。</p>
+
+  <p>他的座右铭——</p>
+</div>
+
+<div class="quote">
+  <p><strong>"Release early, release often."</strong><br><br>（自由地改编自<br>老<strong>芝加哥民主党</strong>的——<br>"<strong>vote early, vote often</strong>"。）<br><br><strong>1990 年的互联网——</strong><br>虽然<strong>小而慢</strong>——<br>但<strong>已经足够了</strong>。</p>
+  <div class="src">— GUIDO'S MOTTO</div>
+</div>
+
+<div class="body">
+  <p>"<strong>vote early, vote often</strong>"是<strong>美国选举舞弊文化的经典玩笑</strong>——意思是"<strong>早投票、多投票</strong>"——讽刺 19 世纪芝加哥政治机器让一个人投多次。<strong>Guido 把这个梗用在软件发布上</strong>——<strong>"早点发布，频繁发布"</strong>——<strong>这是开源运动的圣经之一</strong>。</p>
+
+  <p>Guido 接着回看——<strong>过去 25 年</strong>，<strong>互联网 + 开源运动</strong>（也就是<strong>自由软件</strong>）<strong>真的改变了一切</strong>。<strong>加上摩尔定律——每年电脑更快</strong>。这三样合起来——<strong>完全改变了软件创造者和用户之间的关系</strong>。</p>
+
+  <p>"<strong>我相信</strong>——<strong>这些发展（以及我如何成功地利用它们）对我那门编程语言的成功的贡献——<em>比我编程技巧和经验的贡献都大</em>，<em>不管我多 awesome</em></strong>。"</p>
+
+  <p>这种<strong>"承认时代红利的诚实"</strong>是非常稀有的——大多数<strong>"成功人士"</strong>都把成功归于自己。<strong>Guido 把它归于互联网 + 开源 + 摩尔定律的合力</strong>。</p>
+
+  <p>最后 Guido 用一句话结束这一段——<strong>带着典型的 nerd 自嘲</strong>——</p>
+
+  <p>"<strong>It also didn't hurt that I named my language Python.</strong> 这是<strong>我无心的营销天才</strong>。我本意是<strong>致敬 Monty Python 的 Flying Circus</strong>——1990 年我也没什么好失去的。<strong>今天 brand research 公司一定会乐意收你一大笔钱告诉你这个名字在典型客户的潜意识里勾起的复杂联想</strong>。但<strong>我只是在搞笑</strong>。"</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 6 -->
+<div class="chapter" id="ch6">
+  <div class="chapter-num">CHAPTER 06 · LANGUAGES ARE FOR HUMANS</div>
+  <h2>编程语言是给程序员看的</h2>
+  <div class="en-title">Languages are for humans</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>Guido 承诺过<strong>不做技术讨论</strong>——但他还是想说<strong>编程语言对使用它的人意味着什么</strong>。如果你问程序员"什么是编程语言"——他们会说<strong>"告诉电脑做什么"</strong>。但<strong>如果只是这样，为什么他们在自己人之间谈论编程语言时那么 passionate？</strong> Guido 给出的答案<strong>是这场演讲最重要的洞察之一</strong>——<strong>"编程语言是程序员表达和沟通想法的方式——观众是其他程序员，不是电脑。理由：电脑能照顾自己，但程序员总在跟其他程序员一起工作，<em>糟糕沟通的想法会带来昂贵的失败</em>"</strong>。<strong>Google 和 Facebook</strong>背后是<strong>关于电脑能为人做什么的 idea</strong>——<strong>"true story"</strong>——<strong>Google 第一版是用 Python 写的——因为 Python 是表达 Larry Page 和 Sergey Brin 关于"如何索引网页、组织搜索结果"原始想法的<em>最对的语言</em></strong>。</p>
+  <div class="terms">
+    <span class="tag">For Other Programmers</span>
+    <span class="tag">Google's First Version</span>
+    <span class="tag">Ideas Need Expression</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>Guido 承诺过荷兰大使<strong>不做技术讨论</strong>——但他还是想说几句<strong>编程语言对使用它的人意味着什么</strong>。</p>
+
+  <p>"<strong>典型的</strong>——当你让一个程序员向外行解释什么是编程语言时——他们会说——<strong>'编程语言就是你告诉电脑做什么的方式'</strong>。<strong>但如果只是这样，为什么他们在自己人之间谈论编程语言时那么 passionate？</strong>"</p>
+
+  <p>Guido 给出的答案<strong>是这场演讲最深的洞察之一</strong>——</p>
+</div>
+
+<div class="quote">
+  <p>事实上——<br><strong>编程语言是程序员<em>表达和沟通想法</em>的方式</strong>——<br><strong>受众是<em>其他程序员</em>，不是电脑</strong>。<br><br>理由——<br><strong>电脑能照顾自己</strong>，<br>但<strong>程序员总在跟其他程序员一起工作</strong>——<br><strong>糟糕沟通的想法<em>会带来昂贵的失败</em></strong>。</p>
+  <div class="src">— THE FUNDAMENTAL INSIGHT</div>
+</div>
+
+<div class="body">
+  <p>这一段是<strong>所有写代码的人都应该背下来的</strong>。<strong>"代码是写给人看的，碰巧也能让机器执行"</strong>——这是 Donald Knuth 在《Literate Programming》里说过的话——<strong>Guido 在 2016 年用更朴素的方式重新说了一遍</strong>。</p>
+
+  <p>而且——<strong>"编程语言里表达的想法也常常 reach 到程序的最终用户"</strong>——<strong>那些<em>永远不会读、甚至不知道这个程序</em>但被它影响的人</strong>。</p>
+
+  <p>"<strong>想想 Google 或 Facebook 这种公司的难以置信的成功</strong>。<strong>核心是 idea——关于电脑能为人做什么的 idea</strong>。<strong>为了 effective，一个 idea 必须用编程语言表达出来</strong>。<strong>那个 best 表达 idea 的语言会给团队一个关键优势——因为它给团队成员——人！——关于那个 idea 的 clarity</strong>。"</p>
+
+  <p>这里 Guido 做了一个让我笑出来的对比——"<strong>Google 和 Facebook 的核心 idea 截然不同——而它们最爱的编程语言<em>恰好位于编程语言设计谱系的两端</em></strong>"——<strong>Google 早期是 C++ 和 Python，Facebook 早期是 PHP</strong>——<strong>"That's exactly my point."</strong></p>
+
+  <p>然后他抛出一个<strong>"True story"</strong>——</p>
+</div>
+
+<div class="quote">
+  <p><strong>True story:</strong><br>The first version of Google<br><strong>was written in Python.</strong><br><br>理由——<br>Python 是<strong>表达 Larry Page 和 Sergey Brin<br>关于"如何索引网页、组织搜索结果"<br><em>原始想法</em>的<em>最对的语言</em></strong>。<br><br>而且——<strong>他们也能在电脑上跑这些 idea，对！</strong></p>
+  <div class="src">— THE GOOGLE STORY</div>
+</div>
+
+<div class="body">
+  <p>"<strong>And they could run their ideas on a computer, too!</strong>"——<strong>对，他们还能在电脑上跑！</strong>——这种 dry humor 让满场荷兰和美国创业者大概都笑了。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 7 -->
+<div class="chapter" id="ch7">
+  <div class="chapter-num">CHAPTER 07 · PYTHON'S BIG IDEA</div>
+  <h2>Python 大义 · 由社区创造的语言</h2>
+  <div class="en-title">Python's big idea</div>
+</div>
+
+<div class="insight">
+  <div class="insight-head"><span class="pin">📌</span> 本节核心要点</div>
+  <p>那么——<strong>Python 的 idea 是什么？为什么它这么成功？</strong> Guido 说——<strong>他有很多答案</strong>——技术的、自己当时的技能经验、"恰好在恰好的时间出现在恰好的地方"。<strong>但他相信最重要的 idea 是</strong>——<strong>"Python is developed on the Internet, entirely in the open, by a community of volunteers (but not amateurs!) who feel passion and ownership"</strong>。<strong>"这就是科学楼地下室里那群 geek 的精神"</strong>——<strong>Hold that thought 的回响来了！</strong> 然后 Guido 做出全篇最有力的转向——<strong>"Surprise: 像所有好的励志演讲一样——这场演讲的 point 是关于<em>幸福</em>的！"</strong> <strong>当我感觉自己是这样一个社区的一员时——我最幸福</strong>。<strong>"If I can't feel it, I don't feel alive."</strong> Python 全球数百万用户——<strong>主动选择并热爱使用 Python</strong>。有<strong>PyCon 在纳米比亚、伊朗、伊拉克、甚至俄亥俄州（!）</strong>这种地方举办。</p>
+  <div class="terms">
+    <span class="tag">Community of Volunteers</span>
+    <span class="tag">Not Amateurs</span>
+    <span class="tag">Passion &amp; Ownership</span>
+    <span class="tag">Happiness</span>
+  </div>
+</div>
+
+<div class="body">
+  <p>1990 年 Guido 做了自己的编程语言、起名 Python。但<strong>Python 的 idea 是什么？为什么这么成功？怎么跟其他语言区分？</strong>（"<strong>你们干嘛这样盯着我？:-)</strong>"——他特意在演讲稿里写了一个颜文字）</p>
+
+  <p>"<strong>我有很多答案</strong>——一些<strong>技术的</strong>、一些<strong>来自我当时的技能和经验</strong>、一些<strong>只是恰好在恰好的时间出现在恰好的地方</strong>。但我<strong>相信最重要的 idea 是</strong>——"</p>
+</div>
+
+<div class="quote">
+  <p>Python is developed<br><strong>on the Internet</strong>,<br><strong>entirely in the open</strong>,<br>by a <strong>community of volunteers</strong><br>（<strong>but not amateurs!</strong>）<br>who feel <strong>passion and ownership</strong>.<br><br>And that is what that group of geeks<br>in the basement of the science building<br><strong>was all about.</strong></p>
+  <div class="src">— PYTHON'S BIG IDEA</div>
+</div>
+
+<div class="body">
+  <p>这就是<strong>"Hold that thought!"</strong> 的回响——<strong>30 多年前阿姆斯特丹大学地下室的那群 geek 的精神，<em>就是 Python 今天的精神</em></strong>。<strong>整篇演讲在这里完成了它的回旋结构</strong>。</p>
+
+  <p>然后 Guido 做出全篇最有力的转向——</p>
+</div>
+
+<div class="quote">
+  <p>Surprise：<br>像所有好的<strong>励志演讲</strong>一样——<br>这场演讲的 point<br>是关于<strong><em>幸福</em></strong>的！</p>
+  <div class="src">— THE BIG REVEAL</div>
+</div>
+
+<div class="body">
+  <p>这是<strong>一篇关于编程语言的演讲</strong>——但它的<strong>真正主题是幸福</strong>。这种<strong>"前面 2/3 都在讲技术、最后 1/3 突然转向幸福"</strong>的结构——<strong>典型 TED 范式</strong>，但 Guido 用得<strong>非常诚恳</strong>。</p>
+
+  <p>"<strong>I am happiest when I feel that I'm part of such a community.</strong> 我幸运的是<strong>在我的日常工作里我也能感觉到</strong>。（<strong>I'm a principal engineer at Dropbox.</strong>）如果我感觉不到——<strong>I don't feel alive</strong>。其他社区成员也是这样。<strong>这种感觉是有传染性的</strong>，<strong>我们社区的成员遍布世界各地</strong>。"</p>
+
+  <p>"<strong>Python 用户社区由数百万人组成</strong>——他们<strong>有意识地选择使用 Python，并爱用 Python</strong>。<strong>有 active members 在</strong>——这里 Guido 列了一些他特意挑的地方——<strong>纳米比亚、伊朗、伊拉克——甚至俄亥俄州！</strong>——组织 Python 大会——叫做<strong>PyCons</strong>。"</p>
+
+  <p><strong>"甚至俄亥俄州（!）"</strong>——这个梗是<strong>给硅谷听众的"内部笑话"</strong>——硅谷人会觉得"在国外办 PyCon 很 cool"，但<strong>"在俄亥俄州办 PyCon"</strong>反而<strong>更让人意外</strong>。这是 Guido 用幽默说<strong>"Python 社区已经渗透到所有地方了"</strong>。</p>
+</div>
+
+<div class="divider"><span class="line"></span><span class="brand-mark">广哥在硅谷<span class="diamonds">◆ ◆ ◆</span></span><span class="line"></span></div>
+
+<!-- 8 -->
+<div class="chapter" id="ch8">
+  <div class="chapter-num">CHAPTER 08 · EDITOR'S NOTE</div>
+  <h2>广哥的总结 · 巴比伦大学的眼泪</h2>
+  <div class="en-title">Tears for Babylon</div>
+</div>
+
+<div class="body">
+  <p>演讲的<strong>最后一段</strong>——Guido 讲了一个让全场震惊的故事——</p>
+</div>
+
+<div class="quote">
+  <p>我最爱的故事——<br>一年前我花了 20 分钟开视频会议——<br>跟<strong>南伊拉克巴比伦大学</strong>一教室的<br><strong>教职员工</strong>——<br>回答他们关于 Python 的问题。<br><br>多亏一位<strong>大胆的女性</strong>——<br>在一个<strong>战火纷飞的国家</strong>组织了这次活动——<br><strong>巴比伦大学的学生现在被教<br>编程入门课，用 Python</strong>。<br><br>每次想起这件事——<br><strong>我还是会流泪</strong>。<br><br>在我最狂野的梦里——<br>我从没想过<br><strong>我会触及离我自己生活如此遥远、<br>如此不同的人</strong>。</p>
+  <div class="src">— THE BABYLON UNIVERSITY STORY</div>
+</div>
+
+<div class="body">
+  <p>"<strong>I still tear up when I think about the power of that experience.</strong>"——<strong>我还是会流泪</strong>——这是一个 60 岁的工程师，在一个外国大使馆的官方场合，对一群陌生听众<strong>直接表达自己最柔软的部分</strong>。<strong>没人会预想 Python 之父会说这种话</strong>——但<strong>这就是 Guido 的风格</strong>。</p>
+
+  <p>然后他用一句话结束整场演讲——</p>
+</div>
+
+<div class="quote">
+  <p>And on that note I'd like to leave you:<br><strong>a programming language created by a community<br>fosters happiness in its users around the world.</strong><br><br>Next year I may go to<br><strong>PyCon Cuba!</strong></p>
+  <div class="src">— THE FINAL LINE</div>
+</div>
+
+<div class="body">
+  <p>"<strong>由社区创造的编程语言，给世界各地的用户带来幸福。</strong>"——<strong>一句话总结一生的工作</strong>。然后用一个<strong>"明年我可能去 PyCon 古巴！"</strong>——<strong>用具体的、未来的、热血的承诺收尾</strong>。</p>
+
+  <p>读完这 3000 字，我有几点感受——</p>
+
+  <p><strong>第一</strong>——<strong>Guido 这种"反英雄叙事"是给所有创业者最珍贵的礼物</strong>。在硅谷的<strong>"我 20 岁辍学创业、29 岁 IPO"</strong>的喧嚣里——一个<strong>"26 岁才毕业、45 岁才结婚、60 岁还是绿卡身份"</strong>的人——<strong>站在那里告诉你"我做了 Python"</strong>——这个对比本身<strong>就是一种解药</strong>。<strong>不是所有有意义的人生都长那个样子</strong>。</p>
+
+  <p><strong>第二</strong>——<strong>"编程语言是给程序员看的，不是给电脑看的"</strong>这句话<strong>应该贴在每个开发团队的墙上</strong>。我们<strong>太容易忘记代码是一种沟通工具</strong>——它的<strong>第一受众是其他人</strong>。这句话<strong>跟 Anthropic 的 Thariq 在他《建 Claude Code 学到的事》里说的"See like an agent"是一种镜像</strong>——<strong>"设计工具时把模型当用户"</strong>——和<strong>"设计代码时把同事当读者"</strong>——都是<strong>把"非作者的人"放进设计回路</strong>。</p>
+
+  <p><strong>第三</strong>——<strong>"ABC 死在没有互联网"</strong>这个洞察<strong>是给所有产品人的</strong>。<strong>没有反馈回路的产品，无论多精心设计，都是单向街</strong>。<strong>这就是为什么"release early, release often"在 2025-2026 年的 AI 创业时代依然是金科玉律</strong>——<strong>模型版本、prompt 调优、agent 设计——每一个都需要用户反馈才能进化</strong>。</p>
+
+  <p><strong>第四</strong>——<strong>Guido 反复强调"我不是天才"</strong>——把成功归于<strong>"互联网 + 开源 + 摩尔定律 + 名字 + 时机"</strong>——这种<strong>"承认时代红利"的诚实</strong>是<strong>真正成熟的人才会有的</strong>。<strong>大多数人一旦成功就会重写自己的故事，把所有偶然都说成必然</strong>。<strong>Guido 没有</strong>。</p>
+
+  <p><strong>第五</strong>——<strong>"巴比伦大学的眼泪"</strong>是<strong>这篇演讲最深的部分</strong>。一个荷兰人在阿姆斯特丹地下室写的小语言，35 年后在<strong>南伊拉克战火纷飞的大学里教学生编程</strong>——<strong>没有人能预测这种 reach</strong>。<strong>"我从没想过我会触及离我自己生活如此遥远、如此不同的人"</strong>——<strong>这是一个工程师能得到的最高的赞美</strong>。</p>
+
+  <p><strong>第六</strong>——<strong>"hold that thought"的回旋结构</strong>是 Guido 演讲技巧的精华——<strong>地下室那群 geek 的共享精神 → Python 大义 → 全球社区 → 巴比伦大学 → 古巴 PyCon</strong>——<strong>一个 idea 在 3000 字里穿越 50 年</strong>。这种<strong>"工程师的叙事美学"</strong>非常迷人——<strong>没有花哨的修辞，只有逻辑链条和真实经历的相互回响</strong>。</p>
+
+  <p>这是一篇<strong>每一个工程师都应该读的演讲</strong>——<strong>无论你写不写 Python</strong>。</p>
+
+  <p><strong>Leve de koning! 国王万岁！</strong></p>
+</div>
+
+<div class="footer">
+  <div class="brand">NEOPYTHONIC · 2016/04/27</div>
+  <div>King's Day Speech · 中文版精校</div>
+  <div class="meta">原文：Guido van Rossum · 译者：广哥</div>
+
+  <div class="footer-wechat">
+    <div class="wc-label">微 信 公 众 号</div>
+    <div class="wc-name">广哥在硅谷</div>
+    <div class="wc-slogan">用思考抵达清晰，用行动靠近自由</div>
+  </div>
+
+  <div class="meta">© Jerry Yang · jerryyang.ai/guido-kingsday</div>
+</div>
+
+</div>
+</body>
+</html>
